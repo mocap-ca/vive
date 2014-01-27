@@ -20,6 +20,9 @@ void WorkThread::run()
 		if(!myserver->working)
 		{
 			emit signalFrame();
+            QTime *t = new QTime();
+            t->start();
+            emit measureLatency(t);
 			completedFrames++;
 		}
 
@@ -34,14 +37,18 @@ void WorkThread::run()
 
         if(timer.elapsed() > 1000)
         {
-            emit outFrameRate(completedFrames);
+            //emit outFrameRate(completedFrames);
             timer.restart();
             frameCount = 0;
 			completedFrames = 0;
         }
-
     }
+}
 
+void WorkThread::measureLatency(QTime *t)
+{
+    emit outFrameRate(t->elapsed());
+    delete t;
 }
 
 

@@ -27,6 +27,7 @@ signals:
 public slots:
 
     void stopWorking();
+    void measureLatency(QTime*);
 
 };
 

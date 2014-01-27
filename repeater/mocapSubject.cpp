@@ -31,7 +31,7 @@ MocapSegmentList::MocapSegmentList(QObject *parent)
 void MocapSegmentList::set(std::string name, double trans[3], double rot[3])
 {
 	//for( QList<MocapSegment>::iterator i = items.begin(); i != items.end(); i++)
-	for(size_t i=0; i < items.length(); i++)
+    for(int i=0; i < items.length(); i++)
 	{
 		MocapSegment &seg = items[i];
 		if(seg.name == name)

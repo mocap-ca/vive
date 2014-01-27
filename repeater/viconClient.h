@@ -13,13 +13,18 @@ class ViconClient : public QObject
 public:
 	ViconClient( MocapSubjectList *subjectList, QObject *parent = NULL);
 
-	bool mocapConnect(std::string host, int port);
+    bool mocapConnect(QString, int port);
 	bool mocapDisconnect();
+
+    bool connected;
 
 	
     ViconDataStreamSDK::CPP::Client mClient;
 
 	MocapSubjectList *subjects;
+
+signals:
+    void outMessage(QString);
 
 public slots:
 	void getFrame();

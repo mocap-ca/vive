@@ -9,15 +9,28 @@ using namespace ViconDataStreamSDK::CPP;
 ViconClient::ViconClient(MocapSubjectList *sList, QObject *parent)
 : QObject(parent)
 , subjects(sList)
+, connected(false)
 {
 }
 
-bool ViconClient::mocapConnect(std::string host, int port)
+bool ViconClient::mocapConnect(QString host, int port)
 {
-	std::ostringstream oss;
-	oss << host << ":" << port;
-	Output_Connect output = mClient.Connect( oss.str() );
-	if(output.Result != Result::Success) return false;
+    QString connectionString;
+    QTextStream stream(&connectionString);
+    stream << host << ":" << port;
+    Output_Connect output = mClient.Connect( connectionString.toUtf8().data() );
+    if(output.Result != Result::Success)
+    {
+        switch(output.Result)
+        {
+            case Result::InvalidHostName : outMessage("Error: Invalid host name"); break;
+            case Result::ClientAlreadyConnected : outMessage("Error: Client Already Connected"); break;
+            case Result::ClientConnectionFailed : outMessage("Error: Connection Failed"); break;
+            default: outMessage("Error: Could not connect");
+        }
+
+        return false;
+    }
 
 	mClient.EnableSegmentData();
 	mClient.EnableMarkerData();
@@ -27,18 +40,25 @@ bool ViconClient::mocapConnect(std::string host, int port)
 
 	mClient.SetAxisMapping(Direction::Forward, Direction::Up, Direction::Right);
 
+    connected = true;
+
+    outMessage("Connected to vicon server.");
+
 	return true;
 }
 
 bool ViconClient::mocapDisconnect()
 {
+    if(!connected) return false;
 	Output_Disconnect output = mClient.Disconnect();
+    connected = false;
 	return output.Result == Result::Success;
 }
 
 
 void ViconClient::getFrame()
 {
+    if(!connected) return;
 	MocapSubject *subject;
 
 	Output_GetFrame rf = mClient.GetFrame();

@@ -23,6 +23,7 @@ public slots:
     void updateConnectionList(void);
     void showMessage(QString);
     void setFrameRate(int);
+    void doConnect(void);
 
 
 public:
