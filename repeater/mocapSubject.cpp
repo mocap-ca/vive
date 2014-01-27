@@ -8,17 +8,16 @@
 	Mocap Segment 
 */
 // serialize as string
-template<typename T>
-T& MocapSegment::operator << ( T& oss )
+QTextStream& operator << ( QTextStream& stream, MocapSegment &segment)
 {
-	oss << name << "\t";
-	oss << translation[0] << "\t";
-	oss << translation[1] << "\t";
-	oss << translation[2] << "\t";
-	oss << rotation[0] << "\t";
-	oss << rotation[1] << "\t";
-	oss << rotation[2] << "\n";
-	return oss;
+    stream << segment.name.c_str() << "\t";
+    stream << segment.translation[0] << "\t";
+    stream << segment.translation[1] << "\t";
+    stream << segment.translation[2] << "\t";
+    stream << segment.rotation[0] << "\t";
+    stream << segment.rotation[1] << "\t";
+    stream << segment.rotation[2] << "\n";
+    return stream;
 };
 
 /*
@@ -58,15 +57,14 @@ void MocapSegmentList::set(std::string name, double trans[3], double rot[3])
 	items.append(seg);
 }
 
-template<typename T>
-T& MocapSegmentList::operator << ( T& oss)
+QTextStream& operator << ( QTextStream& stream, MocapSegmentList &segments)
 {
-	oss << items.length() << "\n";
+    stream << segments.items.length() << "\n";
 
-	for( QList<MocapSegment>::iterator i = items.begin(); i != items.end(); i++)
-		oss << (*i);
+    for( QList<MocapSegment>::iterator i = segments.items.begin(); i != segments.items.end(); i++)
+        stream << (*i);
 
-	return pos;
+    return stream;
 
 }
 
@@ -79,12 +77,11 @@ MocapSubject::MocapSubject(QString n, QObject *parent)
 : QObject(parent)
 , name(n) {}
 
-template<typename T>
-T& MocapSubject::operator << ( T& oss)
+QTextStream& operator << ( QTextStream& stream, MocapSubject &subject)
 {
-	oss << name.toUtf8().data() << "\t";
-	oss << segments;
-	return oss;
+    stream << subject.name.toUtf8().data() << "\t";
+    stream << subject.segments;
+    return stream;
 }
 
 /*
@@ -98,8 +95,7 @@ MocapSubjectList::MocapSubjectList(QObject *parent)
 // Find the named subjectm or optionally add it.
 MocapSubject* MocapSubjectList::find(QString inName, bool add)
 {
-	for(QList<MocapSubject*>::iterator i = items.begin();
-		i != items.end(); i++)
+    for(QList<MocapSubject*>::iterator i = items.begin(); i != items.end(); i++)
 	{
 		if( (*i)->name == inName ) return *i;
 	}
@@ -118,7 +114,7 @@ QTextStream& operator << ( QTextStream& stream, MocapSubjectList &subjects)
 	stream << subjects.items.length() << "\n";
 
 	for(QList<MocapSubject*>::iterator i = subjects.items.begin(); i != subjects.items.end(); i++)
-		stream << *i;
+        stream << *(*i);
 
 	return stream;
 }

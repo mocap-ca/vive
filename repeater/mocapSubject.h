@@ -13,8 +13,7 @@ public:
 	std::string name;
 	double translation[3];
 	double rotation[3];
-	template<typename T>
-	T& operator << ( T& );
+    friend QTextStream& operator << ( QTextStream&, MocapSegment& );
 };
 
 // A list of segments
@@ -28,8 +27,7 @@ public:
 		double trans[3],
 		double rot[3]);
 
-	template<typename T>
-	T& operator << ( T& );
+    friend QTextStream& operator << ( QTextStream&, MocapSegmentList& );
 
 	QList<MocapSegment> items;
 };
@@ -41,8 +39,7 @@ class MocapSubject : public QObject
 public:
 	MocapSubject(QString name, QObject *parent);
 
-	template<typename T>
-	T& operator << ( T& );
+    friend QTextStream& operator << ( QTextStream&, MocapSubject& );
 
 	QString name;
 	MocapSegmentList segments;

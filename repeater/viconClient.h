@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QList>
-#include "Client.h"
+#include "ViconStreamClient.h"
 #include "mocapSubject.h"
 
 class ViconClient : public QObject
@@ -17,7 +17,7 @@ public:
 	bool mocapDisconnect();
 
 	
-	ViconDataStreamSDK::CPP::Client mClient;
+    ViconDataStreamSDK::CPP::Client mClient;
 
 	MocapSubjectList *subjects;
 

@@ -13,8 +13,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	viconClient = new ViconClient(subjectList, this);
 	testClient  = new TestClient(subjectList, this);
 
-	testClient->getFrame();
-
 	/*
 	if(!viconClient->mocapConnect("localhost", 8811))
 	{

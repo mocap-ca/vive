@@ -71,9 +71,36 @@ void MyServer::getConnectionList(QList<QString>&items)
 void MyServer::doFrame()
 {
 	working = true;
-	//if(checkAlive() > 0)
-		work();
-	working = false;
+    if(checkAlive() > 0)
+    {
+        QString buffer;
+        QTextStream stream(&buffer);
+        stream << *subjectList;
+
+        listMutex.lock();
+
+        // for each connection
+        for(QList<ServerConnection *>::iterator i =  connections.begin(); i != connections.end(); i++)
+        {
+            QTcpSocket *s = (*i)->socket;
+            if(s->state() != QAbstractSocket::ConnectedState) continue;
+
+            QString d = QString("%1\nEND\r\n").arg(buffer);
+            int written = s->write(d.toUtf8());
+            if(written == -1)
+            {
+                emit outMessage(QString(" Error writing to %1").arg(s->peerAddress().toString()));
+            }
+            else
+            {
+                s->flush();
+            }
+        }
+
+        listMutex.unlock();
+    }
+
+    working = false;
 }
 
 
@@ -117,33 +144,3 @@ int MyServer::checkAlive()
 	return ret;
 }
 
-// Do any work needing done for this loop.
-void MyServer::work()
-{
-	QTextStream stream;
-	stream << *subjectList;
-
-
-    listMutex.lock();
-
-	// for each connection
-    for(QList<ServerConnection *>::iterator i =  connections.begin(); i != connections.end(); i++)
-    {
-        QTcpSocket *s = (*i)->socket;
-		if(s->state() != QAbstractSocket::ConnectedState) continue;
-
-        QString d = QString("%1\nEND\n").arg(stream.readAll());
-        int written = s->write(d.toUtf8());
-        if(written == -1)
-        {
-            emit outMessage(QString(" Error writing to %1").arg(s->peerAddress().toString()));
-        }
-        else
-        {
-            s->flush();
-        }
-    }
-
-    listMutex.unlock();
-
-}

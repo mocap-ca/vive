@@ -39,7 +39,6 @@ public slots:
 private:
     QTcpServer *server;
     int  checkAlive();  // returns number of active connections
-	void work();
 
 
 public:
