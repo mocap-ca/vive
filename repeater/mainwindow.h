@@ -5,6 +5,8 @@
 #include <QStandardItemModel>
 #include "server.h"
 #include "workthread.h"
+#include "viconClient.h"
+#include "testClient.h"
 
 namespace Ui {
 class MainWin;
@@ -31,6 +33,10 @@ private:
     Ui::MainWin *ui;
     MyServer    *server;
     WorkThread  *worker;
+
+	ViconClient *viconClient;
+	TestClient  *testClient;
+	MocapSubjectList *subjectList;
 };
 
 #endif // MAINWINDOW_H

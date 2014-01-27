@@ -6,10 +6,10 @@
 
 using namespace ViconDataStreamSDK::CPP;
 
-ViconClient::ViconClient(QObject *parent)
+ViconClient::ViconClient(MocapSubjectList *sList, QObject *parent)
 : QObject(parent)
+, subjects(sList)
 {
-
 }
 
 bool ViconClient::mocapConnect(std::string host, int port)
@@ -37,10 +37,12 @@ bool ViconClient::mocapDisconnect()
 }
 
 
-bool ViconClient::getFrame()
+void ViconClient::getFrame()
 {
+	MocapSubject *subject;
+
 	Output_GetFrame rf = mClient.GetFrame();
-	if (rf.Result != Result::Success) return false;
+	if (rf.Result != Result::Success) return;
 
 	Output_GetFrameNumber rfn = mClient.GetFrameNumber();
 	unsigned int frameNumber = 0;
@@ -59,7 +61,7 @@ bool ViconClient::getFrame()
 		if(rsn.Result != Result::Success) continue;
 
 		std::string subjectName = rsn.SubjectName;
-		MocapSubject *subject = subjects.find(QString(subjectName.c_str()));
+		subject = subjects->find(QString(subjectName.c_str()));
 
 		Output_GetSubjectRootSegmentName srs = mClient.GetSubjectRootSegmentName(subjectName);
 		if(srs.Result != Result::Success) continue;
@@ -79,19 +81,8 @@ bool ViconClient::getFrame()
 
 		}
 
-		//Output_GetSegmentName = mClient.GetSegmentName(subjectName);
-
-	//rsc.SubjectCount
 	}
 
-
-	return true;
-
 }
 
-template<typename T>
-T& ViconClient::operator <<(T& oss)
-{
-	oss << subjects;
-}
 	

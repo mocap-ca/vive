@@ -8,7 +8,7 @@
 #include <QList>
 #include <QMutex>
 
-#include "viconClient.h"
+#include "mocapSubject.h"
 
 
 class ServerConnection : public QObject
@@ -25,7 +25,7 @@ class MyServer : public QObject
 {
     Q_OBJECT
 public:
-    explicit MyServer(QObject *parent = 0);
+    explicit MyServer(MocapSubjectList*, QObject *);
 
 signals:
     void connectionsChanged(void);
@@ -44,10 +44,10 @@ private:
 
 public:
     QList<ServerConnection*> connections;
-	ViconClient viconClient;
     QMutex listMutex;
     void getConnectionList(QList<QString>&);
 	int working;
+	MocapSubjectList *subjectList;
 
 
 };

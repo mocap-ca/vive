@@ -9,6 +9,7 @@ WorkThread::WorkThread(QObject *parent, MyServer *server) :
     timer.start();
 }
 
+// periodically generates a signalFrame event 
 void WorkThread::run()
 {
 	int frameCount = 0;

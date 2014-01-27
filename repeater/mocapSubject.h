@@ -1,9 +1,12 @@
 #ifndef MOCAP_SUBJECT
 #define MOCAP_SUBJECT
 
+#include <QTextStream>
+
 #include <QObject>
 #include <QList>
 
+// A Segment has name, translation and rotation
 class MocapSegment
 {
 public:
@@ -14,6 +17,7 @@ public:
 	T& operator << ( T& );
 };
 
+// A list of segments
 class MocapSegmentList : public QObject
 {
 	Q_OBJECT
@@ -30,6 +34,7 @@ public:
 	QList<MocapSegment> items;
 };
 
+// A mocap subject - has a name and a segment list
 class MocapSubject : public QObject
 {
 	Q_OBJECT
@@ -43,6 +48,7 @@ public:
 	MocapSegmentList segments;
 };
 
+// A list of mocap subjects
 class MocapSubjectList : public QObject
 {
 	Q_OBJECT
@@ -51,8 +57,7 @@ public:
 
 	MocapSubject* find(QString name, bool add=true);
 
-	template<typename T>
-	T& operator << ( T& );
+	friend QTextStream& operator << ( QTextStream&, MocapSubjectList& );
 
 	QList<MocapSubject*> items;
 };

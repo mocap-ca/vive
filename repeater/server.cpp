@@ -1,5 +1,7 @@
 
 #include "server.h"
+#include <QTextStream>
+#include <sstream>
 
 ServerConnection::ServerConnection(QTcpSocket *socket, QObject *parent)
 : QObject(parent)
@@ -12,12 +14,14 @@ QString ServerConnection::str()
 	return name;
 }
 
-MyServer::MyServer(QObject *parent) :
+MyServer::MyServer(MocapSubjectList *sList, QObject *parent) :
     QObject(parent), 
 	working(false)
 {
     server = new QTcpServer(this);
     connect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
+
+	subjectList = sList;
 }
 
 void MyServer::start()
@@ -31,19 +35,14 @@ void MyServer::start()
         emit outMessage("Server Started.  Listening on port 1234.");
     }
 
-	if(!viconClient.mocapConnect("localhost", 8811))
-	{
-		emit outMessage("Could not connect to vicon");
-	}
-	else
-	{
-		emit outMessage("Connected to vicon");
-	}
+
 }
 
+// There is a new connection, server sends newConnection signal to me.
 void MyServer::newConnection()
 {
     QTcpSocket *socket = server->nextPendingConnection();
+	if(socket == NULL) return;
 
 	ServerConnection *con = new ServerConnection(socket, this);
 
@@ -55,7 +54,9 @@ void MyServer::newConnection()
     emit connectionsChanged();
 }
 
- void MyServer::getConnectionList(QList<QString>&items)
+
+// threadsafe grab a list of connections.
+void MyServer::getConnectionList(QList<QString>&items)
 {
     listMutex.lock();
     for(QList<ServerConnection*>::iterator i = connections.begin(); i != connections.end(); i++)
@@ -66,16 +67,19 @@ void MyServer::newConnection()
 }
 
 
+// perform the operations for a frame
+void MyServer::doFrame()
+{
+	working = true;
+	//if(checkAlive() > 0)
+		work();
+	working = false;
+}
 
- void MyServer::doFrame()
- {
-	 working = true;
-	 if(checkAlive() > 0)
-		 work();
-	 working = false;
- }
 
- int MyServer::checkAlive()
+// Check to see if all connections are alive, if not remove them from the list
+// returns number of active connections.
+int MyServer::checkAlive()
 {
     listMutex.lock();
 
@@ -113,19 +117,22 @@ void MyServer::newConnection()
 	return ret;
 }
 
+// Do any work needing done for this loop.
 void MyServer::work()
 {
+	QTextStream stream;
+	stream << *subjectList;
+
 
     listMutex.lock();
 
+	// for each connection
     for(QList<ServerConnection *>::iterator i =  connections.begin(); i != connections.end(); i++)
     {
         QTcpSocket *s = (*i)->socket;
 		if(s->state() != QAbstractSocket::ConnectedState) continue;
 
-        float r = (float)qrand() / RAND_MAX;
-
-        QString d = QString("%1\nEND\n").arg(r);
+        QString d = QString("%1\nEND\n").arg(stream.readAll());
         int written = s->write(d.toUtf8());
         if(written == -1)
         {

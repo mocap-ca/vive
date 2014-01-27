@@ -407,6 +407,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\testClient.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\viconClient.cpp"
 				>
 			</File>
@@ -559,6 +563,54 @@
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing server.h..."
 						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;$(ConfigurationName)\moc_$(InputName).cpp&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -DQT_NO_DYNAMIC_CAST -DQT_DLL  &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtNetwork&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\debug&quot; &quot;-I.&quot; &quot;-I.\..\..\..\api\Qt\4.8.3_\mkspecs\win32-msvc2008&quot; &quot;-I.\GeneratedFiles&quot; &quot;-IC:\cpp\api\viconDataStream\Win64\CPP&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\testClient.h"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing testClient.h..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;$(ConfigurationName)\moc_$(InputName).cpp&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -DQT_NO_DYNAMIC_CAST -DNDEBUG -DQT_DLL &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtNetwork&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\release&quot; &quot;-I.&quot; &quot;-I.\..\..\..\api\Qt\4.8.3_\mkspecs\win32-msvc2008&quot; &quot;-I.\GeneratedFiles&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing testClient.h..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;$(ConfigurationName)\moc_$(InputName).cpp&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -DQT_NO_DYNAMIC_CAST -DNDEBUG -DQT_DLL &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtNetwork&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\release&quot; &quot;-I.&quot; &quot;-I.\..\..\..\api\Qt\4.8.3_\mkspecs\win32-msvc2008&quot; &quot;-I.\GeneratedFiles&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing testClient.h..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;$(ConfigurationName)\moc_$(InputName).cpp&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -DQT_NO_DYNAMIC_CAST -DQT_DLL &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtNetwork&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\debug&quot; &quot;-I.&quot; &quot;-I.\..\..\..\api\Qt\4.8.3_\mkspecs\win32-msvc2008&quot; &quot;-I.\GeneratedFiles&quot; &quot;-IC:\cpp\api\viconDataStream\Win64\CPP&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing testClient.h..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;$(ConfigurationName)\moc_$(InputName).cpp&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -DQT_NO_DYNAMIC_CAST -DQT_DLL &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtNetwork&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\debug&quot; &quot;-I.&quot; &quot;-I.\..\..\..\api\Qt\4.8.3_\mkspecs\win32-msvc2008&quot; &quot;-I.\GeneratedFiles&quot; &quot;-IC:\cpp\api\viconDataStream\Win64\CPP&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -736,6 +788,26 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\Release\moc_testClient.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|x64"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\Release\moc_viconClient.cpp"
 					>
 					<FileConfiguration
@@ -823,6 +895,26 @@
 				</File>
 				<File
 					RelativePath=".\Debug\moc_server.cpp"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|x64"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Debug\moc_testClient.cpp"
 					>
 					<FileConfiguration
 						Name="Release|Win32"
