@@ -3,28 +3,33 @@
 
 #include <string>
 #include <sstream>
+#include <windows.h>
 
 
 TestClient::TestClient(MocapSubjectList *sList, QObject *parent)
-: QObject(parent)
+: QThread(parent)
 , subjects(sList)
+, running(true)
+, count(0)
+{}
+
+
+void TestClient::run()
 {
-}
+	while(running)
+	{
+		MocapSubject *subject;
 
+		subject = subjects->find(QString("TEST"));
 
-void TestClient::getFrame()
-{
+		double tr[3] = { 0., 0., 0. };
+		double ro[3] = { 0., 0., 0. };
+		tr[1] = (double)qrand() / (double)RAND_MAX;
+		subject->segments.set("ROOT", tr, ro);
 
-	MocapSubject *subject;
-
-	subject = subjects->find(QString("TEST"));
-
-	double tr[3] = { 0., 0., 0. };
-	double ro[3] = { 0., 0., 0. };
-	tr[1] = (double)qrand() / (double)RAND_MAX;
-	subject->segments.set("ROOT", tr, ro);
-
-	return;
+		this->usleep(7000);
+		count++;
+	}
 }
 
 

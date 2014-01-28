@@ -2,7 +2,7 @@
 
 #include <sstream>
 #include <string>
-
+#include <QMutexLocker>
 
 /* 
 	Mocap Segment 
@@ -24,12 +24,16 @@ QTextStream& operator << ( QTextStream& stream, MocapSegment &segment)
     Mocap Segment List
 */
 
-MocapSegmentList::MocapSegmentList(QObject *parent)
-: QObject(parent) {}
+MocapSegmentList::MocapSegmentList(QMutex &m, QObject *parent)
+: QObject(parent)
+, mutex(m)
+{}
 
 // Set the translation and rotation for an item
 void MocapSegmentList::set(std::string name, double trans[3], double rot[3])
 {
+	QMutexLocker lock(&mutex);
+
 	//for( QList<MocapSegment>::iterator i = items.begin(); i != items.end(); i++)
     for(int i=0; i < items.length(); i++)
 	{
@@ -73,9 +77,12 @@ QTextStream& operator << ( QTextStream& stream, MocapSegmentList &segments)
 	Mocap Subject
 */
 
-MocapSubject::MocapSubject(QString n, QObject *parent)
+MocapSubject::MocapSubject(QString n, QMutex &m, QObject *parent)
 : QObject(parent)
-, name(n) {}
+, segments(m, this)
+, name(n)
+, mutex(m)
+{};
 
 QTextStream& operator << ( QTextStream& stream, MocapSubject &subject)
 {
@@ -95,14 +102,17 @@ MocapSubjectList::MocapSubjectList(QObject *parent)
 // Find the named subjectm or optionally add it.
 MocapSubject* MocapSubjectList::find(QString inName, bool add)
 {
-    for(QList<MocapSubject*>::iterator i = items.begin(); i != items.end(); i++)
+	QMutexLocker lock(&subjectMutex);
+
+	for(QList<MocapSubject*>::iterator i = items.begin(); i != items.end(); i++)
 	{
-		if( (*i)->name == inName ) return *i;
+		if( (*i)->name == inName )
+			return *i;
 	}
 
 	if(add == false) return NULL;
 
-	MocapSubject *n = new MocapSubject(inName, this);
+	MocapSubject *n = new MocapSubject(inName, subjectMutex, this);
 	items.append(n);
 
 	return n;
@@ -110,11 +120,13 @@ MocapSubject* MocapSubjectList::find(QString inName, bool add)
 
 QTextStream& operator << ( QTextStream& stream, MocapSubjectList &subjects)
 {
-	//if(subjects.items.length() == 0) return stream;
+	subjects.subjectMutex.lock();
 	stream << subjects.items.length() << "\n";
 
 	for(QList<MocapSubject*>::iterator i = subjects.items.begin(); i != subjects.items.end(); i++)
         stream << *(*i);
+
+	subjects.subjectMutex.unlock();
 
 	return stream;
 }

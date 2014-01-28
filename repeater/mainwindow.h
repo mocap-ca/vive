@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QStandardItemModel>
+#include <QTimer>
 #include "server.h"
 #include "workthread.h"
 #include "viconClient.h"
@@ -24,6 +25,7 @@ public slots:
     void showMessage(QString);
     void setFrameRate(int);
     void doConnect(void);
+	void timerClick(void);
 
 
 public:
@@ -34,9 +36,12 @@ private:
     Ui::MainWin *ui;
     MyServer    *server;
     WorkThread  *worker;
+	QTimer      *timer;
 
 	ViconClient *viconClient;
 	TestClient  *testClient;
+
+	QMutex           subectMutex;
 	MocapSubjectList *subjectList;
 };
 

@@ -3,10 +3,11 @@
 
 #include <QObject>
 #include <QList>
+#include <QThread>
 #include "ViconStreamClient.h"
 #include "mocapSubject.h"
 
-class ViconClient : public QObject
+class ViconClient : public QThread
 {
 	Q_OBJECT
 
@@ -23,11 +24,13 @@ public:
 
 	MocapSubjectList *subjects;
 
+	virtual void run();
+
+	bool running;
+
 signals:
     void outMessage(QString);
 
-public slots:
-	void getFrame();
 };
 
 

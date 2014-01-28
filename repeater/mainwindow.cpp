@@ -3,6 +3,7 @@
 
 #include <QMessageBox>
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
 		ui(new Ui::MainWin )
@@ -15,16 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(viconClient, SIGNAL(outMessage(QString)),     this, SLOT(showMessage(QString)));
 
 	testClient  = new TestClient(subjectList, this);
+	connect(testClient,  SIGNAL(outMessage(QString)),     this, SLOT(showMessage(QString)));
 
-	/*
-	if(!viconClient->mocapConnect("localhost", 8811))
-	{
-		emit outMessage("Could not connect to vicon");
-	}
-	else
-	{
-		emit outMessage("Connected to vicon");
-	}*/
 
     items = new QStandardItemModel;
     ui->listView->setModel(items);
@@ -35,17 +28,30 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(server, SIGNAL(outMessage(QString)),     this, SLOT(showMessage(QString)));
     server->start();
 
-    worker = new WorkThread(this, server);
+/*    worker = new WorkThread(this, server);
     connect(worker, SIGNAL(outMessage(QString)), this,   SLOT(showMessage(QString)));
     connect(worker, SIGNAL(outFrameRate(int)),   this,   SLOT(setFrameRate(int)));
 	connect(worker, SIGNAL(signalFrame()),       server, SLOT(doFrame()));
-	connect(worker, SIGNAL(signalFrame()),       viconClient, SLOT(getFrame()));
-	connect(worker, SIGNAL(signalFrame()),       testClient,  SLOT(getFrame()));
     worker->start();
+	*/
 
     ui->lineEditHost->setText("localhost");
     ui->lineEditPort->setText("8811");
     connect(ui->pushButtonConnect, SIGNAL(clicked()), this, SLOT(doConnect()));
+
+	viconClient->start();
+	testClient->start();
+
+	timer = new QTimer(this);
+	connect(timer, SIGNAL(timeout()), this, SLOT(timerClick()));
+	timer->setInterval(1000);
+	timer->start();
+}
+
+void MainWindow::timerClick()
+{
+	ui->lineEditStats->setText(QString("%1").arg(testClient->count));
+	testClient->count = 0;
 }
 
 // the connection list has changed, update the model/display
@@ -104,8 +110,12 @@ void MainWindow::doConnect()
 
 MainWindow::~MainWindow()
 {
-    worker->stopWorking();
-    worker->wait(3000);
+	viconClient->running=false;
+	testClient->running=false;
+	viconClient->wait();
+	testClient->wait();
+    //worker->stopWorking();
+    //worker->wait(3000);
     delete ui;
-    delete items;
+    //delete items;
 }

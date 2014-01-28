@@ -6,9 +6,10 @@
 
 #include <QObject>
 #include <QList>
+#include <QThread>
 #include "mocapSubject.h"
 
-class TestClient : public QObject
+class TestClient : public QThread
 {
 	Q_OBJECT
 
@@ -20,8 +21,12 @@ public:
 
 	MocapSubjectList *subjects;
 
-public slots:
-	void getFrame();
+	virtual void run();
+	
+
+	bool running;
+
+	size_t count;
 };
 
 
