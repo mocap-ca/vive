@@ -27,6 +27,7 @@ public:
 	virtual void run();
 
 	bool running;
+    size_t count;
 
 signals:
     void outMessage(QString);

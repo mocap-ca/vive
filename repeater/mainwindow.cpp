@@ -18,14 +18,16 @@ MainWindow::MainWindow(QWidget *parent) :
 	testClient  = new TestClient(subjectList, this);
 	connect(testClient,  SIGNAL(outMessage(QString)),     this, SLOT(showMessage(QString)));
 
+    modelConnections = new QStandardItemModel(this);
 
-    items = new QStandardItemModel;
-    ui->listView->setModel(items);
+    ui->listViewConnections->setModel(modelConnections);
+    ui->treeViewData->setModel(&subjectList->model);
 
     // Start tcp server
     server = new MyServer(subjectList, this);
     connect(server, SIGNAL(connectionsChanged()),    this, SLOT(updateConnectionList()));
     connect(server, SIGNAL(outMessage(QString)),     this, SLOT(showMessage(QString)));
+    server->listen(1234);
     server->start();
 
 /*    worker = new WorkThread(this, server);
@@ -36,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	*/
 
     ui->lineEditHost->setText("localhost");
-    ui->lineEditPort->setText("8811");
+    ui->lineEditPort->setText("801");
     connect(ui->pushButtonConnect, SIGNAL(clicked()), this, SLOT(doConnect()));
 
 	viconClient->start();
@@ -50,18 +52,27 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::timerClick()
 {
-	ui->lineEditStats->setText(QString("%1").arg(testClient->count));
+    ui->lineEditStats->setText(QString("%1/%2").arg(testClient->count).arg(viconClient->count));
 	testClient->count = 0;
+    viconClient->count = 0;
+
+    subjectList->updateModel();
+
+    QString data;
+    QTextStream stream(&data);
+
+    stream << *subjectList;
+    ui->textEditData->setText(data);
 }
 
 // the connection list has changed, update the model/display
 void MainWindow::updateConnectionList(void)
 {
     QList<QString> connections;
-    items->clear();
+    modelConnections->clear();
     server->getConnectionList(connections);
     for(QList<QString>::iterator i = connections.begin(); i != connections.end(); i++)
-        items->appendRow( new QStandardItem( *i ));
+        modelConnections->appendRow( new QStandardItem( *i ));
 }
 
 // update the display with a new frame rate value

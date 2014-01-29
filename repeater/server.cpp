@@ -1,6 +1,7 @@
 
 #include "server.h"
 #include <QTextStream>
+#include <QTimer>
 #include <sstream>
 
 ServerConnection::ServerConnection(QTcpSocket *socket, QObject *parent)
@@ -15,27 +16,24 @@ QString ServerConnection::str()
 }
 
 MyServer::MyServer(MocapSubjectList *sList, QObject *parent) :
-    QObject(parent), 
-	working(false)
+    QThread(parent),
+    working(false),
+    subjectList(sList)
+{}
+
+void MyServer::listen(int port)
 {
     server = new QTcpServer(this);
     connect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
 
-	subjectList = sList;
-}
-
-void MyServer::start()
-{
-    if(!server->listen(QHostAddress::Any, 1234))
+    if(!server->listen(QHostAddress::Any, port))
     {
         emit outMessage("Could not start server.");
     }
     else
     {
-        emit outMessage("Server Started.  Listening on port 1234.");
+        emit outMessage(QString("Server Started.  Listening on port: %1").arg(port));
     }
-
-
 }
 
 // There is a new connection, server sends newConnection signal to me.
@@ -67,8 +65,18 @@ void MyServer::getConnectionList(QList<QString>&items)
 }
 
 
+void MyServer::run()
+{
+    QTimer *loopTimer = new QTimer(this);
+    loopTimer->setInterval(100);
+    connect(loopTimer, SIGNAL(timeout()), this, SLOT(runOne()));
+    loopTimer->start();
+    exec();
+}
+
+
 // perform the operations for a frame
-void MyServer::doFrame()
+void MyServer::runOne()
 {
 	working = true;
     if(checkAlive() > 0)

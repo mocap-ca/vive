@@ -11,6 +11,7 @@ ViconClient::ViconClient(MocapSubjectList *sList, QObject *parent)
 , subjects(sList)
 , connected(false)
 , running(true)
+, count(0)
 {
 }
 
@@ -61,11 +62,22 @@ void ViconClient::run()
 {
 	MocapSubject *subject;
 
-	while(running && connected)
+    while(running)
 	{
 
+        if(!connected)
+        {
+            this->msleep(100);
+            continue;
+        }
+
 		Output_GetFrame rf = mClient.GetFrame();
-		if (rf.Result != Result::Success) return;
+        if(rf.Result == Result::NoFrame) continue;
+        if(rf.Result != Result::Success)
+        {
+            outMessage("Error getting frame");
+            continue;
+        }
 
 		Output_GetFrameNumber rfn = mClient.GetFrameNumber();
 		unsigned int frameNumber = 0;
@@ -100,11 +112,13 @@ void ViconClient::run()
 
 				Output_GetSegmentLocalRotationEulerXYZ rot = mClient.GetSegmentLocalRotationEulerXYZ(subjectName, sn.SegmentName);
 
-				subject->segments.set(sn.SegmentName, trans.Translation, rot.Rotation);
+                std::string segname = sn.SegmentName;
+                subject->set(QString(segname.c_str()), trans.Translation, rot.Rotation);
 
 			}
 
 		}
+        count++;
 	}
 
 }

@@ -6,6 +6,8 @@
 #include <QObject>
 #include <QList>
 #include <QMutex>
+#include <QStandardItemModel>
+#include <QStandardItem>
 
 class MocapSegmentList;
 class MocapSubjectList;
@@ -13,33 +15,18 @@ class MocapSubjectList;
 // A Segment has name, translation and rotation
 class MocapSegment
 {
-	friend class MocapSegmentList;
+    friend class MocapSubject;
 private:
-	std::string name;
+    MocapSegment(QString name, double tr[3], double ro[3]);
+    QString name;
+    QStandardItem *modelItem;
 	double translation[3];
 	double rotation[3];
     friend QTextStream& operator << ( QTextStream&, MocapSegment& );
+    void updateModel();
 
 };
 
-// A list of segments
-class MocapSegmentList : public QObject
-{
-	Q_OBJECT
-
-public:
-	MocapSegmentList(QMutex &mutex, QObject *parent = NULL);
-
-	void set(std::string name,
-		double trans[3],
-		double rot[3]);
-
-    friend QTextStream& operator << ( QTextStream&, MocapSegmentList& );
-
-private:
-	QList<MocapSegment> items;
-	QMutex &mutex;
-};
 
 // A mocap subject - has a name and a segment list
 class MocapSubject : public QObject
@@ -52,9 +39,13 @@ public:
 
     friend QTextStream& operator << ( QTextStream&, MocapSubject& );
 
-	MocapSegmentList segments;
+    void set(QString name, double trans[3], double rot[3]);
+
+    void updateModel();
 
 private :
+    QList<MocapSegment> segments;
+    QStandardItem *modelItem;
 	QString name;
 	QMutex &mutex;
 };
@@ -66,7 +57,11 @@ class MocapSubjectList : public QObject
 public:
 	MocapSubjectList(QObject *parent = NULL);
 	MocapSubject* find(QString name, bool add=true);
-	friend QTextStream& operator << ( QTextStream&, MocapSubjectList& );
+    friend QTextStream& operator << ( QTextStream&, MocapSubjectList& );
+    QStandardItemModel model;
+
+public slots:
+    void updateModel();
 
 protected:
 	QMutex subjectMutex;

@@ -1,12 +1,13 @@
 #ifndef MYSERVER_H
 #define MYSERVER_H
 
-#include <QObject>
+#include <QThread>
 #include <QDebug>
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QList>
-#include <QMutex>
+#include <QMutex>\
+
 
 #include "mocapSubject.h"
 
@@ -21,7 +22,7 @@ public:
 	QTcpSocket *socket;
 };
 
-class MyServer : public QObject
+class MyServer : public QThread
 {
     Q_OBJECT
 public:
@@ -33,10 +34,11 @@ signals:
 
 public slots:
     void newConnection();
-    void start();
-	void doFrame();
+    void listen(int port);
+    void runOne();
 
 private:
+    virtual void run();
     QTcpServer *server;
     int  checkAlive();  // returns number of active connections
 

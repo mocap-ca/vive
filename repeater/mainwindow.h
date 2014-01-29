@@ -17,8 +17,6 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-    QStandardItemModel *items;
-
 
 public slots:
     void updateConnectionList(void);
@@ -37,6 +35,7 @@ private:
     MyServer    *server;
     WorkThread  *worker;
 	QTimer      *timer;
+    QStandardItemModel *modelConnections;
 
 	ViconClient *viconClient;
 	TestClient  *testClient;
