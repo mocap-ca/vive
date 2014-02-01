@@ -1,7 +1,7 @@
 
 #include "server.h"
 #include <QTextStream>
-#include <QTimer>
+
 #include <sstream>
 
 ServerConnection::ServerConnection(QTcpSocket *socket, QObject *parent)
@@ -67,15 +67,29 @@ void MyServer::getConnectionList(QList<QString>&items)
 
 void MyServer::run()
 {
-    QTimer *loopTimer = new QTimer(this);
+    // create a timer to call runOne ten times a second
+    loopTimer = new QTimer();
     loopTimer->setInterval(100);
     connect(loopTimer, SIGNAL(timeout()), this, SLOT(runOne()));
+    //loopTimer.moveToThread(this);
     loopTimer->start();
     exec();
 }
 
+void MyServer::stop()
+{
+    loopTimer->stop();
+    delete loopTimer;
+    exit();
+}
 
-// perform the operations for a frame
+
+/* perform the operations for a frame:
+ *   - check to see if the connections are still alive (checkAlive)
+ *      - this will emit connectionsChanged if there is a any change in the connection status
+ *   - grab a text stream of the current model data ( stream << *subjectList )
+ *   - put the text stream on the wire s->write(...)
+*/
 void MyServer::runOne()
 {
 	working = true;

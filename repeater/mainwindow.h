@@ -21,9 +21,10 @@ class MainWindow : public QMainWindow
 public slots:
     void updateConnectionList(void);
     void showMessage(QString);
-    void setFrameRate(int);
     void doConnect(void);
 	void timerClick(void);
+    void doStub(void);
+    void viconConnected(bool);
 
 
 public:

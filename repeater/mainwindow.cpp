@@ -10,18 +10,23 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    QList<int> splitSizes;
+    splitSizes << 4;
+    splitSizes << 2;
+    ui->splitter->setSizes(splitSizes);
+
 	subjectList = new MocapSubjectList(this);
-
-	viconClient = new ViconClient(subjectList, this);
-    connect(viconClient, SIGNAL(outMessage(QString)),     this, SLOT(showMessage(QString)));
-
-	testClient  = new TestClient(subjectList, this);
-	connect(testClient,  SIGNAL(outMessage(QString)),     this, SLOT(showMessage(QString)));
-
     modelConnections = new QStandardItemModel(this);
-
     ui->listViewConnections->setModel(modelConnections);
     ui->treeViewData->setModel(&subjectList->model);
+
+    ui->treeViewData->setColumnWidth(1, 50);
+    ui->treeViewData->setColumnWidth(2, 50);
+    ui->treeViewData->setColumnWidth(3, 50);
+    ui->treeViewData->setColumnWidth(4, 50);
+    ui->treeViewData->setColumnWidth(5, 50);
+    ui->treeViewData->setColumnWidth(6, 50);
+
 
     // Start tcp server
     server = new MyServer(subjectList, this);
@@ -30,19 +35,18 @@ MainWindow::MainWindow(QWidget *parent) :
     server->listen(1234);
     server->start();
 
-/*    worker = new WorkThread(this, server);
-    connect(worker, SIGNAL(outMessage(QString)), this,   SLOT(showMessage(QString)));
-    connect(worker, SIGNAL(outFrameRate(int)),   this,   SLOT(setFrameRate(int)));
-	connect(worker, SIGNAL(signalFrame()),       server, SLOT(doFrame()));
-    worker->start();
-	*/
-
-    ui->lineEditHost->setText("localhost");
+    // Vicon Client
+    viconClient = new ViconClient(subjectList, this);
+    ui->lineEditHost->setText("192.168.11.1");
     ui->lineEditPort->setText("801");
-    connect(ui->pushButtonConnect, SIGNAL(clicked()), this, SLOT(doConnect()));
+    connect(viconClient, SIGNAL(outMessage(QString)),  this, SLOT(showMessage(QString)));
+    connect(viconClient, SIGNAL(connectedEvent(bool)), this, SLOT(viconConnected(bool)));
+    connect(ui->pushButtonConnect, SIGNAL(clicked()),  this, SLOT(doConnect()));
 
-	viconClient->start();
-	testClient->start();
+    // Stub Client
+    testClient  = new TestClient(subjectList, this);
+    connect(testClient,  SIGNAL(outMessage(QString)),     this, SLOT(showMessage(QString)));
+    connect(ui->pushButtonStub, SIGNAL(clicked()), this, SLOT(doStub()));
 
 	timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(timerClick()));
@@ -50,11 +54,60 @@ MainWindow::MainWindow(QWidget *parent) :
 	timer->start();
 }
 
+MainWindow::~MainWindow()
+{
+    bool vRunning = viconClient->running;
+    bool tRunning = testClient->running;
+
+    if(vRunning) viconClient->running=false;
+    if(tRunning) testClient->running=false;
+
+    if(vRunning) viconClient->wait();
+    if(tRunning) testClient->wait();
+
+    delete ui;
+}
+
+
+void MainWindow::doStub()
+{
+    if(!testClient->running)
+    {
+        testClient->start();
+        ui->pushButtonStub->setText("Stop");
+        ui->treeViewData->expandAll();
+    }
+    else
+    {
+        testClient->running = false;
+        ui->pushButtonStub->setText("Start");
+    }
+
+
+
+}
+
 void MainWindow::timerClick()
 {
-    ui->lineEditStats->setText(QString("%1/%2").arg(testClient->count).arg(viconClient->count));
-	testClient->count = 0;
-    viconClient->count = 0;
+    if(viconClient->running)
+    {
+        ui->lineEditViconStatus->setText(QString("%1").arg(viconClient->count));
+        viconClient->count = 0;
+    }
+    else
+    {
+        ui->lineEditViconStatus->setText("Not Connected");
+    }
+
+    if(testClient->running)
+    {
+        ui->lineEditStubStatus->setText(QString("%1").arg(testClient->count));
+        testClient->count = 0;
+    }
+    else
+    {
+        ui->lineEditStubStatus->setText(QString(""));
+    }
 
     subjectList->updateModel();
 
@@ -75,13 +128,6 @@ void MainWindow::updateConnectionList(void)
         modelConnections->appendRow( new QStandardItem( *i ));
 }
 
-// update the display with a new frame rate value
-void MainWindow::setFrameRate(int rate)
-{
-    QString msg("%1");
-    msg = msg.arg(rate);
-    ui->lineEditStats->setText(msg);
-}
 
 // append some text to the log window
 void MainWindow::showMessage(QString msg)
@@ -89,9 +135,22 @@ void MainWindow::showMessage(QString msg)
     ui->textEditLog->append(msg);
 }
 
+void MainWindow::viconConnected(bool con)
+{
+    if(con)
+    {
+        ui->pushButtonConnect->setEnabled(true);
+        ui->pushButtonConnect->setText("Disconnect");
+    }
+    else
+    {
+        ui->pushButtonConnect->setEnabled(true);
+        ui->pushButtonConnect->setText("Connect");
+    }
+}
+
 void MainWindow::doConnect()
 {
-    showMessage("CONNECT");
     if(!viconClient->connected)
     {
         QString host = ui->lineEditHost->text();
@@ -101,32 +160,21 @@ void MainWindow::doConnect()
             QMessageBox::warning(this,"Error", "Invalid Port", QMessageBox::Ok);
             return;
         }
-        viconClient->mocapConnect(host, port);
 
+        // start (connection is handled on other thread as it can be slow)
+        viconClient->host = host;
+        viconClient->port = port;
+        viconClient->start();
+        ui->pushButtonConnect->setEnabled(false);
+        ui->pushButtonConnect->setText("Connecting");
     }
     else
     {
         viconClient->mocapDisconnect();
-    }
+        viconClient->running = false;
+        ui->pushButtonConnect->setEnabled(false);
+        ui->pushButtonConnect->setText("Disconnecting");
 
-    if(viconClient->connected)
-    {
-        ui->pushButtonConnect->setText("Disconnect");
-    }
-    else
-    {
-        ui->pushButtonConnect->setText("Connect");
     }
 }
 
-MainWindow::~MainWindow()
-{
-	viconClient->running=false;
-	testClient->running=false;
-	viconClient->wait();
-	testClient->wait();
-    //worker->stopWorking();
-    //worker->wait(3000);
-    delete ui;
-    //delete items;
-}

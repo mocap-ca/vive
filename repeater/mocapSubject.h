@@ -19,9 +19,9 @@ class MocapSegment
 private:
     MocapSegment(QString name, double tr[3], double ro[3]);
     QString name;
-    QStandardItem *modelItem;
+    QList<QStandardItem*> modelItems;
 	double translation[3];
-	double rotation[3];
+    double rotation[4];
     friend QTextStream& operator << ( QTextStream&, MocapSegment& );
     void updateModel();
 
@@ -39,7 +39,7 @@ public:
 
     friend QTextStream& operator << ( QTextStream&, MocapSubject& );
 
-    void set(QString name, double trans[3], double rot[3]);
+    void set(QString name, double trans[3], double rot[4]);
 
     void updateModel();
 

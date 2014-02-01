@@ -16,17 +16,20 @@ class TestClient : public QThread
 public:
 	TestClient( MocapSubjectList *subjectList, QObject *parent = NULL);
 
-	
 	friend QTextStream& operator << (QTextStream &, TestClient &);
 
 	MocapSubjectList *subjects;
 
 	virtual void run();
-	
 
 	bool running;
 
 	size_t count;
+
+    float rx, ry, rz;
+
+signals:
+    void outMessage(QString);
 };
 
 

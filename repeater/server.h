@@ -6,8 +6,8 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QList>
-#include <QMutex>\
-
+#include <QMutex>
+#include <QTimer>
 
 #include "mocapSubject.h"
 
@@ -36,12 +36,13 @@ public slots:
     void newConnection();
     void listen(int port);
     void runOne();
+    void stop();
 
 private:
     virtual void run();
     QTcpServer *server;
     int  checkAlive();  // returns number of active connections
-
+    QTimer *loopTimer;
 
 public:
     QList<ServerConnection*> connections;

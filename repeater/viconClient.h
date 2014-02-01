@@ -14,7 +14,7 @@ class ViconClient : public QThread
 public:
 	ViconClient( MocapSubjectList *subjectList, QObject *parent = NULL);
 
-    bool mocapConnect(QString, int port);
+    bool mocapConnect();
 	bool mocapDisconnect();
 
     bool connected;
@@ -28,9 +28,12 @@ public:
 
 	bool running;
     size_t count;
+    QString host;
+    int     port;
 
 signals:
     void outMessage(QString);
+    void connectedEvent(bool);
 
 };
 

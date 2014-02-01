@@ -10,16 +10,20 @@ ViconClient::ViconClient(MocapSubjectList *sList, QObject *parent)
 : QThread(parent)
 , subjects(sList)
 , connected(false)
-, running(true)
+, running(false)
 , count(0)
+, port(0)
 {
 }
 
-bool ViconClient::mocapConnect(QString host, int port)
+
+// This function must emit a connected event before returning, to renable the button
+bool ViconClient::mocapConnect()
 {
     QString connectionString;
     QTextStream stream(&connectionString);
     stream << host << ":" << port;
+    outMessage(QString("Connecting to: %1").arg(connectionString));
     Output_Connect output = mClient.Connect( connectionString.toUtf8().data() );
     if(output.Result != Result::Success)
     {
@@ -30,7 +34,7 @@ bool ViconClient::mocapConnect(QString host, int port)
             case Result::ClientConnectionFailed : outMessage("Error: Connection Failed"); break;
             default: outMessage("Error: Could not connect");
         }
-
+        emit connectedEvent(false);
         return false;
     }
 
@@ -46,14 +50,25 @@ bool ViconClient::mocapConnect(QString host, int port)
 
     outMessage("Connected to vicon server.");
 
+    emit connectedEvent(true);
+
+
 	return true;
 }
 
 bool ViconClient::mocapDisconnect()
 {
-    if(!connected) return false;
+    if(!connected)
+    {
+        emit connectedEvent(false);
+        return false;
+    }
+    outMessage("Disconnecting from Vicon");
 	Output_Disconnect output = mClient.Disconnect();
     connected = false;
+
+    emit connectedEvent(false);
+
 	return output.Result == Result::Success;
 }
 
@@ -61,6 +76,15 @@ bool ViconClient::mocapDisconnect()
 void ViconClient::run()
 {
 	MocapSubject *subject;
+
+    running = true;
+
+    if(!mocapConnect())
+    {
+        running = false;
+        return;
+    }
+
 
     while(running)
 	{
@@ -71,7 +95,7 @@ void ViconClient::run()
             continue;
         }
 
-		Output_GetFrame rf = mClient.GetFrame();
+        Output_GetFrame rf = mClient.GetFrame();
         if(rf.Result == Result::NoFrame) continue;
         if(rf.Result != Result::Success)
         {
@@ -108,9 +132,13 @@ void ViconClient::run()
 			{
 				Output_GetSegmentName sn = mClient.GetSegmentName(subjectName, i);
 
-				Output_GetSegmentLocalTranslation trans = mClient.GetSegmentLocalTranslation(subjectName, sn.SegmentName);
+                //Output_GetSegmentLocalTranslation trans = mClient.GetSegmentLocalTranslation(subjectName, sn.SegmentName);
 
-				Output_GetSegmentLocalRotationEulerXYZ rot = mClient.GetSegmentLocalRotationEulerXYZ(subjectName, sn.SegmentName);
+                //Output_GetSegmentLocalRotationEulerXYZ rot = mClient.GetSegmentLocalRotationEulerXYZ(subjectName, sn.SegmentName);
+
+                Output_GetSegmentGlobalTranslation trans = mClient.GetSegmentGlobalTranslation(subjectName, sn.SegmentName);
+
+                Output_GetSegmentGlobalRotationQuaternion rot = mClient.GetSegmentGlobalRotationQuaternion(subjectName, sn.SegmentName);
 
                 std::string segname = sn.SegmentName;
                 subject->set(QString(segname.c_str()), trans.Translation, rot.Rotation);
@@ -121,6 +149,7 @@ void ViconClient::run()
         count++;
 	}
 
+    mocapDisconnect();
 }
 
 	
