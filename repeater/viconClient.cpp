@@ -85,7 +85,6 @@ void ViconClient::run()
         return;
     }
 
-
     while(running)
 	{
 

@@ -44,7 +44,7 @@ void MocapSegment::updateModel()
     modelItems[4]->setText(QString::number(rotation[0], 'f', PREC));
     modelItems[5]->setText(QString::number(rotation[1], 'f', PREC));
     modelItems[6]->setText(QString::number(rotation[2], 'f', PREC));
-    modelItems[6]->setText(QString::number(rotation[3], 'f', PREC));
+    modelItems[7]->setText(QString::number(rotation[3], 'f', PREC));
 
     //QString s("%1: %2 %3 %4 - %5 %6 %7");
     /*s = s.arg( name );

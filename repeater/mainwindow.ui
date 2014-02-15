@@ -250,7 +250,7 @@
         </layout>
        </widget>
       </widget>
-      <widget class="QTextEdit" name="textEditLog"/>
+      <widget class="QPlainTextEdit" name="plainTextEditLog"/>
      </widget>
     </item>
    </layout>

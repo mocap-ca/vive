@@ -26,6 +26,7 @@ public:
 
 	size_t count;
 
+    float tx, ty, tz;
     float rx, ry, rz;
 
 signals:

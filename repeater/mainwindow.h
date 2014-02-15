@@ -32,6 +32,8 @@ public:
     ~MainWindow();
 
 private:
+
+    void mouseMoveEvent(QMouseEvent*);
     Ui::MainWin *ui;
     MyServer    *server;
     WorkThread  *worker;

@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->plainTextEditLog->setMaximumBlockCount(1000);
+
     QList<int> splitSizes;
     splitSizes << 4;
     splitSizes << 2;
@@ -48,9 +50,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(testClient,  SIGNAL(outMessage(QString)),     this, SLOT(showMessage(QString)));
     connect(ui->pushButtonStub, SIGNAL(clicked()), this, SLOT(doStub()));
 
+
+    // Window refresh timer
 	timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(timerClick()));
-	timer->setInterval(1000);
+    timer->setInterval(1000);
 	timer->start();
 }
 
@@ -132,7 +136,7 @@ void MainWindow::updateConnectionList(void)
 // append some text to the log window
 void MainWindow::showMessage(QString msg)
 {
-    ui->textEditLog->append(msg);
+    ui->plainTextEditLog->appendPlainText(msg);
 }
 
 void MainWindow::viconConnected(bool con)
@@ -164,17 +168,23 @@ void MainWindow::doConnect()
         // start (connection is handled on other thread as it can be slow)
         viconClient->host = host;
         viconClient->port = port;
-        viconClient->start();
         ui->pushButtonConnect->setEnabled(false);
         ui->pushButtonConnect->setText("Connecting");
+        viconClient->start();
     }
     else
     {
-        viconClient->mocapDisconnect();
         viconClient->running = false;
         ui->pushButtonConnect->setEnabled(false);
         ui->pushButtonConnect->setText("Disconnecting");
+        viconClient->mocapDisconnect();
 
     }
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *e)
+{
+    testClient->tx = e->x() * 4.0;
+    testClient->tz = e->y() * 4.0;
 }
 

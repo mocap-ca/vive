@@ -69,7 +69,7 @@ void MyServer::run()
 {
     // create a timer to call runOne ten times a second
     loopTimer = new QTimer();
-    loopTimer->setInterval(100);
+    loopTimer->setInterval(20);
     connect(loopTimer, SIGNAL(timeout()), this, SLOT(runOne()));
     //loopTimer.moveToThread(this);
     loopTimer->start();
