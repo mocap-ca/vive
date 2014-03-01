@@ -44,7 +44,11 @@ bool ViconClient::mocapConnect()
 
 	// mClient.SetStreamMode();
 
-	mClient.SetAxisMapping(Direction::Forward, Direction::Up, Direction::Right);
+    Output_SetAxisMapping axisResult = mClient.SetAxisMapping(Direction::Forward, Direction::Up, Direction::Right);
+    if(axisResult.Result != Result::Success)
+    {
+        outMessage("Could not set Axis");
+    }
 
     connected = true;
 
@@ -63,6 +67,7 @@ bool ViconClient::mocapDisconnect()
         emit connectedEvent(false);
         return false;
     }
+
     outMessage("Disconnecting from Vicon");
 	Output_Disconnect output = mClient.Disconnect();
     connected = false;
@@ -135,18 +140,24 @@ void ViconClient::run()
 
                 //Output_GetSegmentLocalRotationEulerXYZ rot = mClient.GetSegmentLocalRotationEulerXYZ(subjectName, sn.SegmentName);
 
-                Output_GetSegmentGlobalTranslation trans = mClient.GetSegmentGlobalTranslation(subjectName, sn.SegmentName);
 
-                Output_GetSegmentGlobalRotationQuaternion rot = mClient.GetSegmentGlobalRotationQuaternion(subjectName, sn.SegmentName);
+                Output_GetSegmentLocalTranslation         trans     = mClient.GetSegmentLocalTranslation(subjectName, sn.SegmentName);
+                Output_GetSegmentStaticRotationQuaternion staticRot = mClient.GetSegmentStaticRotationQuaternion(subjectName, sn.SegmentName);
+                Output_GetSegmentLocalRotationQuaternion  localRot  = mClient.GetSegmentLocalRotationQuaternion(subjectName, sn.SegmentName);
+                Output_GetSegmentGlobalRotationQuaternion globalRot = mClient.GetSegmentGlobalRotationQuaternion(subjectName, sn.SegmentName);
 
                 std::string segname = sn.SegmentName;
-                subject->set(QString(segname.c_str()), trans.Translation, rot.Rotation);
+                subject->set(QString(segname.c_str()), trans.Translation, staticRot.Rotation, localRot.Rotation, globalRot.Rotation);
 
 			}
 
 		}
+
+        emit newFrame(frameNumber);
         count++;
 	}
+
+    outMessage("Vicon Service has finished");
 
     mocapDisconnect();
 }

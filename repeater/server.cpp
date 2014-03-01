@@ -1,6 +1,6 @@
 
 #include "server.h"
-#include <QTextStream>
+#include "profile.h"
 
 #include <sstream>
 
@@ -8,17 +8,22 @@ ServerConnection::ServerConnection(QTcpSocket *socket, QObject *parent)
 : QObject(parent)
 , name(socket->peerAddress().toString())
 , socket(socket)
-{};
+
+
+{}
 
 QString ServerConnection::str()
 {
 	return name;
 }
 
-MyServer::MyServer(MocapSubjectList *sList, QObject *parent) :
-    QThread(parent),
-    working(false),
-    subjectList(sList)
+MyServer::MyServer(MocapSubjectList *sList, QObject *parent)
+: QObject(parent)
+, working(false)
+, subjectList(sList)
+, count(0)
+, interval(100)
+, running(true)
 {}
 
 void MyServer::listen(int port)
@@ -39,17 +44,27 @@ void MyServer::listen(int port)
 // There is a new connection, server sends newConnection signal to me.
 void MyServer::newConnection()
 {
-    QTcpSocket *socket = server->nextPendingConnection();
-	if(socket == NULL) return;
+    bool change = false;
+    while(1)
+    {
+        QTcpSocket *socket = server->nextPendingConnection();
+        if(socket == NULL) break;
 
-	ServerConnection *con = new ServerConnection(socket, this);
+        change = true;
 
-    listMutex.lock();
-    connections.append(con);
-    listMutex.unlock();
+        ServerConnection *con = new ServerConnection(socket, this);
 
-    emit outMessage(QString("Connection from: ") + con->str());
-    emit connectionsChanged();
+        listMutex.lock();
+        connections.append(con);
+        listMutex.unlock();
+
+        emit outMessage(QString("Connection from: ") + con->str());
+    }
+
+    if(change)
+    {
+        emit connectionsChanged();
+    }
 }
 
 
@@ -65,22 +80,15 @@ void MyServer::getConnectionList(QList<QString>&items)
 }
 
 
-void MyServer::run()
+void MyServer::setInterval(int i)
 {
-    // create a timer to call runOne ten times a second
-    loopTimer = new QTimer();
-    loopTimer->setInterval(20);
-    connect(loopTimer, SIGNAL(timeout()), this, SLOT(runOne()));
-    //loopTimer.moveToThread(this);
-    loopTimer->start();
-    exec();
+    interval = i;
+    loopTimer->setInterval(i);
 }
 
 void MyServer::stop()
 {
-    loopTimer->stop();
-    delete loopTimer;
-    exit();
+    running = false;
 }
 
 
@@ -90,16 +98,31 @@ void MyServer::stop()
  *   - grab a text stream of the current model data ( stream << *subjectList )
  *   - put the text stream on the wire s->write(...)
 */
-void MyServer::runOne()
+void MyServer::process()
 {
-	working = true;
-    if(checkAlive() > 0)
+    stopProfile("Other");
+
+    working = true;
+
+    startProfile("checkAlive");
+    int alive = checkAlive();
+    stopProfile("checkAlive");
+
+    if(alive > 0)
     {
+        startProfile("Serve");
+
+        count++;
         QString buffer;
         QTextStream stream(&buffer);
+        // The following operation is threadsafe.
+        startProfile("Fetch");
         stream << *subjectList;
+        stopProfile("Fetch");
 
+        startProfile("Wait");
         listMutex.lock();
+        stopProfile("Wait");
 
         // for each connection
         for(QList<ServerConnection *>::iterator i =  connections.begin(); i != connections.end(); i++)
@@ -108,7 +131,11 @@ void MyServer::runOne()
             if(s->state() != QAbstractSocket::ConnectedState) continue;
 
             QString d = QString("%1\nEND\r\n").arg(buffer);
+
+            startProfile("Write");
             int written = s->write(d.toUtf8());
+            stopProfile("Write");
+
             if(written == -1)
             {
                 emit outMessage(QString(" Error writing to %1").arg(s->peerAddress().toString()));
@@ -120,9 +147,16 @@ void MyServer::runOne()
         }
 
         listMutex.unlock();
+
+        stopProfile("Serve");
     }
 
     working = false;
+
+
+    startProfile("Other");
+
+
 }
 
 

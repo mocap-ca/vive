@@ -27,13 +27,15 @@ SOURCES += main.cpp\
     workthread.cpp \
 	mocapSubject.cpp \
         viconClient.cpp \
-	testClient.cpp
+	testClient.cpp \
+    profilesx.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
     workthread.h \
 	mocapSubject.h \
         testClient.h \
-    viconClient.h
+    viconClient.h \
+    profile.h
 
 FORMS    += mainwindow.ui

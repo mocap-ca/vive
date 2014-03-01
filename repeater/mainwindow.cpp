@@ -22,28 +22,28 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->listViewConnections->setModel(modelConnections);
     ui->treeViewData->setModel(&subjectList->model);
 
-    ui->treeViewData->setColumnWidth(1, 50);
-    ui->treeViewData->setColumnWidth(2, 50);
-    ui->treeViewData->setColumnWidth(3, 50);
-    ui->treeViewData->setColumnWidth(4, 50);
-    ui->treeViewData->setColumnWidth(5, 50);
-    ui->treeViewData->setColumnWidth(6, 50);
+    for(size_t i=1; i < 16; i++)
+        ui->treeViewData->setColumnWidth(i, 50);
+
+    connect(ui->lineEditServerDelay, SIGNAL(textChanged(QString)), this, SLOT(updateServerDelay(QString)));
 
 
     // Start tcp server
-    server = new MyServer(subjectList, this);
+    server = new MyServer(subjectList);
     connect(server, SIGNAL(connectionsChanged()),    this, SLOT(updateConnectionList()));
     connect(server, SIGNAL(outMessage(QString)),     this, SLOT(showMessage(QString)));
     server->listen(1234);
-    server->start();
+
 
     // Vicon Client
     viconClient = new ViconClient(subjectList, this);
-    ui->lineEditHost->setText("192.168.11.1");
+    //ui->lineEditHost->setText("192.168.11.1");
+    ui->lineEditHost->setText("127.0.0.1");
     ui->lineEditPort->setText("801");
     connect(viconClient, SIGNAL(outMessage(QString)),  this, SLOT(showMessage(QString)));
     connect(viconClient, SIGNAL(connectedEvent(bool)), this, SLOT(viconConnected(bool)));
     connect(ui->pushButtonConnect, SIGNAL(clicked()),  this, SLOT(doConnect()));
+    connect(viconClient, SIGNAL(newFrame(uint)),       server, SLOT(process()));
 
     // Stub Client
     testClient  = new TestClient(subjectList, this);
@@ -53,13 +53,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Window refresh timer
 	timer = new QTimer(this);
-	connect(timer, SIGNAL(timeout()), this, SLOT(timerClick()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(timerClick()));
     timer->setInterval(1000);
 	timer->start();
 }
 
 MainWindow::~MainWindow()
 {
+    server->stop();
+
     bool vRunning = viconClient->running;
     bool tRunning = testClient->running;
 
@@ -93,9 +95,13 @@ void MainWindow::doStub()
 
 void MainWindow::timerClick()
 {
+    ui->lineEditServerFPS->setText(QString("%1").arg(server->count));
+    server->count = 0;
+
     if(viconClient->running)
     {
         ui->lineEditViconStatus->setText(QString("%1").arg(viconClient->count));
+        ui->lineEditViconFPS->setText(QString("%1").arg(viconClient->count));
         viconClient->count = 0;
     }
     else
@@ -177,7 +183,8 @@ void MainWindow::doConnect()
         viconClient->running = false;
         ui->pushButtonConnect->setEnabled(false);
         ui->pushButtonConnect->setText("Disconnecting");
-        viconClient->mocapDisconnect();
+        // Stop the thread from running, this will call disconnect
+        viconClient->running = false;
 
     }
 }
@@ -188,3 +195,11 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
     testClient->tz = e->y() * 4.0;
 }
 
+void MainWindow::updateServerDelay(QString val)
+{
+    bool ok;
+    int ival = val.toInt(&ok);
+    if(!ok) ival = 100;
+    if(ival < 1) ival = 100;
+    server->setInterval(ival);
+}

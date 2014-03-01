@@ -5,32 +5,28 @@
 #include <QMutexLocker>
 #include <QStandardItemModel>
 
+#include "profile.h"
+
 /* 
 	Mocap Segment 
 */
 
 
-#define PREC 2
+#define PREC 8
 
-MocapSegment::MocapSegment(QString n, double tr[3], double ro[3])
+MocapSegment::MocapSegment(QString n, double tr[3], double staticRot[4], double localRot[4], double globalRot[4] )
 : name(n)
 {
-    translation[0] = tr[0];
-    translation[1] = tr[1];
-    translation[2] = tr[2];
-    rotation[0] = ro[0];
-    rotation[1] = ro[1];
-    rotation[2] = ro[2];
-    rotation[3] = ro[3];
+    for(size_t i=0; i < 3; i++)  translation[i] = tr[i];
+    for(size_t i=0; i < 4; i++)  staticRotation[i] = staticRot[i];
+    for(size_t i=0; i < 4; i++)  localRotation[i]  = localRot[i];
+    for(size_t i=0; i < 4; i++)  globalRotation[i] = globalRot[i];
 
     modelItems << new QStandardItem(name);
-    modelItems << new QStandardItem(QString::number(translation[0], 'f', PREC));
-    modelItems << new QStandardItem(QString::number(translation[1], 'f', PREC));
-    modelItems << new QStandardItem(QString::number(translation[2], 'f', PREC));
-    modelItems << new QStandardItem(QString::number(rotation[0], 'f', PREC));
-    modelItems << new QStandardItem(QString::number(rotation[1], 'f', PREC));
-    modelItems << new QStandardItem(QString::number(rotation[2], 'f', PREC));
-    modelItems << new QStandardItem(QString::number(rotation[3], 'f', PREC));
+    for(size_t i=0; i < 3; i++) modelItems << new QStandardItem(QString::number(translation[i], 'f', PREC));
+    for(size_t i=0; i < 4; i++) modelItems << new QStandardItem(QString::number(staticRotation[i], 'f', PREC));
+    for(size_t i=0; i < 4; i++) modelItems << new QStandardItem(QString::number(localRotation[i], 'f', PREC));
+    for(size_t i=0; i < 4; i++) modelItems << new QStandardItem(QString::number(globalRotation[i], 'f', PREC));
 
     updateModel();
 }
@@ -38,37 +34,28 @@ MocapSegment::MocapSegment(QString n, double tr[3], double ro[3])
 void MocapSegment::updateModel()
 {
     modelItems[0]->setText(name);
-    modelItems[1]->setText(QString::number(translation[0], 'f', PREC));
-    modelItems[2]->setText(QString::number(translation[1], 'f', PREC));
-    modelItems[3]->setText(QString::number(translation[2], 'f', PREC));
-    modelItems[4]->setText(QString::number(rotation[0], 'f', PREC));
-    modelItems[5]->setText(QString::number(rotation[1], 'f', PREC));
-    modelItems[6]->setText(QString::number(rotation[2], 'f', PREC));
-    modelItems[7]->setText(QString::number(rotation[3], 'f', PREC));
-
-    //QString s("%1: %2 %3 %4 - %5 %6 %7");
-    /*s = s.arg( name );
-    s = s.arg( translation[0]);
-    s = s.arg( translation[1]);
-    s = s.arg( translation[2]);
-    s = s.arg( rotation[0]);
-    s = s.arg( rotation[1]);
-    s = s.arg( rotation[2]);*/
-    //modelItem->setText(s);
-
+    size_t i=1;
+    for(; i < 4; i++)  modelItems[i]->setText(QString::number(translation[i-1],     'f', PREC));
+    for(; i < 8; i++)  modelItems[i]->setText(QString::number(staticRotation[i-4],  'f', PREC));
+    for(; i < 12; i++) modelItems[i]->setText(QString::number(localRotation[i-8],  'f', PREC));
+    for(; i < 16; i++) modelItems[i]->setText(QString::number(globalRotation[i-12], 'f', PREC));
 }
 
 // serialize as string
 QTextStream& operator << ( QTextStream& stream, MocapSegment &segment)
 {
+    startProfile("MocapSegment");
     stream << segment.name << "\t";
-    stream << segment.translation[0] << "\t";
-    stream << segment.translation[1] << "\t";
-    stream << segment.translation[2] << "\t";
-    stream << segment.rotation[0] << "\t";
-    stream << segment.rotation[1] << "\t";
-    stream << segment.rotation[2] << "\t";
-    stream << segment.rotation[3] << "\n";
+    for(size_t i=0; i < 3; i++) stream << segment.translation[i]    << "\t";
+    for(size_t i=0; i < 4; i++) stream << segment.staticRotation[i] << "\t";
+    for(size_t i=0; i < 4; i++) stream << segment.localRotation[i]  << "\t";
+    for(size_t i=0; i < 4; i++)
+    {
+        stream << segment.globalRotation[i];
+        if(i < 3) stream << "\t";
+    }
+    stream << "\n";
+    stopProfile("MocapSegment");
     return stream;
 }
 
@@ -78,7 +65,7 @@ QTextStream& operator << ( QTextStream& stream, MocapSegment &segment)
 
 
 // Set the translation and rotation for an item
-void MocapSubject::set(QString name, double trans[3], double rot[4])
+void MocapSubject::set(QString name, double trans[3], double staticRot[4], double localRot[4], double globalRot[4])
 {
 	QMutexLocker lock(&mutex);
 
@@ -87,18 +74,15 @@ void MocapSubject::set(QString name, double trans[3], double rot[4])
         MocapSegment &seg = *i;
         if(seg.name == name)
 		{
-			seg.translation[0] = trans[0];
-			seg.translation[1] = trans[1];
-			seg.translation[2] = trans[2];
-            seg.rotation[0]    = rot[0];
-            seg.rotation[1]    = rot[1];
-            seg.rotation[2]    = rot[2];
-            seg.rotation[3]    = rot[3];
+            for(size_t i=0; i < 3; i++) seg.translation[i]    = trans[i];
+            for(size_t i=0; i < 4; i++) seg.staticRotation[i] = staticRot[i];
+            for(size_t i=0; i < 4; i++) seg.localRotation[i]  = localRot[i];
+            for(size_t i=0; i < 4; i++) seg.globalRotation[i] = globalRot[i];
             return;
 		}
 	}
 
-    MocapSegment seg(name, trans, rot);
+    MocapSegment seg(name, trans, staticRot, localRot, globalRot);
     segments.append(seg);
     modelItem->appendRow(seg.modelItems);
 }
@@ -123,11 +107,15 @@ void MocapSubject::updateModel()
 
 QTextStream& operator << ( QTextStream& stream, MocapSubject &subject)
 {
+    startProfile("MocapSubject");
+
     stream << subject.name.toUtf8().data() << "\t";
     stream << subject.segments.length() << "\n";
 
     for( QList<MocapSegment>::iterator i = subject.segments.begin(); i != subject.segments.end(); i++)
         stream << (*i);
+
+    stopProfile("MocapSubject");
     return stream;
 }
 
@@ -145,12 +133,26 @@ MocapSubjectList::MocapSubjectList(QObject *parent)
     headers << "tx";
     headers << "ty";
     headers << "tz";
-    headers << "rx";
-    headers << "ry";
-    headers << "rz";
-    headers << "rw";
+    headers << "s-rx";
+    headers << "s-ry";
+    headers << "s-rz";
+    headers << "s-rw";
+    headers << "l-rx";
+    headers << "l-ry";
+    headers << "l-rz";
+    headers << "l-rw";
+    headers << "g-rx";
+    headers << "g-ry";
+    headers << "g-rz";
+    headers << "g-rw";
     model.setHorizontalHeaderLabels(headers);
 
+
+}
+
+MocapSubjectList::~MocapSubjectList()
+{
+    finishProfile("c://out2.txt");
 }
 
 
@@ -174,13 +176,7 @@ MocapSubject* MocapSubjectList::find(QString inName, bool add)
     // Add it to the model
     QList<QStandardItem*> x;
     x << n->modelItem;
-    x << new QStandardItem();
-    x << new QStandardItem();
-    x << new QStandardItem();
-    x << new QStandardItem();
-    x << new QStandardItem();
-    x << new QStandardItem();
-    x << new QStandardItem();
+    for(size_t i=0; i < 15; i++) x << new QStandardItem();
     model.appendRow(x);
 
 	return n;
@@ -202,8 +198,10 @@ QTextStream& operator << ( QTextStream& stream, MocapSubjectList &subjects)
 	subjects.subjectMutex.lock();
 	stream << subjects.items.length() << "\n";
 
+    startProfile("total");
 	for(QList<MocapSubject*>::iterator i = subjects.items.begin(); i != subjects.items.end(); i++)
         stream << *(*i);
+    stopProfile("total");
 
 	subjects.subjectMutex.unlock();
 

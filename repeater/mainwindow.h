@@ -25,6 +25,7 @@ public slots:
 	void timerClick(void);
     void doStub(void);
     void viconConnected(bool);
+    void updateServerDelay(QString);
 
 
 public:

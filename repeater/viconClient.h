@@ -34,6 +34,7 @@ public:
 signals:
     void outMessage(QString);
     void connectedEvent(bool);
+    void newFrame(unsigned int);
 
 };
 

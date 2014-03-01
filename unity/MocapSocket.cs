@@ -62,7 +62,7 @@ public class MocapSocket : MonoBehaviour {
 			}
 		}
 
-		data = new Byte[1024];
+		data = new Byte[8192];
 
 		Connect();
 
@@ -113,8 +113,11 @@ public class MocapSocket : MonoBehaviour {
 		if (!clientSocket.Connected)
 			GUI.Label (new Rect (Screen.width - 150, 5, 150, 40), "Not Connected");
 
+
+
 		if(toggleDisplay)
 			GUI.Label(	new Rect(5, 5, 	Screen.width, Screen.height), infoMessage);
+
 		//if(GUI.Button (new Rect(120,10,100,20), "disconnect"))
 		//{
 		//	currentState = 2;
@@ -134,12 +137,17 @@ public class MocapSocket : MonoBehaviour {
 		return q;
 	}
 
-			
-	// Update is called once per frame
-	void Update ()
+	void Update()
+
 	{
 		if (Input.GetKeyDown ("z"))
-						toggleDisplay = !toggleDisplay;
+				toggleDisplay = !toggleDisplay;
+	}
+			
+	// Update is called once per frame
+	void FixedUpdate ()
+	{
+
 
 		if (clientSocket.Available == 0)
 						return;
@@ -159,7 +167,7 @@ public class MocapSocket : MonoBehaviour {
 		try
 		{
 			// Get some data, append to current buffer
-			int ret = clientSocket.Receive (data, 1024, 0);
+			int ret = clientSocket.Receive (data, 8192, 0);
 			buffer += Encoding.ASCII.GetString(data, 0, ret);
 
 			// find split point
@@ -205,7 +213,7 @@ public class MocapSocket : MonoBehaviour {
 				string[] subjectSplit = lineItems[line++].Split ('\t');
 				string subjectName = subjectSplit[0];
 				int    noSegments  = Convert.ToInt32 (subjectSplit[1]);
-				infoMessage += "SUB: " + subjectName + "\n";
+				//infoMessage += "SUB: " + subjectName + "\n";
 
 
 				for(int j=0; j < noSegments && line < lineItems.Length; j++)
@@ -278,12 +286,12 @@ public class MocapSocket : MonoBehaviour {
 						//dbg += "OST:" + ofs.x.ToString ("0.00") + "\t\t" + ofs.y.ToString ("0.00") + "\t\t" + ofs.z.ToString("0.00") + "\n";
 						//dbg += "INI:" + ofi.x.ToString ("0.00") + "\t\t" + ofi.y.ToString ("0.00") + "\t\t" + ofi.z.ToString("0.00") + "\n";
 
-						Debug.Log (dbg);
+						//Debug.Log (dbg);
 
 						string seg = segmentName.ToLower();
 						if ( seg == "hips" || seg == "spine" || seg == "spine1" || seg == "spine2")
 						{
-							infoMessage += dbg;
+							//infoMessage += dbg;
 						}
 						
 
@@ -294,7 +302,7 @@ public class MocapSocket : MonoBehaviour {
 				}
 			}
 
-			infoMessage += "FPS:" + fps;
+			infoMessage += "FPS:" + fps.ToString ("0.00");
 
 			if(frameDone) frameCount++;
 

@@ -8,6 +8,8 @@
 #include <QList>
 #include <QMutex>
 #include <QTimer>
+#include <QElapsedTimer>
+
 
 #include "mocapSubject.h"
 
@@ -22,11 +24,11 @@ public:
 	QTcpSocket *socket;
 };
 
-class MyServer : public QThread
+class MyServer : public QObject
 {
     Q_OBJECT
 public:
-    explicit MyServer(MocapSubjectList*, QObject *);
+    explicit MyServer(MocapSubjectList*, QObject * = 0);
 
 signals:
     void connectionsChanged(void);
@@ -35,16 +37,20 @@ signals:
 public slots:
     void newConnection();
     void listen(int port);
-    void runOne();
+    void process();
     void stop();
 
 private:
-    virtual void run();
+    //virtual void run();
     QTcpServer *server;
     int  checkAlive();  // returns number of active connections
     QTimer *loopTimer;
+    size_t interval;
+    bool running;
 
 public:
+    size_t count;
+    void setInterval(int i);
     QList<ServerConnection*> connections;
     QMutex listMutex;
     void getConnectionList(QList<QString>&);

@@ -34,9 +34,10 @@ void TestClient::run()
         if(ry >= 3.14) ry = 0;
 
         double tr[3] = { tx, ty, tz };
-        double ro[3] = { rx, ry, rz };
+        double ro[4] = { rx, ry, rz, 0 };
+        double zero[4] = { 0, 0, 0, 0 };
         //tr[1] = (double)qrand() / (double)RAND_MAX;
-        subject->set("root", tr, ro);
+        subject->set("root", tr, ro, zero, zero);
 
         this->usleep(4000);
 		count++;
