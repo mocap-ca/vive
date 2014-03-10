@@ -31,6 +31,9 @@ public:
     QString host;
     int     port;
 
+private:
+    bool    frameError;
+
 signals:
     void outMessage(QString);
     void connectedEvent(bool);

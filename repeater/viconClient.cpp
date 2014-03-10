@@ -13,6 +13,7 @@ ViconClient::ViconClient(MocapSubjectList *sList, QObject *parent)
 , running(false)
 , count(0)
 , port(0)
+, frameError(false)
 {
 }
 
@@ -103,9 +104,13 @@ void ViconClient::run()
         if(rf.Result == Result::NoFrame) continue;
         if(rf.Result != Result::Success)
         {
-            outMessage("Error getting frame");
+            // Only show this error once, otherwise it will fill up the log
+            if(!frameError) outMessage("Error getting frame");
+            frameError =true;
             continue;
         }
+
+        frameError = false;
 
 		Output_GetFrameNumber rfn = mClient.GetFrameNumber();
 		unsigned int frameNumber = 0;

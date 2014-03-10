@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include <QMessageBox>
-
+#include <QCompleter>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -22,10 +22,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->listViewConnections->setModel(modelConnections);
     ui->treeViewData->setModel(&subjectList->model);
 
+    QStringList wordList;
+    wordList << "127.0.0.1" << "192.168.11.1";
+    QCompleter *completer = new QCompleter(wordList, this);
+    ui->lineEditHost->setCompleter(completer);
+
     for(size_t i=1; i < 16; i++)
         ui->treeViewData->setColumnWidth(i, 50);
 
     connect(ui->lineEditServerDelay, SIGNAL(textChanged(QString)), this, SLOT(updateServerDelay(QString)));
+
+
 
 
     // Start tcp server
