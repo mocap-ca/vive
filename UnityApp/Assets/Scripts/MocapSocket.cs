@@ -9,6 +9,14 @@ using System.Collections.Generic;
 
 class SegmentItem
 {
+	public SegmentItem()
+	{
+		tr = new float[3];
+		so = new float[4];
+		lo = new float[4];
+		go = new float[4];
+	}
+
 	public string name;
 	public float[] tr;
 	public float[] so;
@@ -21,7 +29,8 @@ public class MocapSocket : MonoBehaviour {
 	Byte[] data;
 	Socket clientSocket;
 	string buffer;
-	string infoMessage;
+	string infoMessage1;
+	string infoMessage2;
 
 	const string BODY_OBJECT       = "BetaVicon";
 	const string OCULUS_OBJECT     = "Oculus";
@@ -33,8 +42,8 @@ public class MocapSocket : MonoBehaviour {
 	public int port = 1234;
 	Boolean toggleDisplay;
 
-	GameObject[] skeletonObjects;
-	GameObject[] rigidObjects;
+	List<GameObject> skeletonObjects = new List<GameObject>();
+	List<GameObject> rigidObjects = new List<GameObject>();
 	Dictionary< string, GameObject >     objectDict         = new Dictionary<string, GameObject> ();
 	Dictionary< GameObject, Quaternion > rotationOffsets    = new Dictionary<GameObject, Quaternion> ();
 	Dictionary< GameObject, Quaternion > initialOrientation = new Dictionary<GameObject, Quaternion> ();
@@ -57,7 +66,6 @@ public class MocapSocket : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
 	{
-
 		toggleDisplay = false;
 
 		string[] skeletonList =  new string[] {"Hips",  
@@ -71,17 +79,25 @@ public class MocapSocket : MonoBehaviour {
 		};
 
 
-		rigidObjects = GameObject.FindGameObjectsWithTag ("Mocap");
+		GameObject[] mocapTagged = GameObject.FindGameObjectsWithTag ("Mocap");
 
 
-		foreach (GameObject o in rigidObjects) SetInitialState(o);
+		if(mocapTagged != null)
+		{
+			foreach (GameObject o in mocapTagged)
+			{
+				Debug.Log ("Adding Rigid Object: " + o.name);
+				rigidObjects.Add (o);
+				SetInitialState(o);
+			}
+		}
 
 		int i = 0;
 		foreach(string s in skeletonList) 
 		{
 			GameObject o = GameObject.Find(s);
 			if (o == null) continue;
-			skeletonObjects[i++] = o;
+			skeletonObjects.Add (o);
 			SetInitialState(o);
 		}
 
@@ -154,10 +170,8 @@ public class MocapSocket : MonoBehaviour {
 		if (clientSocket == null || !clientSocket.Connected)
 			GUI.Label (new Rect (Screen.width - 150, 5, 150, 40), "Not Connected");
 
-
-
 		if(toggleDisplay)
-			GUI.Label(	new Rect(5, 5, 	Screen.width, Screen.height), infoMessage);
+			GUI.Label(	new Rect(5, 5, 	Screen.width, Screen.height), infoMessage1 + infoMessage2);
 
 		//if(GUI.Button (new Rect(120,10,100,20), "disconnect"))
 		//{
@@ -201,7 +215,7 @@ public class MocapSocket : MonoBehaviour {
 			objectDict[RIGHT_HAND_OBJECT].SetActive (! objectDict[RIGHT_HAND_OBJECT].activeInHierarchy);
 		}
 
-		if (Input.GetKeyDown ("c") && clientSocket.Connected) Connect();
+		if (Input.GetKeyDown ("c") ) Connect();  // && (!clientSocket || !clientSocket.Connected)
 
 		if (Input.GetKeyDown ("d") && clientSocket.Connected) Disconnect();
 
@@ -252,7 +266,7 @@ public class MocapSocket : MonoBehaviour {
 		}
 		catch(SocketException e)
 		{
-			infoMessage += "Socket Error: " + e.ToString();
+			infoMessage1 += "Socket Error: " + e.ToString();
 		}
 
 		return false;
@@ -264,19 +278,19 @@ public class MocapSocket : MonoBehaviour {
 		string packet = "";
 		if (!GetOnePacket (out packet)) return false;
 			
-		infoMessage = "";
+		infoMessage1 = "";
 			
 		string[] lineItems = packet.Split ('\n');
 		if(lineItems.Length == 0)
 		{
-			infoMessage = "No data error";
+			infoMessage1 = "No data error";
 			return false;
 		}
 			
 		int subjects = 0;
 		if(!int.TryParse ( lineItems[0], out subjects))
 		{
-			infoMessage = "Invalid data while parsing";
+			infoMessage1 = "Invalid data while parsing";
 			return false;
 		}
 
@@ -287,7 +301,7 @@ public class MocapSocket : MonoBehaviour {
 			string[] subjectSplit = lineItems[line++].Split ('\t');
 			string subjectName = subjectSplit[0];
 			int    noSegments  = Convert.ToInt32 (subjectSplit[1]);
-			infoMessage += "SUB: " + subjectName + "\n";
+			infoMessage1 += "SUB: " + subjectName + "\n";
 
 			SegmentItem[] items = new SegmentItem[noSegments];
 
@@ -298,7 +312,7 @@ public class MocapSocket : MonoBehaviour {
 					
 				if(segmentSplit.Length != 16)
 				{
-					infoMessage += "Segment Error: " + segmentSplit.Length;
+					infoMessage1 += "Segment Error: " + segmentSplit.Length;
 					continue;
 				}
 				SegmentItem item = new SegmentItem();
@@ -322,7 +336,7 @@ public class MocapSocket : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate ()
 	{
-
+		infoMessage2 = "";
 		if (clientSocket == null || clientSocket.Available == 0) return;
 
 		// Frame rate calculator
@@ -330,19 +344,29 @@ public class MocapSocket : MonoBehaviour {
 
 		Dictionary< string, SegmentItem[] > subjectList;
 
-		if(!GetSocketData(out subjectList)) return;
+		if(!GetSocketData(out subjectList))
+		{
+			infoMessage2 = "no data";
+			return;
+		}
 
 		/*if(subjectName != LEFT_HAND_OBJECT && subjectName != RIGHT_HAND_OBJECT && subjectName != OCULUS_OBJECT)
 		{
 			if ( !objects.ContainsKey( segmentName) ) continue;
 		}*/
 
+		infoMessage2 = "Subjects: " + subjectList.Keys.Count + "\n";
+
+		// For each subject
 		foreach(KeyValuePair<String, SegmentItem[]> entry in subjectList)
 		{
 			string subject = entry.Key;
 
+			infoMessage2 += "LOADING: " + subject + "\n";
+
 			bool frameDone = false;
 
+			// For each segment in subject
 			foreach(SegmentItem item in entry.Value)
 			{
 
@@ -352,37 +376,47 @@ public class MocapSocket : MonoBehaviour {
 				//Quaternion localOrientation  =  new Quaternion(lo[0], lo[3], -lo[1], lo[2]);
 				Quaternion globalOrientation =  new Quaternion(item.go[0], item.go[1], item.go[2], item.go[3]);
 
-				// Zero off the rotations
-				if (captureOri)
-				{
-					//PlayerPrefs.SetFloat(segmentName, inputOrientation.ToString());						
-					//rotationOffsets[segmentName] =  Quaternion.AngleAxis(0, Vector3.right) * Quaternion.Inverse ( localOrientation );
-				}
+
 			
 
 				GameObject o = null;
 
-				if (item.name == OCULUS_OBJECT || item.name == LEFT_HAND_OBJECT || item.name == RIGHT_HAND_OBJECT)
+				if (subject == OCULUS_OBJECT || subject == LEFT_HAND_OBJECT || subject == RIGHT_HAND_OBJECT)
 				{
 					if(item.name == "root")
 					{
-						if ( !objectDict.ContainsKey( item.name) ) continue;
-						o = objectDict[item.name];
-						o.transform.localRotation = localOrientation;// * rotationOffsets[segmentName]; 
-						//object = "Oculus";
-						infoMessage += "RIGID: " + item.name + "\n";
-						o.transform.localRotation = localOrientation;// * rotationOffsets[segmentName]; 
-						//o.transform.localPosition = new Vector3(-tr[0] / 100, -tr[1] / 100, -tr[2] / 100)
+						// Rigid objects match on subject name, not segment
+						if ( !objectDict.ContainsKey( subject ) )
+						{
+							infoMessage2 += "RIGID MISSING:" + subject + "\n";
+							continue;
+						}
+						infoMessage2 += "RIGID: " + subject + "\n";
+						o = objectDict[subject];
+						o.transform.localRotation = localOrientation * rotationOffsets[o]; 
+
 					}
 				}
 				else
 				{
-					if ( !objectDict.ContainsKey( item.name) ) continue;
+					if ( !objectDict.ContainsKey( item.name) )
+					{
+						infoMessage2 += "BODY MISSING:" + item.name + "\n";
+						continue;
+					}
+					infoMessage2 += "BODY: " + item.name + "\n";
 					o = objectDict[item.name];
-					o.transform.localRotation = localOrientation;// * rotationOffsets[segmentName]; */
+					o.transform.localRotation = localOrientation * rotationOffsets[o];
 				}
 
 				if( o == null) continue;
+
+				// Zero off the rotations
+				if (captureOri)
+				{
+					//PlayerPrefs.SetFloat(segmentName, inputOrientation.ToString());						
+					rotationOffsets[o] =  Quaternion.AngleAxis(0, Vector3.right) * Quaternion.Inverse ( localOrientation );
+				}
 
 
 				o.transform.localPosition = new Vector3(-item.tr[0] / 100, -item.tr[2] / 100, item.tr[1] / 100);
@@ -414,14 +448,13 @@ public class MocapSocket : MonoBehaviour {
 				string seg = item.name.ToLower();
 				if ( seg == "hips" || seg == "spine" || seg == "spine1" || seg == "spine2")
 				{
-					infoMessage += dbg;
+					infoMessage2 += dbg;
 				}
 
 				frameDone = true;
 			
 			}
 
-			infoMessage += "FPS:" + fps.ToString ("0.00");
 
 			if(frameDone) frameCount++;
 
@@ -437,6 +470,9 @@ public class MocapSocket : MonoBehaviour {
 
 
 		}
+
+		infoMessage2 += "FPS:" + fps.ToString ("0.00");
+
 
 
 		captureOri = false;

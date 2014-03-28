@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\LightEffect.js" />
      <Compile Include="Assets\Scripts\LoadNextLevel.js" />
+     <Compile Include="Assets\Scripts\TriggerAction.js" />
      <None Include="Assets\OVR\OVRImageEffects\OVRLensCorrection_CA.shader" />
      <None Include="Assets\OVR\OVRImageEffects\OVRLensCorrection.shader" />
      <None Include="Assets\OVR\Shaders\OVRGUIShader.shader" />

@@ -1,8 +1,11 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\LoadLevelTest.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\LoadNextLevel.js">
     <Files>
-      <File FileName="Assets\Scripts\LoadLevelTest.cs" Line="6" Column="36" />
+      <File FileName="Assets\Scripts\TriggerAction.js" Line="13" Column="1" />
+      <File FileName="Assets\Scripts\MocapSocket.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\TriggerAction.js" Line="26" Column="2" />
+      <File FileName="Assets\Scripts\LoadNextLevel.js" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
