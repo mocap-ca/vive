@@ -41,7 +41,7 @@ bool ViconClient::mocapConnect()
 
 	mClient.EnableSegmentData();
 	mClient.EnableMarkerData();
-	mClient.EnableUnlabeledMarkerData();
+    //mClient.EnableUnlabeledMarkerData();
 
 	// mClient.SetStreamMode();
 
@@ -147,14 +147,25 @@ void ViconClient::run()
 
 
                 Output_GetSegmentLocalTranslation         trans     = mClient.GetSegmentLocalTranslation(subjectName, sn.SegmentName);
-                Output_GetSegmentStaticRotationQuaternion staticRot = mClient.GetSegmentStaticRotationQuaternion(subjectName, sn.SegmentName);
                 Output_GetSegmentLocalRotationQuaternion  localRot  = mClient.GetSegmentLocalRotationQuaternion(subjectName, sn.SegmentName);
-                Output_GetSegmentGlobalRotationQuaternion globalRot = mClient.GetSegmentGlobalRotationQuaternion(subjectName, sn.SegmentName);
+                //Output_GetSegmentStaticRotationQuaternion staticRot = mClient.GetSegmentStaticRotationQuaternion(subjectName, sn.SegmentName);
+                //Output_GetSegmentGlobalRotationQuaternion globalRot = mClient.GetSegmentGlobalRotationQuaternion(subjectName, sn.SegmentName);
 
                 std::string segname = sn.SegmentName;
-                subject->set(QString(segname.c_str()), trans.Translation, staticRot.Rotation, localRot.Rotation, globalRot.Rotation);
+                subject->setSegment(QString(segname.c_str()), trans.Translation, localRot.Rotation);
 
 			}
+
+            Output_GetMarkerCount mc = mClient.GetMarkerCount(subjectName);
+            for(unsigned int i=0; i < mc.MarkerCount; i++)
+            {
+                Output_GetMarkerName mn = mClient.GetMarkerName(subjectName, i);
+                Output_GetMarkerGlobalTranslation trans = mClient.GetMarkerGlobalTranslation(subjectName, mn.MarkerName);
+                std::string markername = mn.MarkerName;
+                subject->setMarker(QString(markername.c_str()), trans.Translation);
+
+            }
+
 
 		}
 

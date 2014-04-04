@@ -198,8 +198,8 @@ void MainWindow::doConnect()
 
 void MainWindow::mouseMoveEvent(QMouseEvent *e)
 {
-    testClient->tx = e->x() * 4.0;
-    testClient->tz = e->y() * 4.0;
+    testClient->mousex = e->x() * 4.0;
+    testClient->mousey = e->y() * 4.0;
 }
 
 void MainWindow::updateServerDelay(QString val)

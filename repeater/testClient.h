@@ -26,8 +26,7 @@ public:
 
 	size_t count;
 
-    float tx, ty, tz;
-    float rx, ry, rz;
+    float val, mousex, mousey;
 
 signals:
     void outMessage(QString);

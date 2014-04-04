@@ -17,16 +17,25 @@ class MocapSegment
 {
     friend class MocapSubject;
 private:
-    MocapSegment(QString name, double tr[3], double staticRot[4], double localRot[4], double globalRot[4]);
+    MocapSegment(QString name, double tr[3], double rot[4]);
     QString name;
     QList<QStandardItem*> modelItems;
 	double translation[3];
-    double staticRotation[4];
     double localRotation[4];
-    double globalRotation[4];
     friend QTextStream& operator << ( QTextStream&, MocapSegment& );
     void updateModel();
+};
 
+class MocapMarker
+{
+    friend class MocapSubject;
+private:
+    MocapMarker(QString name, double tr[3]);
+    QString name;
+    QList<QStandardItem*> modelItems;
+    double translation[3];
+    friend QTextStream& operator << (QTextStream&, MocapMarker& );
+    void updateModel();
 };
 
 
@@ -41,12 +50,15 @@ public:
 
     friend QTextStream& operator << ( QTextStream&, MocapSubject& );
 
-    void set(QString name, double trans[3], double staticRot[4], double localRot[4], double globalRot[4]);
+    void setSegment(QString name, double trans[3], double rot[4]);
+
+    void setMarker(QString name, double trans[3]);
 
     void updateModel();
 
 private :
     QList<MocapSegment> segments;
+    QList<MocapMarker> markers;
     QStandardItem *modelItem;
 	QString name;
 	QMutex &mutex;

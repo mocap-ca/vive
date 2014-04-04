@@ -9,33 +9,38 @@ using System.Collections.Generic;
 
 class SegmentItem
 {
-	public SegmentItem()
+	public SegmentItem(string _name, float[] _tr, float[] _ro, bool _isJoint)
 	{
+		name = _name;
+		isJoint = _isJoint;
 		tr = new float[3];
-		so = new float[4];
-		lo = new float[4];
-		go = new float[4];
+		tr = _tr;
+		ro = new float[4];
+		ro = _ro;
 	}
 
 	public string name;
 	public float[] tr;
-	public float[] so;
-	public float[] lo;
-	public float[] go;
+	public float[] ro;
+	public bool isJoint;
+
 };
+
+
 
 public class MocapSocket : MonoBehaviour {
 
-	Byte[] data;
 	Socket clientSocket;
 	string buffer;
-	string infoMessage1;
-	string infoMessage2;
+	string infoMessage1 = "";
+	string infoMessage2 = "";
 
 	const string BODY_OBJECT       = "BetaVicon";
 	const string OCULUS_OBJECT     = "Oculus";
 	const string LEFT_HAND_OBJECT  = "LeftHandRigid";
 	const string RIGHT_HAND_OBJECT = "RightHandRigid";
+	const string LEFT_FOOT_OBJECT  = "LeftFootRigid";
+	const string RIGHT_FOOT_OBJECT = "RightFootRigid";
 
 
 	public string hostIp = "127.0.0.1";
@@ -47,19 +52,24 @@ public class MocapSocket : MonoBehaviour {
 	Dictionary< string, GameObject >     objectDict         = new Dictionary<string, GameObject> ();
 	Dictionary< GameObject, Quaternion > rotationOffsets    = new Dictionary<GameObject, Quaternion> ();
 	Dictionary< GameObject, Quaternion > initialOrientation = new Dictionary<GameObject, Quaternion> ();
+	Dictionary< string, GameObject >     markerDict         = new Dictionary< string, GameObject >();
 
 	int frameCount = 0;
 	double dt = 0.0;
 	double fps = 0.0;
 	double updateRate = 4.0;  // 4 updates per sec.
 
-	bool captureOri = false;
-
+	bool captureOriOculus = false;
+	bool captureOriBody = false;
+	bool captureOriHands = false;
+	bool captureOriFeet = false;
+	
 	void SetInitialState(GameObject o)
 	{
 		objectDict[o.name] = o;
 		rotationOffsets.Add (o, Quaternion.identity);
 		initialOrientation.Add (o, o.transform.localRotation);
+
 	}
 		
 		
@@ -67,6 +77,9 @@ public class MocapSocket : MonoBehaviour {
 	void Start ()
 	{
 		toggleDisplay = false;
+
+		infoMessage1 = "INIT1";
+		infoMessage1 = "INIT2";
 
 		string[] skeletonList =  new string[] {"Hips",  
 			"LeftUpLeg", "LeftLeg", "LeftFoot", "LeftToeBase", 
@@ -89,17 +102,20 @@ public class MocapSocket : MonoBehaviour {
 				Debug.Log ("Adding Rigid Object: " + o.name);
 				rigidObjects.Add (o);
 				SetInitialState(o);
+				if(o.name != OCULUS_OBJECT) o.SetActive (false);
 			}
 		}
 
-		int i = 0;
 		foreach(string s in skeletonList) 
 		{
 			GameObject o = GameObject.Find(s);
 			if (o == null) continue;
 			skeletonObjects.Add (o);
 			SetInitialState(o);
+
+			//if(s == BODY_OBJECT) o.SetActive (false);
 		}
+
 
 
 		data = new Byte[1024 * 16];
@@ -124,7 +140,7 @@ public class MocapSocket : MonoBehaviour {
 		ProtocolType  proType = ProtocolType.Tcp;
 		clientSocket = new Socket(family, sokType, proType);
 
-		GameObject mainCamera = GameObject.Find("Oculus");
+		//GameObject mainCamera = GameObject.Find("Oculus");
 		//LoadLevelTest tester = null;
 		//if(mainCamera) tester = mainCamera.GetComponent<LoadLevelTest>();
 
@@ -163,21 +179,6 @@ public class MocapSocket : MonoBehaviour {
 		clientSocket.Disconnect (false);
 		MouseNavigator.hasControl = true;
 	}
-	 
-	 
-	void OnGUI()
-	{
-		if (clientSocket == null || !clientSocket.Connected)
-			GUI.Label (new Rect (Screen.width - 150, 5, 150, 40), "Not Connected");
-
-		if(toggleDisplay)
-			GUI.Label(	new Rect(5, 5, 	Screen.width, Screen.height), infoMessage1 + infoMessage2);
-
-		//if(GUI.Button (new Rect(120,10,100,20), "disconnect"))
-		//{
-		//	currentState = 2;
-		//}
-	}
 
 	public static Quaternion QuaternionFromMatrix(Matrix4x4 m) {
 		// Adapted from: http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
@@ -192,32 +193,35 @@ public class MocapSocket : MonoBehaviour {
 		return q;
 	}
 
-	void Update()
+	void OnGUI()
 
 	{
-		if (Input.GetKeyDown ("z"))
-				toggleDisplay = !toggleDisplay;
 
-		if (Input.GetKeyDown ("1"))
-						captureOri = true;
+		Event e = Event.current;
 
-		if (Input.GetKeyDown ("x"))
-			Application.LoadLevelAsync ("Entrance");
-
-		if (Input.GetKeyDown ("b"))
+		if (e.type == EventType.KeyUp)
 		{
-			objectDict[BODY_OBJECT].SetActive (! objectDict[BODY_OBJECT].activeInHierarchy );
+			if(e.keyCode == KeyCode.Y) toggleDisplay = !toggleDisplay;
+			if(e.keyCode == KeyCode.X) Application.LoadLevelAsync ("Entrance");
+			if(e.keyCode == KeyCode.Alpha1) captureOriOculus = true;
+			if(e.keyCode == KeyCode.B) captureOriBody = true;
+			if(e.keyCode == KeyCode.H) captureOriHands = true;
+			if(e.keyCode == KeyCode.F) captureOriFeet = true;
+			if(e.keyCode == KeyCode.C) Connect();
+			if(e.keyCode == KeyCode.D && clientSocket.Connected) Disconnect();
 		}
 
-		if (Input.GetKeyDown ("h"))
+		if (clientSocket == null || !clientSocket.Connected)
+			GUI.Label (new Rect (Screen.width - 150, 5, 150, 40), "Not Connected");
+		
+		if(toggleDisplay)
 		{
-			objectDict[LEFT_HAND_OBJECT].SetActive (! objectDict[LEFT_HAND_OBJECT].activeInHierarchy);
-			objectDict[RIGHT_HAND_OBJECT].SetActive (! objectDict[RIGHT_HAND_OBJECT].activeInHierarchy);
+			GUI.Label(	new Rect(5, 5, 	Screen.width, Screen.height), infoMessage1 + infoMessage2);
+			Debug.Log (infoMessage1);
+			Debug.Log (infoMessage2);
 		}
-
-		if (Input.GetKeyDown ("c") ) Connect();  // && (!clientSocket || !clientSocket.Connected)
-
-		if (Input.GetKeyDown ("d") && clientSocket.Connected) Disconnect();
+		else
+			GUI.Label(	new Rect(5, 5, 	Screen.width, Screen.height), "ACTIVE");
 
 
 	}
@@ -277,8 +281,8 @@ public class MocapSocket : MonoBehaviour {
 		subjectList = new Dictionary< string, SegmentItem[] > ();
 		string packet = "";
 		if (!GetOnePacket (out packet)) return false;
-			
-		infoMessage1 = "";
+
+		infoMessage1 = "DATA\n";
 			
 		string[] lineItems = packet.Split ('\n');
 		if(lineItems.Length == 0)
@@ -288,9 +292,10 @@ public class MocapSocket : MonoBehaviour {
 		}
 			
 		int subjects = 0;
+
 		if(!int.TryParse ( lineItems[0], out subjects))
 		{
-			infoMessage1 = "Invalid data while parsing";
+			infoMessage1 = "Invalid data while parsing subjects";
 			return false;
 		}
 
@@ -301,29 +306,50 @@ public class MocapSocket : MonoBehaviour {
 			string[] subjectSplit = lineItems[line++].Split ('\t');
 			string subjectName = subjectSplit[0];
 			int    noSegments  = Convert.ToInt32 (subjectSplit[1]);
-			infoMessage1 += "SUB: " + subjectName + "\n";
+			int    noMarkers   = Convert.ToInt32 (subjectSplit[2]);
+			infoMessage1 += subjectName + "  " + noSegments + " segments   " + noMarkers + " markers\n";
 
-			SegmentItem[] items = new SegmentItem[noSegments];
+			SegmentItem[] items = new SegmentItem[noSegments + noMarkers];
 
-				
+			// Segments	
+			int item_i=0;
 			for(int j=0; j < noSegments && line < lineItems.Length; j++)
 			{
 				string[] segmentSplit = lineItems[line++].Split('\t');
 					
-				if(segmentSplit.Length != 16)
+				if(segmentSplit.Length != 8)
 				{
 					infoMessage1 += "Segment Error: " + segmentSplit.Length;
 					continue;
 				}
-				SegmentItem item = new SegmentItem();
-				item.name = segmentSplit[0];
-				for(int k=0; k < 3; k++) item.tr[k] = float.Parse (segmentSplit[k+1]);
-				for(int k=0; k < 4; k++) item.so[k] = float.Parse (segmentSplit[k+4]);
-				for(int k=0; k < 4; k++) item.lo[k] = float.Parse (segmentSplit[k+8]);
-				for(int k=0; k < 4; k++) item.go[k] = float.Parse (segmentSplit[k+12]);
-				items[j] = item;
+				float[] tr = new float[3];
+				float[] ro = new float[4];
+				for(int k=0; k < 3; k++) tr[k] = float.Parse (segmentSplit[k+1]);
+				for(int k=0; k < 4; k++) ro[k] = float.Parse (segmentSplit[k+4]);
+				items[item_i++] = new SegmentItem(segmentSplit[0], tr, ro, true);
+			}
+
+			float[] zero = new float[4];
+			for(int j=0; j < 4; j++) zero[j] = 0.0f;
+
+			// Markers
+			for(int j=0; j < noMarkers && line < lineItems.Length; j++)
+			{
+				string[] segmentSplit = lineItems[line++].Split('\t');
+				
+				if(segmentSplit.Length != 4)
+				{
+					Debug.Log ("Marker Error" + segmentSplit.Length);
+					infoMessage1 += "Marker Error: " + segmentSplit.Length;
+					continue;
+				}
+				float[] tr = new float[3];
+				for(int k=0; k < 3; k++) tr[k] = float.Parse (segmentSplit[k+1]);
+				items[item_i++] = new SegmentItem(segmentSplit[0], tr, zero, false);
 			}
 			subjectList.Add (subjectName, items);
+			infoMessage1 += "Adding " + items.Length + " items";
+
 		}
 
 		return true;
@@ -334,26 +360,21 @@ public class MocapSocket : MonoBehaviour {
 		
 		
 	// Update is called once per frame
-	void FixedUpdate ()
+	void FixedUpdate()
 	{
 		infoMessage2 = "";
-		if (clientSocket == null || clientSocket.Available == 0) return;
+		if (clientSocket == null)// || clientSocket.Available == 0)
+		{
+			infoMessage1 = "No Socket";
+			return;
+		}
 
 		// Frame rate calculator
 		TimeClick ();
 
 		Dictionary< string, SegmentItem[] > subjectList;
 
-		if(!GetSocketData(out subjectList))
-		{
-			infoMessage2 = "no data";
-			return;
-		}
-
-		/*if(subjectName != LEFT_HAND_OBJECT && subjectName != RIGHT_HAND_OBJECT && subjectName != OCULUS_OBJECT)
-		{
-			if ( !objects.ContainsKey( segmentName) ) continue;
-		}*/
+		if(!GetSocketData(out subjectList)) { infoMessage2 = "no data"; return; }
 
 		infoMessage2 = "Subjects: " + subjectList.Keys.Count + "\n";
 
@@ -369,113 +390,101 @@ public class MocapSocket : MonoBehaviour {
 			// For each segment in subject
 			foreach(SegmentItem item in entry.Value)
 			{
-
-				//Quaternion inputOrientation =  Quaternion.AngleAxis(90, Vector3.left) * new Quaternion(rx, ry, rz, rw);
-				Quaternion staticOrientation =  new Quaternion(item.so[0], item.so[1], item.so[2], item.so[3]);
-				Quaternion localOrientation  =  new Quaternion(item.lo[0], item.lo[2], -item.lo[1], item.lo[3]);
-				//Quaternion localOrientation  =  new Quaternion(lo[0], lo[3], -lo[1], lo[2]);
-				Quaternion globalOrientation =  new Quaternion(item.go[0], item.go[1], item.go[2], item.go[3]);
-
-
-			
-
-				GameObject o = null;
-
-				if (subject == OCULUS_OBJECT || subject == LEFT_HAND_OBJECT || subject == RIGHT_HAND_OBJECT)
+				if(item == null)
 				{
-					if(item.name == "root")
+					infoMessage2 += "!skipping null\n";
+					continue;
+				}
+				if(item.isJoint)
+				{
+					// JOINT
+					Quaternion localOrientation  =  new Quaternion(item.ro[0], item.ro[2], -item.ro[1], item.ro[3]);
+					GameObject o = null;
+
+					bool isHands  = (subject == LEFT_HAND_OBJECT  || subject == RIGHT_HAND_OBJECT);
+					bool isFeet   = (subject == RIGHT_FOOT_OBJECT || subject == LEFT_FOOT_OBJECT);
+					bool isOculus = (subject == OCULUS_OBJECT);
+
+					if ( isHands || isFeet || isOculus )
 					{
-						// Rigid objects match on subject name, not segment
-						if ( !objectDict.ContainsKey( subject ) )
+						// Rigidbody joint
+						if(item.name == "root")
 						{
-							infoMessage2 += "RIGID MISSING:" + subject + "\n";
+							// Rigid objects match on subject name, not segment
+							if ( !objectDict.ContainsKey( subject ) )
+							{
+								infoMessage2 += "RIGID MISSING:" + subject + "\n";
+								continue;
+							}
+							infoMessage2 += "RIGID: " + subject + "\n";
+							o = objectDict[subject];
+						}
+					}
+					else
+					{
+						// Body Joint
+						if ( !objectDict.ContainsKey( item.name) )
+						{
+							infoMessage2 += "BODY MISSING:" + item.name + "\n";
 							continue;
 						}
-						infoMessage2 += "RIGID: " + subject + "\n";
-						o = objectDict[subject];
-						o.transform.localRotation = localOrientation * rotationOffsets[o]; 
-
+						infoMessage2 += "BODY: " + item.name + "\n";
+						o = objectDict[item.name];
 					}
+
+					if( o == null) continue;
+
+					// Zero off the rotations
+					bool doHands  = isHands && captureOriHands;
+					bool doFeet   = isFeet && captureOriFeet;
+					bool doBody   = (!isOculus && !isHands && !isFeet && captureOriBody);
+					bool doOculus = isOculus && captureOriOculus;
+					if (  doHands || doFeet || doBody || doOculus ) 
+					{
+						//PlayerPrefs.SetFloat(segmentName, inputOrientation.ToString());						
+						rotationOffsets[o] =  Quaternion.AngleAxis(0, Vector3.right) * Quaternion.Inverse ( localOrientation );
+					}
+
+					// Set object visibility
+					if(isHands || isFeet)
+					{
+						o.SetActive (true);
+					}
+
+					// Set Translation and rotation
+					o.transform.localPosition = new Vector3(-item.tr[0] / 100, -item.tr[2] / 100, item.tr[1] / 100);
+					o.transform.localRotation = localOrientation * rotationOffsets[o];
+					frameDone = true;
 				}
 				else
 				{
-					if ( !objectDict.ContainsKey( item.name) )
+					// Marker
+					Vector3 pos = new Vector3(-item.tr[0] / 100, -item.tr[2] / 100, item.tr[1] / 100);
+
+					if(markerDict.ContainsKey(item.name))
 					{
-						infoMessage2 += "BODY MISSING:" + item.name + "\n";
-						continue;
+						markerDict[item.name].transform.localPosition = pos;
 					}
-					infoMessage2 += "BODY: " + item.name + "\n";
-					o = objectDict[item.name];
-					o.transform.localRotation = localOrientation * rotationOffsets[o];
+					else
+					{
+						GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+						markerDict.Add (item.name, cube);
+						cube.transform.localPosition = pos;
+					}
+					frameDone = true;
 				}
-
-				if( o == null) continue;
-
-				// Zero off the rotations
-				if (captureOri)
-				{
-					//PlayerPrefs.SetFloat(segmentName, inputOrientation.ToString());						
-					rotationOffsets[o] =  Quaternion.AngleAxis(0, Vector3.right) * Quaternion.Inverse ( localOrientation );
-				}
-
-
-				o.transform.localPosition = new Vector3(-item.tr[0] / 100, -item.tr[2] / 100, item.tr[1] / 100);
-
-				String dbg = "SEG:" + item.name + "\n";
-
-				Vector3    eus = staticOrientation.eulerAngles;
-				Vector3    eul = localOrientation.eulerAngles;
-				Vector3    eug = globalOrientation.eulerAngles;
-				//Vector3    ofs = rotationOffsets[segmentName].eulerAngles;
-				//Vector3    ofi = initialOrientation[segmentName].eulerAngles;
-				Vector3    eu2 = o.transform.localRotation.eulerAngles;
-				Vector3    pos = o.transform.localPosition;
-				
-				float px = pos[0] * 1000;
-				float py = pos[1] * 1000;
-				float pz = pos[2] * 1000;
-				
-				//dbg += "POS:" + px.ToString ("0.00") + "\t\t" + py.ToString ("0.00") + "\t\t" + pz.ToString("0.00") + "\n";
-				//dbg += "S:  " + eus.x.ToString ("0.00") + "\t\t" + eus.y.ToString ("0.00") + "\t\t" + eus.z.ToString("0.00") + "\n";
-				//dbg += "L:  " + eul.x.ToString ("0.00") + "\t\t" + eul.y.ToString ("0.00") + "\t\t" + eul.z.ToString("0.00") + "\n";
-				//dbg += "G:  " + eug.x.ToString ("0.00") + "\t\t" + eug.y.ToString ("0.00") + "\t\t" + eug.z.ToString("0.00") + "\n";
-				//dbg += "OUT:" + eu2.x.ToString ("0.00") + "\t\t" + eu2.y.ToString ("0.00") + "\t\t" + eu2.z.ToString("0.00") + "\n";
-				//dbg += "OST:" + ofs.x.ToString ("0.00") + "\t\t" + ofs.y.ToString ("0.00") + "\t\t" + ofs.z.ToString("0.00") + "\n";
-				//dbg += "INI:" + ofi.x.ToString ("0.00") + "\t\t" + ofi.y.ToString ("0.00") + "\t\t" + ofi.z.ToString("0.00") + "\n";
-
-				//Debug.Log (dbg);
-
-				string seg = item.name.ToLower();
-				if ( seg == "hips" || seg == "spine" || seg == "spine1" || seg == "spine2")
-				{
-					infoMessage2 += dbg;
-				}
-
-				frameDone = true;
-			
 			}
 
-
 			if(frameDone) frameCount++;
-
-
-			/*
-			float f = float.Parse(last, System.Globalization.CultureInfo.InvariantCulture);
-			Debug.Log (f);
-
-			if(objects["LeftArm"] != null)
-			{
-				objects["LeftArm"].transform.eulerAngles = new Vector3(0, f * 180, 0);
-			}*/
-
-
 		}
 
 		infoMessage2 += "FPS:" + fps.ToString ("0.00");
 
 
-
-		captureOri = false;
+		captureOriOculus = false;
+		captureOriHands = false;
+		captureOriFeet = false;
+		captureOriBody = false;
 	}
 
 }

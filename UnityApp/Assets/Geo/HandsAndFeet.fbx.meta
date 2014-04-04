@@ -50,6 +50,10 @@ ModelImporter:
     100088: RightToeBase
     100090: RightToeEnd
     100092: Toe_R
+    100094: LeftFootRigid
+    100096: LeftHandRigid
+    100098: RightFootRigid
+    100100: RightHandRigid
     400000: //RootNode
     400002: LeftFoot
     400004: LeftHand
@@ -97,6 +101,10 @@ ModelImporter:
     400088: RightToeBase
     400090: RightToeEnd
     400092: Toe_R
+    400094: LeftFootRigid
+    400096: LeftHandRigid
+    400098: RightFootRigid
+    400100: RightHandRigid
     2300000: LowPolyMan_Finger_L01_J01
     2300002: LowPolyMan_Finger_L01_J02
     2300004: LowPolyMan_Finger_L01_J03

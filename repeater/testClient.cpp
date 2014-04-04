@@ -11,12 +11,9 @@ TestClient::TestClient(MocapSubjectList *sList, QObject *parent)
 , subjects(sList)
 , running(false)
 , count(0)
-, tx(0)
-, ty(0)
-, tz(0)
-, rx(0)
-, ry(0)
-, rz(0)
+, val(0)
+, mousex(0)
+, mousey(0)
 {}
 
 
@@ -30,14 +27,18 @@ void TestClient::run()
 
 		subject = subjects->find(QString("TEST"));
 
-        ry += 0.001f;
-        if(ry >= 3.14) ry = 0;
+        val += 0.1f;
+        if(val >= 10.0f) val = 0.0f;
 
-        double tr[3] = { tx, ty, tz };
-        double ro[4] = { rx, ry, rz, 0 };
-        double zero[4] = { 0, 0, 0, 0 };
+        double tr[3] = { mousex, val, mousey };
+        double ro[4] = { 0, 0, 0, 0 };
         //tr[1] = (double)qrand() / (double)RAND_MAX;
-        subject->set("root", tr, ro, zero, zero);
+        subject->setSegment("root", tr, ro);
+
+
+        tr[0] = 10.0f;
+        tr[2] = 10.0f;
+        subject->setMarker("marker1", tr);
 
         this->usleep(4000);
 		count++;
