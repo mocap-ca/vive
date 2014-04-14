@@ -40,7 +40,9 @@ void TestClient::run()
         tr[2] = 10.0f;
         subject->setMarker("marker1", tr);
 
-        this->usleep(4000);
+        emit newFrame(0);
+
+        this->usleep(10000);
 		count++;
 	}
     outMessage("Test client ended.");

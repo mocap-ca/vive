@@ -22,7 +22,6 @@ MyServer::MyServer(MocapSubjectList *sList, QObject *parent)
 , working(false)
 , subjectList(sList)
 , count(0)
-, interval(100)
 , running(true)
 {}
 
@@ -80,11 +79,6 @@ void MyServer::getConnectionList(QList<QString>&items)
 }
 
 
-void MyServer::setInterval(int i)
-{
-    interval = i;
-    loopTimer->setInterval(i);
-}
 
 void MyServer::stop()
 {

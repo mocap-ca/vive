@@ -44,8 +44,6 @@ private:
     //virtual void run();
     QTcpServer *server;
     int  checkAlive();  // returns number of active connections
-    QTimer *loopTimer;
-    size_t interval;
     bool running;
 
 public:

@@ -7,6 +7,8 @@ using System.Threading;
 using System.Text;
 using System.Collections.Generic;
 
+using System.Runtime.InteropServices;
+
 class SegmentItem
 {
 	public SegmentItem(string _name, float[] _tr, float[] _ro, bool _isJoint)
@@ -30,6 +32,19 @@ class SegmentItem
 
 public class MocapSocket : MonoBehaviour {
 
+	[DllImport("UnityDllTest",  EntryPoint = "getData", CallingConvention = CallingConvention.Cdecl) ]
+	private static extern int getData(byte[] data, int len);
+
+	[DllImport("UnityDllTest") ]
+	private static extern int test();
+
+	[DllImport("UnityDllTest") ]
+	private static extern void init();
+
+	[DllImport("UnityDllTest") ]
+	private static extern int peek();
+
+	
 	Socket clientSocket;
 	string buffer;
 	string infoMessage1 = "";
@@ -44,7 +59,8 @@ public class MocapSocket : MonoBehaviour {
 
 
 	public string hostIp = "127.0.0.1";
-	public int port = 1234;
+	public int port = 4001;
+	public bool useLocal = true;
 	Boolean toggleDisplay;
 
 	List<GameObject> skeletonObjects = new List<GameObject>();
@@ -76,6 +92,12 @@ public class MocapSocket : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
 	{
+
+		init();
+
+		int testValue = test ();
+		Debug.Log ("Test stays: " + testValue);
+
 		toggleDisplay = false;
 
 		infoMessage1 = "INIT1";
@@ -113,12 +135,11 @@ public class MocapSocket : MonoBehaviour {
 			skeletonObjects.Add (o);
 			SetInitialState(o);
 
-			//if(s == BODY_OBJECT) o.SetActive (false);
+			if(s == BODY_OBJECT) o.SetActive (false);
 		}
 
 
-
-		data = new Byte[1024 * 16];
+		//data = new Byte[1024 * 16];
 
 		Connect();
 
@@ -126,6 +147,7 @@ public class MocapSocket : MonoBehaviour {
 
 	void Connect()
 	{
+		if (useLocal) return;
 		Debug.Log ("Connect");
 
 		//if (clientSocket != null && clientSocket.Connected) Disconnect();
@@ -175,6 +197,7 @@ public class MocapSocket : MonoBehaviour {
 
 	void Disconnect()
 	{
+		if(useLocal) return;
 		if (!clientSocket.Connected) return;
 		clientSocket.Disconnect (false);
 		MouseNavigator.hasControl = true;
@@ -216,9 +239,8 @@ public class MocapSocket : MonoBehaviour {
 		
 		if(toggleDisplay)
 		{
-			GUI.Label(	new Rect(5, 5, 	Screen.width, Screen.height), infoMessage1 + infoMessage2);
-			Debug.Log (infoMessage1);
-			Debug.Log (infoMessage2);
+			String infoFps = "FPS:" + fps.ToString ("0.00");
+			GUI.Label(	new Rect(5, 5, 	Screen.width, Screen.height), infoFps + infoMessage1 + infoMessage2);
 		}
 		else
 			GUI.Label(	new Rect(5, 5, 	Screen.width, Screen.height), "ACTIVE");
@@ -237,10 +259,46 @@ public class MocapSocket : MonoBehaviour {
 		}
 	}
 
+	bool GetLocalData(out string outData)
+	{
+		outData = "";
+ 
+		int avail = peek ();
+		if (avail == 0) return false;
+		infoMessage1 = "Bytes avail: " + avail + "\n";
+		byte[] socketData = new byte[1024*16];
+		int ret = getData (socketData, 1024*16);
 
+		if(ret == 1) return false;  // No data
+		if(ret == 100)
+		{	 
+			infoMessage1 += "Pipe Error reading local data\n";
+			Debug.Log ("Pipe Error");
+			return false;
+		}
+		if(ret == 101)
+		{
+			infoMessage1 += "Read Error getting local data\n";
+			infoMessage1 += Encoding.ASCII.GetString(socketData) + "\n";
+			Debug.Log ("Read Error: " + Encoding.ASCII.GetString(socketData));
+			return false;
+		}
+		outData = Encoding.ASCII.GetString(socketData);
+
+		return true;
+
+	}
+	
+	
 	bool GetOnePacket(out string outData)
 	{
 		outData = "";
+
+		if (clientSocket == null || !clientSocket.Connected)
+		{
+			infoMessage1 = "Not Connected while trying to get packet\n";
+			return false;
+		}
 
 		try
 		{
@@ -248,7 +306,7 @@ public class MocapSocket : MonoBehaviour {
 			byte[] socketData = new byte[1024*16];
 			int ret = clientSocket.Receive (socketData, 1024*16, 0);
 			buffer += Encoding.ASCII.GetString(socketData, 0, ret);
-			
+						
 			// find split point
 			int splitHere = buffer.LastIndexOf ("END\r\n");
 			if(splitHere == -1) return false;
@@ -270,7 +328,7 @@ public class MocapSocket : MonoBehaviour {
 		}
 		catch(SocketException e)
 		{
-			infoMessage1 += "Socket Error: " + e.ToString();
+			infoMessage1 = "Socket Error: " + e.ToString() + "\n";
 		}
 
 		return false;
@@ -278,16 +336,23 @@ public class MocapSocket : MonoBehaviour {
 
 	bool GetSocketData(out Dictionary< string, SegmentItem[] > subjectList)
 	{
+
 		subjectList = new Dictionary< string, SegmentItem[] > ();
 		string packet = "";
-		if (!GetOnePacket (out packet)) return false;
 
-		infoMessage1 = "DATA\n";
+		if (useLocal)
+		{
+			if (!GetLocalData (out packet)) return false;
+		}
+		else
+		{
+			if (!GetOnePacket( out packet)) return false;
+		}
 			
 		string[] lineItems = packet.Split ('\n');
 		if(lineItems.Length == 0)
 		{
-			infoMessage1 = "No data error";
+			infoMessage1 = "No data error\n";
 			return false;
 		}
 			
@@ -295,7 +360,7 @@ public class MocapSocket : MonoBehaviour {
 
 		if(!int.TryParse ( lineItems[0], out subjects))
 		{
-			infoMessage1 = "Invalid data while parsing subjects";
+			infoMessage1 += "Invalid data while parsing subjects\n";
 			return false;
 		}
 
@@ -332,6 +397,7 @@ public class MocapSocket : MonoBehaviour {
 			float[] zero = new float[4];
 			for(int j=0; j < 4; j++) zero[j] = 0.0f;
 
+
 			// Markers
 			for(int j=0; j < noMarkers && line < lineItems.Length; j++)
 			{
@@ -350,6 +416,7 @@ public class MocapSocket : MonoBehaviour {
 			subjectList.Add (subjectName, items);
 			infoMessage1 += "Adding " + items.Length + " items";
 
+
 		}
 
 		return true;
@@ -363,18 +430,19 @@ public class MocapSocket : MonoBehaviour {
 	void FixedUpdate()
 	{
 		infoMessage2 = "";
-		if (clientSocket == null)// || clientSocket.Available == 0)
+		if (!useLocal && clientSocket == null)// || clientSocket.Available == 0)
 		{
-			infoMessage1 = "No Socket";
+			infoMessage1 = "No Socket\n";
 			return;
 		}
 
-		// Frame rate calculator
-		TimeClick ();
 
 		Dictionary< string, SegmentItem[] > subjectList;
 
-		if(!GetSocketData(out subjectList)) { infoMessage2 = "no data"; return; }
+		if(!GetSocketData(out subjectList)) { return; }
+
+		// Frame rate calculator
+		TimeClick ();
 
 		infoMessage2 = "Subjects: " + subjectList.Keys.Count + "\n";
 
@@ -458,6 +526,7 @@ public class MocapSocket : MonoBehaviour {
 				}
 				else
 				{
+					/*
 					// Marker
 					Vector3 pos = new Vector3(-item.tr[0] / 100, -item.tr[2] / 100, item.tr[1] / 100);
 
@@ -470,7 +539,7 @@ public class MocapSocket : MonoBehaviour {
 						GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 						markerDict.Add (item.name, cube);
 						cube.transform.localPosition = pos;
-					}
+					}*/
 					frameDone = true;
 				}
 			}
@@ -478,7 +547,7 @@ public class MocapSocket : MonoBehaviour {
 			if(frameDone) frameCount++;
 		}
 
-		infoMessage2 += "FPS:" + fps.ToString ("0.00");
+
 
 
 		captureOriOculus = false;
@@ -486,5 +555,6 @@ public class MocapSocket : MonoBehaviour {
 		captureOriFeet = false;
 		captureOriBody = false;
 	}
+
 
 }

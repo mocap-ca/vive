@@ -31,8 +31,16 @@ public:
     QString host;
     int     port;
 
+    enum eStreamMode
+    {
+        SERVER_PUSH,
+        CLIENT_PULL,
+        CLIENT_PULL_PRE_FETCH
+    };
+
 private:
     bool    frameError;
+    eStreamMode   streamMode;
 
 signals:
     void outMessage(QString);

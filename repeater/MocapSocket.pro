@@ -28,7 +28,8 @@ SOURCES += main.cpp\
 	mocapSubject.cpp \
         viconClient.cpp \
 	testClient.cpp \
-    profilesx.cpp
+    profilesx.cpp \
+    localServer.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
@@ -36,6 +37,7 @@ HEADERS  += mainwindow.h \
 	mocapSubject.h \
         testClient.h \
     viconClient.h \
-    profile.h
+    profile.h \
+    localServer.h
 
 FORMS    += mainwindow.ui

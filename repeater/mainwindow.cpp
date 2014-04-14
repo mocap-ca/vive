@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    setWindowTitle(QString("VIVE Version ") + QString(VIVE_VERSION));
+
     ui->plainTextEditLog->setMaximumBlockCount(1000);
 
     QList<int> splitSizes;
@@ -30,33 +32,36 @@ MainWindow::MainWindow(QWidget *parent) :
     for(size_t i=1; i < 16; i++)
         ui->treeViewData->setColumnWidth(i, 50);
 
-    connect(ui->lineEditServerDelay, SIGNAL(textChanged(QString)), this, SLOT(updateServerDelay(QString)));
-
-
-
 
     // Start tcp server
     server = new MyServer(subjectList);
     connect(server, SIGNAL(connectionsChanged()),    this, SLOT(updateConnectionList()));
     connect(server, SIGNAL(outMessage(QString)),     this, SLOT(showMessage(QString)));
-    server->listen(1234);
+    server->listen(4001);
 
+    // Start local server
+    localServer = new LocalServer(subjectList);
+    connect(localServer, SIGNAL(connectionsChanged()), this, SLOT(updateConnectionList()));
+    connect(localServer, SIGNAL(outMessage(QString)),  this, SLOT(showMessage(QString)));
+    localServer->listen();
 
     // Vicon Client
     viconClient = new ViconClient(subjectList, this);
     //ui->lineEditHost->setText("192.168.11.1");
     ui->lineEditHost->setText("127.0.0.1");
     ui->lineEditPort->setText("801");
-    connect(viconClient, SIGNAL(outMessage(QString)),  this, SLOT(showMessage(QString)));
-    connect(viconClient, SIGNAL(connectedEvent(bool)), this, SLOT(viconConnected(bool)));
-    connect(ui->pushButtonConnect, SIGNAL(clicked()),  this, SLOT(doConnect()));
-    connect(viconClient, SIGNAL(newFrame(uint)),       server, SLOT(process()));
+    connect(viconClient, SIGNAL(outMessage(QString)),   this, SLOT(showMessage(QString)));
+    connect(viconClient, SIGNAL(connectedEvent(bool)),  this, SLOT(viconConnected(bool)));
+    connect(ui->pushButtonConnect, SIGNAL(clicked()),   this, SLOT(doConnect()));
+    connect(viconClient, SIGNAL(newFrame(uint)),      server, SLOT(process()));
+    connect(viconClient, SIGNAL(newFrame(uint)), localServer, SLOT(process()));
 
     // Stub Client
     testClient  = new TestClient(subjectList, this);
-    connect(testClient,  SIGNAL(outMessage(QString)),     this, SLOT(showMessage(QString)));
-    connect(ui->pushButtonStub, SIGNAL(clicked()), this, SLOT(doStub()));
-
+    connect(testClient,         SIGNAL(outMessage(QString)),  this, SLOT(showMessage(QString)));
+    connect(testClient,         SIGNAL(newFrame(int)),        server, SLOT(process()));
+    connect(testClient,         SIGNAL(newFrame(int)),        localServer, SLOT(process()));
+    connect(ui->pushButtonStub, SIGNAL(clicked()),            this, SLOT(doStub()));
 
     // Window refresh timer
 	timer = new QTimer(this);
@@ -68,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     server->stop();
+    localServer->stop();
 
     bool vRunning = viconClient->running;
     bool tRunning = testClient->running;
@@ -104,6 +110,8 @@ void MainWindow::timerClick()
 {
     ui->lineEditServerFPS->setText(QString("%1").arg(server->count));
     server->count = 0;
+    ui->lineEditLocalFPS->setText(QString("%1").arg(localServer->count));
+    localServer->count = 0;
 
     if(viconClient->running)
     {
@@ -141,6 +149,7 @@ void MainWindow::updateConnectionList(void)
     QList<QString> connections;
     modelConnections->clear();
     server->getConnectionList(connections);
+    localServer->getConnectionList(connections);
     for(QList<QString>::iterator i = connections.begin(); i != connections.end(); i++)
         modelConnections->appendRow( new QStandardItem( *i ));
 }
@@ -202,11 +211,3 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
     testClient->mousey = e->y() * 4.0;
 }
 
-void MainWindow::updateServerDelay(QString val)
-{
-    bool ok;
-    int ival = val.toInt(&ok);
-    if(!ok) ival = 100;
-    if(ival < 1) ival = 100;
-    server->setInterval(ival);
-}

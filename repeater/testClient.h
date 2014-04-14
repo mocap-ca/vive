@@ -30,6 +30,7 @@ public:
 
 signals:
     void outMessage(QString);
+    void newFrame(int);
 };
 
 

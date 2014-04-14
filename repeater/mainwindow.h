@@ -8,6 +8,12 @@
 #include "workthread.h"
 #include "viconClient.h"
 #include "testClient.h"
+#include "localServer.h"
+
+// 0.2 - Added local (named pipe) server
+
+#define VIVE_VERSION "0.2"
+
 
 namespace Ui {
 class MainWin;
@@ -25,7 +31,6 @@ public slots:
 	void timerClick(void);
     void doStub(void);
     void viconConnected(bool);
-    void updateServerDelay(QString);
 
 
 public:
@@ -37,6 +42,7 @@ private:
     void mouseMoveEvent(QMouseEvent*);
     Ui::MainWin *ui;
     MyServer    *server;
+    LocalServer *localServer;
     WorkThread  *worker;
 	QTimer      *timer;
     QStandardItemModel *modelConnections;

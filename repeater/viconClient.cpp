@@ -14,6 +14,7 @@ ViconClient::ViconClient(MocapSubjectList *sList, QObject *parent)
 , count(0)
 , port(0)
 , frameError(false)
+, streamMode(SERVER_PUSH)
 {
 }
 
@@ -25,6 +26,7 @@ bool ViconClient::mocapConnect()
     QTextStream stream(&connectionString);
     stream << host << ":" << port;
     outMessage(QString("Connecting to: %1").arg(connectionString));
+
     Output_Connect output = mClient.Connect( connectionString.toUtf8().data() );
     if(output.Result != Result::Success)
     {
@@ -43,7 +45,12 @@ bool ViconClient::mocapConnect()
 	mClient.EnableMarkerData();
     //mClient.EnableUnlabeledMarkerData();
 
-	// mClient.SetStreamMode();
+    switch(streamMode)
+    {
+        case SERVER_PUSH : mClient.SetStreamMode(StreamMode::ServerPush); break;
+        case CLIENT_PULL : mClient.SetStreamMode(StreamMode::ClientPull); break;
+        case CLIENT_PULL_PRE_FETCH : mClient.SetStreamMode(StreamMode::ClientPullPreFetch); break;
+    }
 
     Output_SetAxisMapping axisResult = mClient.SetAxisMapping(Direction::Forward, Direction::Up, Direction::Right);
     if(axisResult.Result != Result::Success)
