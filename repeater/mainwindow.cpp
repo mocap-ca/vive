@@ -4,6 +4,10 @@
 #include <QMessageBox>
 #include <QCompleter>
 
+#ifdef VICON_CLIENT
+#include "viconClient.h"
+#endif
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
 		ui(new Ui::MainWin )
@@ -45,6 +49,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(localServer, SIGNAL(outMessage(QString)),  this, SLOT(showMessage(QString)));
     localServer->listen();
 
+#ifdef VICON_CLIENT
     // Vicon Client
     viconClient = new ViconClient(subjectList, this);
     //ui->lineEditHost->setText("192.168.11.1");
@@ -52,9 +57,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->lineEditPort->setText("801");
     connect(viconClient, SIGNAL(outMessage(QString)),   this, SLOT(showMessage(QString)));
     connect(viconClient, SIGNAL(connectedEvent(bool)),  this, SLOT(viconConnected(bool)));
-    connect(ui->pushButtonConnect, SIGNAL(clicked()),   this, SLOT(doConnect()));
+    connect(ui->pushButtonConnect, SIGNAL(clicked()),   this, SLOT(doViconConnect()));
     connect(viconClient, SIGNAL(newFrame(uint)),      server, SLOT(process()));
     connect(viconClient, SIGNAL(newFrame(uint)), localServer, SLOT(process()));
+#else
+    ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->ViconTab));
+#endif
 
     // Stub Client
     testClient  = new TestClient(subjectList, this);
@@ -75,13 +83,14 @@ MainWindow::~MainWindow()
     server->stop();
     localServer->stop();
 
+#ifdef VICON_CLIENT
     bool vRunning = viconClient->running;
-    bool tRunning = testClient->running;
-
     if(vRunning) viconClient->running=false;
-    if(tRunning) testClient->running=false;
-
     if(vRunning) viconClient->wait();
+#endif
+
+    bool tRunning = testClient->running;
+    if(tRunning) testClient->running=false;
     if(tRunning) testClient->wait();
 
     delete ui;
@@ -113,6 +122,7 @@ void MainWindow::timerClick()
     ui->lineEditLocalFPS->setText(QString("%1").arg(localServer->count));
     localServer->count = 0;
 
+#ifdef VICON_CLIENT
     if(viconClient->running)
     {
         ui->lineEditViconStatus->setText(QString("%1").arg(viconClient->count));
@@ -120,6 +130,7 @@ void MainWindow::timerClick()
         viconClient->count = 0;
     }
     else
+#endif
     {
         ui->lineEditViconStatus->setText("Not Connected");
     }
@@ -161,6 +172,7 @@ void MainWindow::showMessage(QString msg)
     ui->plainTextEditLog->appendPlainText(msg);
 }
 
+#ifdef VICON_CLIENT
 void MainWindow::viconConnected(bool con)
 {
     if(con)
@@ -175,7 +187,7 @@ void MainWindow::viconConnected(bool con)
     }
 }
 
-void MainWindow::doConnect()
+void MainWindow::doViconConnect()
 {
     if(!viconClient->connected)
     {
@@ -204,6 +216,19 @@ void MainWindow::doConnect()
 
     }
 }
+#endif // VICON_CLIENT
+
+#ifdef NATURALPOINT_CLIENT
+
+void MainWindow::naturalPointConnected(bool con)
+{
+}
+
+void MainWindow::doNaturalPointConnect()
+{
+}
+
+#endif
 
 void MainWindow::mouseMoveEvent(QMouseEvent *e)
 {

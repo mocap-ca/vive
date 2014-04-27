@@ -6,9 +6,14 @@
 #include <QTimer>
 #include "server.h"
 #include "workthread.h"
-#include "viconClient.h"
 #include "testClient.h"
 #include "localServer.h"
+
+#ifdef VICON_CLIENT
+class ViconClient;
+#endif
+
+
 
 // 0.2 - Added local (named pipe) server
 
@@ -27,11 +32,18 @@ class MainWindow : public QMainWindow
 public slots:
     void updateConnectionList(void);
     void showMessage(QString);
-    void doConnect(void);
 	void timerClick(void);
     void doStub(void);
-    void viconConnected(bool);
 
+#ifdef VICON_CLIENT
+    void doViconConnect(void);
+    void viconConnected(bool);
+#endif
+
+#ifdef NATURALPOINT_CLIENT
+    void doNaturalPointConnect(void);
+    void naturalPointConnected(bool);
+#endif
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -47,8 +59,15 @@ private:
 	QTimer      *timer;
     QStandardItemModel *modelConnections;
 
-	ViconClient *viconClient;
-	TestClient  *testClient;
+#ifdef VICON_CLIENT
+    ViconClient *viconClient;
+#endif
+
+#ifdef NATURALPOINT_CLIENT
+    NaturalPointClient *naturalPointClient;
+#endif
+
+    TestClient  *testClient;
 
 	QMutex           subectMutex;
 	MocapSubjectList *subjectList;

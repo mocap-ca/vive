@@ -5,39 +5,42 @@
 #-------------------------------------------------
 
 CONFIG   += qt
+#CONFIG   += vicon
 QT       += core gui network
-INCLUDEPATH += C:/cpp/api/viconDataStream/Win32/CPP/
-DEPENDPATH  += C:/cpp/api/viconDataStream/Win32/CPP/
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = MocapSocket
 TEMPLATE = app
 
-#win32: INCLUDEPATH += C:\cpp\api\viconDataStream\Win32\CPP
-#win64: INCLUDEPATH += C:\cpp\api\viconDataStream\Win64\CPP
-
-QMAKE_LFLAGS += /INCREMENTAL:NO
-
-LIBS += C:/cpp/api/viconDataStream/Win32/CPP/ViconDataStreamSDK_CPP.lib
+#QMAKE_LFLAGS += /INCREMENTAL:NO
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
+    mainwindow.cpp \
     server.cpp \
     workthread.cpp \
-	mocapSubject.cpp \
-        viconClient.cpp \
-	testClient.cpp \
+    mocapSubject.cpp \
+    testClient.cpp \
     profilesx.cpp \
     localServer.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
     workthread.h \
-	mocapSubject.h \
-        testClient.h \
-    viconClient.h \
+    mocapSubject.h \
+    testClient.h \
     profile.h \
     localServer.h
 
 FORMS    += mainwindow.ui
+
+CONFIG(vicon) {
+    DEFINES += VICON_CLIENT
+    INCLUDEPATH += C:/cpp/api/viconDataStream/Win32/CPP/
+    DEPENDPATH  += C:/cpp/api/viconDataStream/Win32/CPP/
+    LIBS += C:/cpp/api/viconDataStream/Win32/CPP/ViconDataStreamSDK_CPP.lib
+    SOURCES += viconClient.cpp
+    HEADERS += viconClient.h
+#win32: INCLUDEPATH += C:\cpp\api\viconDataStream\Win32\CPP
+#win64: INCLUDEPATH += C:\cpp\api\viconDataStream\Win64\CPP
+}
