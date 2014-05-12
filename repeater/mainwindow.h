@@ -13,6 +13,9 @@
 class ViconClient;
 #endif
 
+#ifdef NATURALPOINT_CLIENT
+class NaturalPointClient;
+#endif
 
 
 // 0.2 - Added local (named pipe) server

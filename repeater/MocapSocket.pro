@@ -5,7 +5,8 @@
 #-------------------------------------------------
 
 CONFIG   += qt
-#CONFIG   += vicon
+# CONFIG   += vicon
+# CONFIG   += naturalpoint
 QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -13,7 +14,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = MocapSocket
 TEMPLATE = app
 
-#QMAKE_LFLAGS += /INCREMENTAL:NO
+QMAKE_LFLAGS += -INCREMENTAL:NO
 
 SOURCES += main.cpp\
     mainwindow.cpp \
@@ -43,4 +44,13 @@ CONFIG(vicon) {
     HEADERS += viconClient.h
 #win32: INCLUDEPATH += C:\cpp\api\viconDataStream\Win32\CPP
 #win64: INCLUDEPATH += C:\cpp\api\viconDataStream\Win64\CPP
+}
+
+CONFIG(naturalpoint) {
+    DEFINES += NATURALPOINT_CLIENT
+    INCLUDEPATH += $$_PRO_FILE_PWD_/NatNetSDK2.5/include/
+    LIBS += $$_PRO_FILE_PWD_/NatNetSDK2.5/lib/NatNetLibStatic.lib
+#    LIBS += $$_PRO_FILE_PWD_/NatNetSDK2.5/lib/x64/NatNetLibStatic.lib
+    SOURCES += naturalpointClient.cpp
+    HEADERS += naturalpointClient.h
 }
