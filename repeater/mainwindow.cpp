@@ -77,8 +77,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(naturalPointClient, SIGNAL(outMessage(QString)),   this, SLOT(showMessage(QString)));
     connect(naturalPointClient, SIGNAL(connectedEvent(bool)),  this, SLOT(naturalPointConnected(bool)));
     connect(ui->pushButtonNPConnect, SIGNAL(clicked()),   this, SLOT(doNaturalPointConnect()));
-//    connect(naturalPointClient, SIGNAL(newFrame(uint)),      server, SLOT(process()));
-//    connect(naturalPointClient, SIGNAL(newFrame(uint)), localServer, SLOT(process()));
+    connect(naturalPointClient, SIGNAL(newFrame(uint)),      server, SLOT(process()));
+    connect(naturalPointClient, SIGNAL(newFrame(uint)), localServer, SLOT(process()));
 #else
     ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->NPTab));
 #endif
@@ -152,6 +152,19 @@ void MainWindow::timerClick()
 #endif
     {
         ui->lineEditViconStatus->setText("Not Connected");
+    }
+
+#ifdef NATURALPOINT_CLIENT
+    if(naturalPointClient->running)
+    {
+        ui->lineEditNPStatus->setText(QString("%1").arg(naturalPointClient->count));
+//        ui->lineEditNPFPS->setText(QString("%1").arg(naturalPointClient->count));
+        naturalPointClient->count = 0;
+    }
+    else
+#endif
+    {
+        ui->lineEditNPStatus->setText("Not Connected");
     }
 
     if(testClient->running)

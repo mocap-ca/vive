@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <assert.h>
 #include "naturalpointClient.h"
 
 NaturalPointClient::NaturalPointClient(MocapSubjectList *sList, QObject *parent)
@@ -86,81 +87,50 @@ void NaturalPointClient::run()
 
         char  szData[20000];
         qint64 datagramSize = socket->readDatagram(szData, sizeof(szData));
-        mParser.parse(szData, (int)datagramSize );
-
-        /*
-        Output_GetFrame rf = mClient.GetFrame();
-        if(rf.Result == Result::NoFrame) continue;
-        if(rf.Result != Result::Success)
-        {
-            // Only show this error once, otherwise it will fill up the log
-            if(!frameError) outMessage("Error getting frame");
-            frameError =true;
+        sFrameOfMocapData *frameData = mParser.parse(szData, (int)datagramSize );
+        
+        if( frameData == NULL ) {
+            static bool errorNotice = false;
+            if( !errorNotice ) {
+                outMessage("Error getting NaturalPoint frame");
+                errorNotice = true;
+            }
             continue;
         }
 
-        frameError = false;
-
-        Output_GetFrameNumber rfn = mClient.GetFrameNumber();
-        unsigned int frameNumber = 0;
-        unsigned int subjectCount = 0;
-
-        if (rfn.Result == Result::Success)
-            frameNumber = rfn.FrameNumber;
-
-        Output_GetSubjectCount rsc = mClient.GetSubjectCount();
-        if (rsc.Result == Result::Success)
-            subjectCount = rsc.SubjectCount;
-
-        for(unsigned int i=0; i < subjectCount; i++)
+        unsigned int subjectCount = frameData->nRigidBodies;
+        for(unsigned int iSubject=0; iSubject < subjectCount; iSubject++)
         {
-            Output_GetSubjectName rsn = mClient.GetSubjectName(i);
-            if(rsn.Result != Result::Success) continue;
+            sRigidBodyData *rb = &frameData->RigidBodies[iSubject];
 
-            std::string subjectName = rsn.SubjectName;
-            subject = subjects->find(QString(subjectName.c_str()));
+            // ASSUMPTION:  rb => frameData->MocapData[rb->ID-1].szName
+            int markerSetID = rb->ID-1;
+            assert(markerSetID>=0 && markerSetID<frameData->nMarkerSets);
+            sMarkerSetData *markerSet = &frameData->MocapData[rb->ID-1];
 
-            Output_GetSubjectRootSegmentName srs = mClient.GetSubjectRootSegmentName(subjectName);
-            if(srs.Result != Result::Success) continue;
+            // Find/Create the subject by name.
+            char* subjectName = markerSet->szName;
+            subject = subjects->find(QString(subjectName));
 
-            Output_GetSegmentCount sc = mClient.GetSegmentCount(subjectName);
-            if(sc.Result  != Result::Success) continue;
+            // Load the subject's translation and rotation quaternion.
+            double t[3] = {rb->x, rb->y, rb->z};
+            double r[4] = {rb->qx, rb->qy, rb->qz, rb->qw};
+            subject->setSegment(QString("root"), t, r);
 
-            for(unsigned int i = 0; i < sc.SegmentCount; i++)
+            for(int iMarker=0; iMarker < rb->nMarkers; iMarker++)
             {
-                Output_GetSegmentName sn = mClient.GetSegmentName(subjectName, i);
-
-                //Output_GetSegmentLocalTranslation trans = mClient.GetSegmentLocalTranslation(subjectName, sn.SegmentName);
-
-                //Output_GetSegmentLocalRotationEulerXYZ rot = mClient.GetSegmentLocalRotationEulerXYZ(subjectName, sn.SegmentName);
-
-
-                Output_GetSegmentLocalTranslation         trans     = mClient.GetSegmentLocalTranslation(subjectName, sn.SegmentName);
-                Output_GetSegmentLocalRotationQuaternion  localRot  = mClient.GetSegmentLocalRotationQuaternion(subjectName, sn.SegmentName);
-                //Output_GetSegmentStaticRotationQuaternion staticRot = mClient.GetSegmentStaticRotationQuaternion(subjectName, sn.SegmentName);
-                //Output_GetSegmentGlobalRotationQuaternion globalRot = mClient.GetSegmentGlobalRotationQuaternion(subjectName, sn.SegmentName);
-
-                std::string segname = sn.SegmentName;
-                subject->setSegment(QString(segname.c_str()), trans.Translation, localRot.Rotation);
-
+                MarkerData *m = &rb->Markers[iMarker];
+                double markerPos[3] = {*m[0], *m[1], *m[2]};
+                if( rb->MarkerIDs ) {
+                    subject->setMarker(QString::number(rb->MarkerIDs[iMarker]), markerPos);
+                } else {
+                    subject->setMarker(QString::number(iMarker), markerPos);
+                }
             }
-
-            Output_GetMarkerCount mc = mClient.GetMarkerCount(subjectName);
-            for(unsigned int i=0; i < mc.MarkerCount; i++)
-            {
-                Output_GetMarkerName mn = mClient.GetMarkerName(subjectName, i);
-                Output_GetMarkerGlobalTranslation trans = mClient.GetMarkerGlobalTranslation(subjectName, mn.MarkerName);
-                std::string markername = mn.MarkerName;
-                subject->setMarker(QString(markername.c_str()), trans.Translation);
-
-            }
-
-
         }
 
-        emit newFrame(frameNumber);
+        emit newFrame(frameData->iFrame);
         count++;
-        */
     }
 
     outMessage("NaturalPoint Service has finished");

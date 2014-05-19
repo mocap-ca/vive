@@ -14,11 +14,14 @@
 
 class CMNatNetPacketParser {
 public:
-//    CMNatNetPacketParser();
-//    ~CMNatNetPacketParser();
+    CMNatNetPacketParser();
+    ~CMNatNetPacketParser();
 
     sFrameOfMocapData *parse(char *packet, size_t length);
 private:
+    void zeroFrame(sFrameOfMocapData *frame);  // Just zero the data structs.
+    void deallocFrame(sFrameOfMocapData *frame); // Look through data structs, free and zero them.
+    
     // TODO: NOT THREADSAFE (yet)
     // Double-buffer frame data, so threaded parsing of data can work together.
     int m_iFrame;

@@ -133,7 +133,7 @@ typedef struct
 // Marker
 typedef struct
 {
-    int ID;                                 // Unique identifier
+    int32_t ID;                                 // Unique identifier
     float x;                                // x position
     float y;                                // y position
     float z;                                // z position
@@ -144,7 +144,7 @@ typedef struct
 typedef struct
 {
     char szName[MAX_NAMELENGTH];            // MarkerSet name
-    int nMarkers;                           // # of markers in MarkerSet
+    int32_t nMarkers;                           // # of markers in MarkerSet
     char** szMarkerNames;                   // array of marker names
 
 } sMarkerSetDescription;
@@ -153,7 +153,7 @@ typedef struct
 typedef struct
 {
     char szName[MAX_NAMELENGTH];            // MarkerSet name
-    int nMarkers;                           // # of markers in MarkerSet
+    int32_t nMarkers;                           // # of markers in MarkerSet
     MarkerData* Markers;                    // Array of marker data ( [nMarkers][3] )
 
 } sMarkerSetData;
@@ -162,20 +162,20 @@ typedef struct
 typedef struct
 {
     char szName[MAX_NAMELENGTH];            // RigidBody name
-    int ID;                                 // RigidBody identifier
-    int parentID;                           // ID of parent Rigid Body (in case hierarchy exists)
+    int32_t ID;                                 // RigidBody identifier
+    int32_t parentID;                           // ID of parent Rigid Body (in case hierarchy exists)
     float offsetx, offsety, offsetz;        // offset position relative to parent
 } sRigidBodyDescription;
 
 // Rigid Body Data (single frame of one rigid body)
 typedef struct sRigidBodyData
 {
-    int ID;                                 // RigidBody identifier
+    int32_t ID;                                 // RigidBody identifier
     float x, y, z;                          // Position
     float qx, qy, qz, qw;                   // Orientation
-    int nMarkers;                           // Number of markers associated with this rigid body
+    int32_t nMarkers;                           // Number of markers associated with this rigid body
     MarkerData* Markers;                    // Array of marker data ( [nMarkers][3] )
-    int* MarkerIDs;                         // Array of marker IDs
+    int32_t* MarkerIDs;                         // Array of marker IDs
     float* MarkerSizes;                     // Array of marker sizes
     float MeanError;                        // Mean measure-to-solve deviation
     sRigidBodyData()
@@ -188,8 +188,8 @@ typedef struct sRigidBodyData
 typedef struct sSkeletonDescription
 {
     char szName[MAX_NAMELENGTH];                             // Skeleton name
-    int skeletonID;                                          // Skeleton identifier
-    int nRigidBodies;                                        // # of rigid bodies (bones) in skeleton
+    int32_t skeletonID;                                          // Skeleton identifier
+    int32_t nRigidBodies;                                        // # of rigid bodies (bones) in skeleton
     sRigidBodyDescription RigidBodies[MAX_SKELRIGIDBODIES];  // array of rigid body (bone) descriptions 
 } sSkeletonDescription;
 
@@ -197,8 +197,8 @@ typedef struct sSkeletonDescription
 // Skeleton Data
 typedef struct
 {
-    int skeletonID;                                          // Skeleton identifier
-    int nRigidBodies;                                        // # of rigid bodies
+    int32_t skeletonID;                                          // Skeleton identifier
+    int32_t nRigidBodies;                                        // # of rigid bodies
     sRigidBodyData* RigidBodyData;                           // Array of RigidBody data
 } sSkeletonData;
 
@@ -208,7 +208,7 @@ typedef struct
 // own DataDescription.
 typedef struct 
 {
-    int type;
+    int32_t type;
     union
     {
         sMarkerSetDescription* MarkerSetDescription;
@@ -220,26 +220,26 @@ typedef struct
 // All data descriptions for current session (as defined by host app)
 typedef struct
 {
-    int nDataDescriptions;
+    int32_t nDataDescriptions;
     sDataDescription arrDataDescriptions[MAX_MODELS];
 } sDataDescriptions;
 
 // Single frame of data (for all tracked objects)
 typedef struct
 {
-    int iFrame;                                 // host defined frame number
-    int nMarkerSets;                            // # of marker sets in this frame of data
+    int32_t iFrame;                                 // host defined frame number
+    int32_t nMarkerSets;                            // # of marker sets in this frame of data
     sMarkerSetData MocapData[MAX_MODELS];       // MarkerSet data
-    int nOtherMarkers;                          // # of undefined markers
+    int32_t nOtherMarkers;                          // # of undefined markers
     MarkerData* OtherMarkers;                   // undefined marker data
-    int nRigidBodies;                           // # of rigid bodies
+    int32_t nRigidBodies;                           // # of rigid bodies
     sRigidBodyData RigidBodies[MAX_RIGIDBODIES];// Rigid body data
-    int nSkeletons;                             // # of Skeletons
+    int32_t nSkeletons;                             // # of Skeletons
     sSkeletonData Skeletons[MAX_SKELETONS];     // Skeleton data
-    int nLabeledMarkers;                        // # of Labeled Markers
+    int32_t nLabeledMarkers;                        // # of Labeled Markers
     sMarker LabeledMarkers[MAX_LABELED_MARKERS];// Labeled Marker data (labeled markers not associated with a "MarkerSet")
     float fLatency;                             // host defined time delta between capture and send
-    unsigned int Timecode;                      // SMPTE timecode (if available)
-    unsigned int TimecodeSubframe;              // timecode sub-frame data
+    uint32_t Timecode;                      // SMPTE timecode (if available)
+    uint32_t TimecodeSubframe;              // timecode sub-frame data
 
 } sFrameOfMocapData;
