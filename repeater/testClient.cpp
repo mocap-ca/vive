@@ -3,7 +3,7 @@
 
 #include <string>
 #include <sstream>
-#include <windows.h>
+// #include <windows.h>
 
 
 TestClient::TestClient(MocapSubjectList *sList, QObject *parent)

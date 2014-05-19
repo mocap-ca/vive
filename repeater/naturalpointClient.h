@@ -4,10 +4,11 @@
 #include <QObject>
 #include <QList>
 #include <QThread>
+#include <QUdpSocket>
 #include "mocapSubject.h"
 
 #include "NatNetTypes.h"
-#include "NatNetClient.h"
+#include "CMNatNetPacketParser.h"
 
 class NaturalPointClient : public QThread
 {
@@ -20,9 +21,11 @@ public:
     bool mocapDisconnect();
 
     bool connected;
+    QHostAddress connectGroupAddress;
+    QUdpSocket *socket;
 
     MocapSubjectList *subjects;
-    NatNetClient mClient;
+    CMNatNetPacketParser mParser;
 
     virtual void run();
 

@@ -8,6 +8,11 @@
 #include "viconClient.h"
 #endif
 
+#ifdef NATURALPOINT_CLIENT
+#include "naturalpointClient.h"
+#endif
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
 		ui(new Ui::MainWin )
@@ -62,6 +67,20 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(viconClient, SIGNAL(newFrame(uint)), localServer, SLOT(process()));
 #else
     ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->ViconTab));
+#endif
+
+#ifdef NATURALPOINT_CLIENT
+    // NaturalPoint Client
+    naturalPointClient = new NaturalPointClient(subjectList, this);
+    ui->lineEditNPHost->setText(naturalPointClient->host);
+    ui->lineEditNPPort->setText(QString::number(naturalPointClient->port));
+    connect(naturalPointClient, SIGNAL(outMessage(QString)),   this, SLOT(showMessage(QString)));
+    connect(naturalPointClient, SIGNAL(connectedEvent(bool)),  this, SLOT(naturalPointConnected(bool)));
+    connect(ui->pushButtonNPConnect, SIGNAL(clicked()),   this, SLOT(doNaturalPointConnect()));
+//    connect(naturalPointClient, SIGNAL(newFrame(uint)),      server, SLOT(process()));
+//    connect(naturalPointClient, SIGNAL(newFrame(uint)), localServer, SLOT(process()));
+#else
+    ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->NPTab));
 #endif
 
     // Stub Client
@@ -222,10 +241,41 @@ void MainWindow::doViconConnect()
 
 void MainWindow::naturalPointConnected(bool con)
 {
+    if(con)
+    {
+        ui->pushButtonNPConnect->setEnabled(true);
+        ui->pushButtonNPConnect->setText("Disconnect");
+    }
+    else
+    {
+        ui->pushButtonNPConnect->setEnabled(true);
+        ui->pushButtonNPConnect->setText("Connect");
+    }
 }
 
 void MainWindow::doNaturalPointConnect()
 {
+    if(naturalPointClient->connected == false) {
+        QString host = ui->lineEditNPHost->text();
+
+        int port = ui->lineEditNPPort->text().toInt();
+        if(port == 0)
+        {
+            QMessageBox::warning(this,"Error", "Invalid Port", QMessageBox::Ok);
+            return;
+        }
+
+        naturalPointClient->host = host;
+        naturalPointClient->port = port;
+
+        ui->pushButtonNPConnect->setEnabled(false);
+        ui->pushButtonNPConnect->setText("Connecting");
+        naturalPointClient->start();
+    } else {
+        naturalPointClient->running = false;
+        ui->pushButtonNPConnect->setEnabled(false);
+        ui->pushButtonNPConnect->setText("Disconnecting");
+    }
 }
 
 #endif

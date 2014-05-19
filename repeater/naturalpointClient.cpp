@@ -1,19 +1,15 @@
 #include <stdio.h>
 #include "naturalpointClient.h"
 
-void naturalPointDataCallback(sFrameOfMocapData *FrameOfData, void* ) {
-    printf( "Processing frame: %d\n", FrameOfData->iFrame );
-}
-
 NaturalPointClient::NaturalPointClient(MocapSubjectList *sList, QObject *parent)
     : QThread(parent)
     , connected(false)
     , subjects(sList)
-    , mClient()
     , running(false)
     , count(0)
-    , host("")
-    , port(0)
+    , host("239.255.42.99")
+    , port(1511)
+
 {
 }
 
@@ -22,54 +18,28 @@ NaturalPointClient::NaturalPointClient(MocapSubjectList *sList, QObject *parent)
 
 bool NaturalPointClient::mocapConnect()
 {
-    /* No Connection Needed, streaming is done with multicast
-    QString connectionString;
-    QTextStream stream(&connectionString);
-    stream << host << ":" << port;
-    outMessage(QString("Connecting to: %1").arg(connectionString));
-
-    Output_Connect output = mClient.Connect( connectionString.toUtf8().data() );
-    if(output.Result != Result::Success)
-    {
-        switch(output.Result)
-        {
-            case Result::InvalidHostName : outMessage("Error: Invalid host name"); break;
-            case Result::ClientAlreadyConnected : outMessage("Error: Client Already Connected"); break;
-            case Result::ClientConnectionFailed : outMessage("Error: Connection Failed"); break;
-            default: outMessage("Error: Could not connect");
-        }
-        emit connectedEvent(false);
+    socket = new QUdpSocket();
+    if( socket->bind(QHostAddress::AnyIPv4, port, QUdpSocket::ShareAddress) == false ){
+        outMessage("Failed to bind NaturalPoint port");
         return false;
     }
 
-    mClient.EnableSegmentData();
-    mClient.EnableMarkerData();
-    //mClient.EnableUnlabeledMarkerData();
-
-    switch(streamMode)
-    {
-        case SERVER_PUSH : mClient.SetStreamMode(StreamMode::ServerPush); break;
-        case CLIENT_PULL : mClient.SetStreamMode(StreamMode::ClientPull); break;
-        case CLIENT_PULL_PRE_FETCH : mClient.SetStreamMode(StreamMode::ClientPullPreFetch); break;
+    connectGroupAddress = QHostAddress(host);
+//    outMessage("Connecting to group:");
+//    outMessage(connectGroupAddress->toString());
+    if( socket->joinMulticastGroup(QHostAddress(host)) ) {
+        outMessage("Listening for NaturalPoint data over multicast.");
+        connected = true;
+        emit connectedEvent(true);
+        return true;
+    } else {
+        outMessage("Error joining multicast group:");
+        outMessage(socket->errorString());
+//        delete connectGroupAddress;
+//        connectGroupAddress = NULL;
+        return false;
     }
-
-    Output_SetAxisMapping axisResult = mClient.SetAxisMapping(Direction::Forward, Direction::Up, Direction::Right);
-    if(axisResult.Result != Result::Success)
-    {
-        outMessage("Could not set Axis");
-    }
-
-    connected = true;
-    */
-
-    mClient.SetMulticastAddress( (char*)host.toStdString().c_str() );
-    mClient.SetDataCallback(naturalPointDataCallback);
-    outMessage("Listening for NaturalPoint data over multicast.");
-
-    emit connectedEvent(true);
-    return true;
 }
-
 
 bool NaturalPointClient::mocapDisconnect()
 {
@@ -80,8 +50,9 @@ bool NaturalPointClient::mocapDisconnect()
     }
 
     outMessage("Disconnecting from NaturalPoint");
-    mClient.SetDataCallback(NULL);
     connected = false;
+    socket->leaveMulticastGroup(connectGroupAddress);
+    socket->close();
 
     emit connectedEvent(false);
 
@@ -92,7 +63,6 @@ bool NaturalPointClient::mocapDisconnect()
 void NaturalPointClient::run()
 {
     MocapSubject *subject = NULL;
-
     running = true;
 
     if(!mocapConnect())
@@ -109,6 +79,15 @@ void NaturalPointClient::run()
             this->msleep(100);
             continue;
         }
+
+        if( socket->hasPendingDatagrams() == false) {
+            continue;
+        }
+
+        char  szData[20000];
+        qint64 datagramSize = socket->readDatagram(szData, sizeof(szData));
+        mParser.parse(szData, (int)datagramSize );
+
         /*
         Output_GetFrame rf = mClient.GetFrame();
         if(rf.Result == Result::NoFrame) continue;

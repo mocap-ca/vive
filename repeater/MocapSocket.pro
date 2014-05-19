@@ -6,7 +6,7 @@
 
 CONFIG   += qt
 # CONFIG   += vicon
-# CONFIG   += naturalpoint
+CONFIG   += naturalpoint
 QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -48,9 +48,6 @@ CONFIG(vicon) {
 
 CONFIG(naturalpoint) {
     DEFINES += NATURALPOINT_CLIENT
-    INCLUDEPATH += $$_PRO_FILE_PWD_/NatNetSDK2.5/include/
-    LIBS += $$_PRO_FILE_PWD_/NatNetSDK2.5/lib/NatNetLibStatic.lib
-#    LIBS += $$_PRO_FILE_PWD_/NatNetSDK2.5/lib/x64/NatNetLibStatic.lib
-    SOURCES += naturalpointClient.cpp
-    HEADERS += naturalpointClient.h
+    SOURCES += naturalpointClient.cpp CMNatNetPacketParser.cpp
+    HEADERS += naturalpointClient.h NatNetTypes.h CMNatNetPacketParser.h
 }
