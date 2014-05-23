@@ -33,10 +33,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->listViewConnections->setModel(modelConnections);
     ui->treeViewData->setModel(&subjectList->model);
 
-    QStringList wordList;
-    wordList << "127.0.0.1" << "192.168.11.1";
-    QCompleter *completer = new QCompleter(wordList, this);
-    ui->lineEditHost->setCompleter(completer);
 
     for(size_t i=1; i < 16; i++)
         ui->treeViewData->setColumnWidth(i, 50);
@@ -57,8 +53,12 @@ MainWindow::MainWindow(QWidget *parent) :
 #ifdef VICON_CLIENT
     // Vicon Client
     viconClient = new ViconClient(subjectList, this);
-    //ui->lineEditHost->setText("192.168.11.1");
-    ui->lineEditHost->setText("127.0.0.1");
+    QStringList wordList;
+    wordList << "192.168.11.1" << "127.0.0.1";
+    QCompleter *completer = new QCompleter(wordList, this);
+    ui->lineEditHost->setCompleter(completer);
+    ui->lineEditHost->setText(wordList[0]);
+
     ui->lineEditPort->setText("801");
     connect(viconClient, SIGNAL(outMessage(QString)),   this, SLOT(showMessage(QString)));
     connect(viconClient, SIGNAL(connectedEvent(bool)),  this, SLOT(viconConnected(bool)));

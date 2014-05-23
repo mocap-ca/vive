@@ -29,6 +29,9 @@ public class MidiPlugin : MonoBehaviour {
 	private static extern void ctrlChange (char chan, char ctrl, char val);
 
 	private bool isOn;
+	public int note = 66;
+	public int channel = 1;
+	public int velocity = 100;
 
 	public void Start()
 	{
@@ -37,17 +40,33 @@ public class MidiPlugin : MonoBehaviour {
 		isOn = false;
 	}
 
+	public void  OnCollisionEnter( Collision c)
+	{
+		if(channel == -1 && note == -1)
+		{
+			// All note off
+			for(int ch='\0'; ch<16; ch++)
+			{
+				for(int i=0; i< 128; i++)
+				{
+					noteOff((char)ch, (char)note, '\0');
+				}
+			}
+		}
 
-	public void OnGUI() {
-		if (!isOn && Event.current.type == EventType.KeyDown) {
-			Debug.Log ("ON");
-			noteOn ((char)1, (char)66, (char)90);
-			isOn = true;
-		}
-		if (Event.current.type == EventType.KeyUp) {
-			Debug.Log ("OFF");
-			noteOff ((char)1, (char)66, (char)40);
-			isOn = false;
-		}
+		if(isOn) return;
+		noteOn ((char)channel, (char)note, (char)velocity);
+		isOn = true;
 	}
+
+	public void OnCollisionExit( Collision c )
+	{
+		noteOff ((char)channel, (char)note, (char)velocity);
+		isOn = false;
+	}
+
+
+
+
+
 }
