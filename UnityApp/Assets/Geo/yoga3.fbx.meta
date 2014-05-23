@@ -1,0 +1,311 @@
+fileFormatVersion: 2
+guid: 3aa2c430054b156488b770af0003d2e4
+ModelImporter:
+  serializedVersion: 16
+  fileIDToRecycleName:
+    100000: two1:Head
+    100002: two1:Hips
+    100004: two1:jen
+    100006: two1:LeftArm
+    100008: two1:LeftFoot
+    100010: two1:LeftForeArm
+    100012: two1:LeftHand
+    100014: two1:LeftLeg
+    100016: two1:LeftShoulder
+    100018: two1:LeftToeBase
+    100020: two1:LeftUpLeg
+    100022: two1:Neck
+    100024: two1:RightArm
+    100026: two1:RightFoot
+    100028: two1:RightForeArm
+    100030: two1:RightHand
+    100032: two1:RightLeg
+    100034: two1:RightShoulder
+    100036: two1:RightToeBase
+    100038: two1:RightUpLeg
+    100040: two1:Spine
+    100042: two1:Spine1
+    100044: two1:Spine2
+    100046: //RootNode
+    100048: Claire2_ARIEL_Marker
+    100050: Claire2_C7_Marker
+    100052: Claire2_C7_Marker 1
+    100054: Claire2_CLAV_Marker
+    100056: Claire2_LANK_Marker
+    100058: Claire2_LANK_Marker 1
+    100060: Claire2_LBHD_Marker
+    100062: Claire2_LBHD_Marker 1
+    100064: Claire2_LBSH_Marker
+    100066: Claire2_LBWT_Marker
+    100068: Claire2_LBWT_Marker 1
+    100070: Claire2_LELB_Marker
+    100072: Claire2_LFHD_Marker
+    100074: Claire2_LFSH_Marker
+    100076: Claire2_LFWT_Marker
+    100078: Claire2_LHEL_Marker
+    100080: Claire2_LIEL_Marker
+    100082: Claire2_LIHAND_Marker
+    100084: Claire2_LIWR_Marker
+    100086: Claire2_LIWR_Marker 1
+    100088: Claire2_LKNE_Marker
+    100090: Claire2_LKNI_Marker
+    100092: Claire2_LMT5_Marker
+    100094: Claire2_LOHAND_Marker
+    100096: Claire2_LOWR_Marker
+    100098: Claire2_LOWR_Marker 1
+    100100: Claire2_LSHN_Marker
+    100102: Claire2_LUPA_Marker
+    100104: Claire2_LWRE_Marker
+    100106: Claire2_RANK_Marker
+    100108: Claire2_RANK_Marker 1
+    100110: Claire2_RBHD_Marker
+    100112: Claire2_RBHD_Marker 1
+    100114: Claire2_RBSH_Marker
+    100116: Claire2_RBWT_Marker
+    100118: Claire2_RBWT_Marker 1
+    100120: Claire2_RELB_Marker
+    100122: Claire2_RFHD_Marker
+    100124: Claire2_RFSH_Marker
+    100126: Claire2_RFWT_Marker
+    100128: Claire2_RHEL_Marker
+    100130: Claire2_RIEL_Marker
+    100132: Claire2_RIHAND_Marker
+    100134: Claire2_RIWR_Marker
+    100136: Claire2_RIWR_Marker 1
+    100138: Claire2_RKNE_Marker
+    100140: Claire2_RKNI_Marker
+    100142: Claire2_RMT1_Marker
+    100144: Claire2_RMT5_Marker
+    100146: Claire2_RMWT_Marker
+    100148: Claire2_ROHAND_Marker
+    100150: Claire2_ROWR_Marker
+    100152: Claire2_ROWR_Marker 1
+    100154: Claire2_RSHN_Marker
+    100156: Claire2_RUPA_Marker
+    100158: Claire2_RWRE_Marker
+    100160: Claire2_S1_Marker
+    100162: Claire2_S2_Marker
+    100164: Claire2_S3_Marker
+    100166: Claire2_S3_Marker 1
+    100168: Claire2_S4_Marker
+    100170: Claire2_S4_Marker 1
+    100172: Claire2_T10_Marker
+    400000: two1:Head
+    400002: two1:Hips
+    400004: two1:jen
+    400006: two1:LeftArm
+    400008: two1:LeftFoot
+    400010: two1:LeftForeArm
+    400012: two1:LeftHand
+    400014: two1:LeftLeg
+    400016: two1:LeftShoulder
+    400018: two1:LeftToeBase
+    400020: two1:LeftUpLeg
+    400022: two1:Neck
+    400024: two1:RightArm
+    400026: two1:RightFoot
+    400028: two1:RightForeArm
+    400030: two1:RightHand
+    400032: two1:RightLeg
+    400034: two1:RightShoulder
+    400036: two1:RightToeBase
+    400038: two1:RightUpLeg
+    400040: two1:Spine
+    400042: two1:Spine1
+    400044: two1:Spine2
+    400046: //RootNode
+    400048: Claire2_ARIEL_Marker
+    400050: Claire2_C7_Marker
+    400052: Claire2_C7_Marker 1
+    400054: Claire2_CLAV_Marker
+    400056: Claire2_LANK_Marker
+    400058: Claire2_LANK_Marker 1
+    400060: Claire2_LBHD_Marker
+    400062: Claire2_LBHD_Marker 1
+    400064: Claire2_LBSH_Marker
+    400066: Claire2_LBWT_Marker
+    400068: Claire2_LBWT_Marker 1
+    400070: Claire2_LELB_Marker
+    400072: Claire2_LFHD_Marker
+    400074: Claire2_LFSH_Marker
+    400076: Claire2_LFWT_Marker
+    400078: Claire2_LHEL_Marker
+    400080: Claire2_LIEL_Marker
+    400082: Claire2_LIHAND_Marker
+    400084: Claire2_LIWR_Marker
+    400086: Claire2_LIWR_Marker 1
+    400088: Claire2_LKNE_Marker
+    400090: Claire2_LKNI_Marker
+    400092: Claire2_LMT5_Marker
+    400094: Claire2_LOHAND_Marker
+    400096: Claire2_LOWR_Marker
+    400098: Claire2_LOWR_Marker 1
+    400100: Claire2_LSHN_Marker
+    400102: Claire2_LUPA_Marker
+    400104: Claire2_LWRE_Marker
+    400106: Claire2_RANK_Marker
+    400108: Claire2_RANK_Marker 1
+    400110: Claire2_RBHD_Marker
+    400112: Claire2_RBHD_Marker 1
+    400114: Claire2_RBSH_Marker
+    400116: Claire2_RBWT_Marker
+    400118: Claire2_RBWT_Marker 1
+    400120: Claire2_RELB_Marker
+    400122: Claire2_RFHD_Marker
+    400124: Claire2_RFSH_Marker
+    400126: Claire2_RFWT_Marker
+    400128: Claire2_RHEL_Marker
+    400130: Claire2_RIEL_Marker
+    400132: Claire2_RIHAND_Marker
+    400134: Claire2_RIWR_Marker
+    400136: Claire2_RIWR_Marker 1
+    400138: Claire2_RKNE_Marker
+    400140: Claire2_RKNI_Marker
+    400142: Claire2_RMT1_Marker
+    400144: Claire2_RMT5_Marker
+    400146: Claire2_RMWT_Marker
+    400148: Claire2_ROHAND_Marker
+    400150: Claire2_ROWR_Marker
+    400152: Claire2_ROWR_Marker 1
+    400154: Claire2_RSHN_Marker
+    400156: Claire2_RUPA_Marker
+    400158: Claire2_RWRE_Marker
+    400160: Claire2_S1_Marker
+    400162: Claire2_S2_Marker
+    400164: Claire2_S3_Marker
+    400166: Claire2_S3_Marker 1
+    400168: Claire2_S4_Marker
+    400170: Claire2_S4_Marker 1
+    400172: Claire2_T10_Marker
+    4300000: two1:jen
+    7400000: Take 001
+    9500000: //RootNode
+    11100000: //RootNode
+    13700000: two1:jen
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Take 001
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 2865
+      wrapMode: 2
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: two1:Hips
+        weight: 1
+      - path: two1:Hips/two1:LeftUpLeg
+        weight: 1
+      - path: two1:Hips/two1:LeftUpLeg/two1:LeftLeg
+        weight: 1
+      - path: two1:Hips/two1:LeftUpLeg/two1:LeftLeg/two1:LeftFoot
+        weight: 1
+      - path: two1:Hips/two1:LeftUpLeg/two1:LeftLeg/two1:LeftFoot/two1:LeftToeBase
+        weight: 1
+      - path: two1:Hips/two1:RightUpLeg
+        weight: 1
+      - path: two1:Hips/two1:RightUpLeg/two1:RightLeg
+        weight: 1
+      - path: two1:Hips/two1:RightUpLeg/two1:RightLeg/two1:RightFoot
+        weight: 1
+      - path: two1:Hips/two1:RightUpLeg/two1:RightLeg/two1:RightFoot/two1:RightToeBase
+        weight: 1
+      - path: two1:Hips/two1:Spine
+        weight: 1
+      - path: two1:Hips/two1:Spine/two1:Spine1
+        weight: 1
+      - path: two1:Hips/two1:Spine/two1:Spine1/two1:Spine2
+        weight: 1
+      - path: two1:Hips/two1:Spine/two1:Spine1/two1:Spine2/two1:LeftShoulder
+        weight: 1
+      - path: two1:Hips/two1:Spine/two1:Spine1/two1:Spine2/two1:LeftShoulder/two1:LeftArm
+        weight: 1
+      - path: two1:Hips/two1:Spine/two1:Spine1/two1:Spine2/two1:LeftShoulder/two1:LeftArm/two1:LeftForeArm
+        weight: 1
+      - path: two1:Hips/two1:Spine/two1:Spine1/two1:Spine2/two1:LeftShoulder/two1:LeftArm/two1:LeftForeArm/two1:LeftHand
+        weight: 1
+      - path: two1:Hips/two1:Spine/two1:Spine1/two1:Spine2/two1:Neck
+        weight: 1
+      - path: two1:Hips/two1:Spine/two1:Spine1/two1:Spine2/two1:Neck/two1:Head
+        weight: 1
+      - path: two1:Hips/two1:Spine/two1:Spine1/two1:Spine2/two1:RightShoulder
+        weight: 1
+      - path: two1:Hips/two1:Spine/two1:Spine1/two1:Spine2/two1:RightShoulder/two1:RightArm
+        weight: 1
+      - path: two1:Hips/two1:Spine/two1:Spine1/two1:Spine2/two1:RightShoulder/two1:RightArm/two1:RightForeArm
+        weight: 1
+      - path: two1:Hips/two1:Spine/two1:Spine1/two1:Spine2/two1:RightShoulder/two1:RightArm/two1:RightForeArm/two1:RightHand
+        weight: 1
+      - path: two1:jen
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: .100000001
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+  tangentSpace:
+    normalSmoothAngle: 156
+    splitTangentsAcrossUV: 0
+    normalImportMode: 1
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 1
+  additionalBone: 0
+  userData: 
