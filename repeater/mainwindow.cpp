@@ -17,6 +17,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
 		ui(new Ui::MainWin )
 {
+
+    bool ok = true;
+
     ui->setupUi(this);
 
     setWindowTitle(QString("VIVE Version ") + QString(VIVE_VERSION));
@@ -40,14 +43,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Start tcp server
     server = new MyServer(subjectList);
-    connect(server, SIGNAL(connectionsChanged()),    this, SLOT(updateConnectionList()));
-    connect(server, SIGNAL(outMessage(QString)),     this, SLOT(showMessage(QString)));
+    ok &= (bool)QObject::connect(server, SIGNAL(connectionsChanged()),    this, SLOT(updateConnectionList()));
+    ok &= (bool)QObject::connect(server, SIGNAL(outMessage(QString)),     this, SLOT(showMessage(QString)));
     server->listen(4001);
 
     // Start local server
     localServer = new LocalServer(subjectList);
-    connect(localServer, SIGNAL(connectionsChanged()), this, SLOT(updateConnectionList()));
-    connect(localServer, SIGNAL(outMessage(QString)),  this, SLOT(showMessage(QString)));
+    ok &= (bool)QObject::connect(localServer, SIGNAL(connectionsChanged()), this, SLOT(updateConnectionList()));
+    ok &= (bool)QObject::connect(localServer, SIGNAL(outMessage(QString)),  this, SLOT(showMessage(QString)));
     localServer->listen();
 
 #ifdef VICON_CLIENT
@@ -60,11 +63,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->lineEditHost->setText(wordList[0]);
 
     ui->lineEditPort->setText("801");
-    connect(viconClient, SIGNAL(outMessage(QString)),   this, SLOT(showMessage(QString)));
-    connect(viconClient, SIGNAL(connectedEvent(bool)),  this, SLOT(viconConnected(bool)));
-    connect(ui->pushButtonConnect, SIGNAL(clicked()),   this, SLOT(doViconConnect()));
-    connect(viconClient, SIGNAL(newFrame(uint)),      server, SLOT(process()));
-    connect(viconClient, SIGNAL(newFrame(uint)), localServer, SLOT(process()));
+    ok &= (bool)QObject::connect(viconClient, SIGNAL(outMessage(QString)),   this, SLOT(showMessage(QString)));
+    ok &= (bool)QObject::connect(ui->pushButtonConnect, SIGNAL(clicked()),   this, SLOT(doViconConnect()));
+    ok &= (bool)QObject::connect(viconClient, SIGNAL(connectedEvent(bool)),  this, SLOT(viconConnected(bool)));
+    ok &= (bool)QObject::connect(viconClient, SIGNAL(newFrame(uint)),      server, SLOT(process()));
+    ok &= (bool)QObject::connect(viconClient, SIGNAL(newFrame(uint)), localServer, SLOT(process()));
 #else
     ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->ViconTab));
 #endif
@@ -74,27 +77,31 @@ MainWindow::MainWindow(QWidget *parent) :
     naturalPointClient = new NaturalPointClient(subjectList, this);
     ui->lineEditNPHost->setText(naturalPointClient->host);
     ui->lineEditNPPort->setText(QString::number(naturalPointClient->port));
-    connect(naturalPointClient, SIGNAL(outMessage(QString)),   this, SLOT(showMessage(QString)));
-    connect(naturalPointClient, SIGNAL(connectedEvent(bool)),  this, SLOT(naturalPointConnected(bool)));
-    connect(ui->pushButtonNPConnect, SIGNAL(clicked()),   this, SLOT(doNaturalPointConnect()));
-    connect(naturalPointClient, SIGNAL(newFrame(uint)),      server, SLOT(process()));
-    connect(naturalPointClient, SIGNAL(newFrame(uint)), localServer, SLOT(process()));
+    ok &= (bool)QObject::connect(naturalPointClient, SIGNAL(outMessage(QString)),   this, SLOT(showMessage(QString)));
+    ok &= (bool)QObject::connect(naturalPointClient, SIGNAL(connectedEvent(bool)),  this, SLOT(naturalPointConnected(bool)));
+    ok &= (bool)QObject::connect(ui->pushButtonNPConnect, SIGNAL(clicked()),   this, SLOT(doNaturalPointConnect()));
+    ok &= (bool)QObject::connect(naturalPointClient, SIGNAL(newFrame(uint)),      server, SLOT(process()));
+    ok &= (bool)QObject::connect(naturalPointClient, SIGNAL(newFrame(uint)), localServer, SLOT(process()));
 #else
     ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->NPTab));
 #endif
 
     // Stub Client
     testClient  = new TestClient(subjectList, this);
-    connect(testClient,         SIGNAL(outMessage(QString)),  this, SLOT(showMessage(QString)));
-    connect(testClient,         SIGNAL(newFrame(int)),        server, SLOT(process()));
-    connect(testClient,         SIGNAL(newFrame(int)),        localServer, SLOT(process()));
-    connect(ui->pushButtonStub, SIGNAL(clicked()),            this, SLOT(doStub()));
+    ok &= (bool)QObject::connect(testClient,         SIGNAL(outMessage(QString)),  this, SLOT(showMessage(QString)));
+    ok &= (bool)QObject::connect(testClient,         SIGNAL(newFrame(int)),        server, SLOT(process()));
+    ok &= (bool)QObject::connect(testClient,         SIGNAL(newFrame(int)),        localServer, SLOT(process()));
+    ok &= (bool)QObject::connect(ui->pushButtonStub, SIGNAL(clicked()),            this, SLOT(doStub()));
 
     // Window refresh timer
 	timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(timerClick()));
+    ok &= (bool)QObject::connect(timer, SIGNAL(timeout()), this, SLOT(timerClick()));
     timer->setInterval(1000);
 	timer->start();
+
+#ifdef _DEBUG
+    if(!ok) showMessage("There was an initialization error");
+#endif
 }
 
 MainWindow::~MainWindow()
