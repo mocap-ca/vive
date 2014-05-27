@@ -1,4 +1,23 @@
-﻿using UnityEngine;
+﻿/*
+VIVE - Very Immersive Virtual Experience
+Copyright (C) 2014 Emily Carr University
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
+using UnityEngine;
 using System.Collections;
 using System;
 using System.Net;
@@ -246,7 +265,7 @@ public class MocapSocket : MonoBehaviour {
 
 		if(toggleDisplay)
 		{
-			String infoFps = "FPS:" + fps.ToString ("0.00");
+			String infoFps = "FPS:" + fps.ToString ("0.00") + "\n";
 			GUI.Label(	new Rect(5, 5, 	Screen.width, Screen.height), infoFps + infoMessage);
 		}
 	}
@@ -331,7 +350,8 @@ public class MocapSocket : MonoBehaviour {
 		}
 		catch(SocketException e)
 		{
-			infoMessage += "Socket Error: " + e.ToString() + "\n";
+			if(e.ErrorCode == 10035) return false;
+			infoMessage += "Socket Error: " + e.ToString() + " (" + e.ErrorCode + ")\n";
 		}
 
 		return false;
@@ -519,14 +539,12 @@ public class MocapSocket : MonoBehaviour {
 					}
 
 					// Set object visibility
-					if(isHands || isFeet)
-					{
-						o.SetActive (true);
-					}
+					o.SetActive (true);
 
 					// Set Translation and rotation
 					o.transform.localPosition = new Vector3(-item.tr[0] / 100, -item.tr[2] / 100, item.tr[1] / 100);
 					o.transform.localRotation = localOrientation * rotationOffsets[o];
+
 					frameDone = true;
 				}
 				else
