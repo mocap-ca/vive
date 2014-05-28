@@ -1,6 +1,6 @@
 ﻿/*
 VIVE - Very Immersive Virtual Experience
-Copyright (C) 2014 Emily Carr University
+Copyright (C) 2014 Alastair Macleod, Emily Carr University
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -47,8 +47,6 @@ class SegmentItem
 
 };
 
-
-
 public class MocapSocket : MonoBehaviour {
 
 	[DllImport("UnityDllTest",  EntryPoint = "getData", CallingConvention = CallingConvention.Cdecl) ]
@@ -82,10 +80,14 @@ public class MocapSocket : MonoBehaviour {
 	const string RIGHT_FOOT_OBJECT = "RightFootRigid";
 
 
-	public string hostIp = "127.0.0.1";
-	public int port = 4001;
-	public bool useLocal = true;
-	Boolean toggleDisplay;
+	public string hostIp        = "127.0.0.1";
+	public int    port          = 4001;
+	public bool   useLocal      = true;  // connect using a named pipe ( via dll )
+	public bool   lockNavigator = true;  // Set to true to disable the camera when connected
+	public float  markerSize    = 0.3f;  // Size of markers when displayed
+	Boolean       toggleDisplay = false; // Show debug text when true
+	Boolean       toggleHelp    = false; // Show help scren
+	Boolean       showMarkers   = false; // Show markers when true
 
 	List<GameObject> skeletonObjects = new List<GameObject>();
 	List<GameObject> rigidObjects = new List<GameObject>();
@@ -94,35 +96,106 @@ public class MocapSocket : MonoBehaviour {
 	Dictionary< GameObject, Quaternion > initialOrientation = new Dictionary<GameObject, Quaternion> ();
 	Dictionary< string, GameObject >     markerDict         = new Dictionary< string, GameObject >();
 
-	int frameCount = 0;
-	double dt = 0.0;
-	double fps = 0.0;
+	int frameCount    = 0;
+	double dt         = 0.0;
+	double fps        = 0.0;
 	double updateRate = 4.0;  // 4 updates per sec.
 
 	bool captureOriOculus = false;
-	bool captureOriBody = false;
-	bool captureOriHands = false;
-	bool captureOriFeet = false;
+	bool captureOriBody   = false;
+	bool captureOriHands  = false;
+	bool captureOriFeet   = false;
+
+
+	void OnGUI()
+	{
+		Event e = Event.current;
+		
+		if (e.type == EventType.KeyUp)
+		{
+
+			if(e.keyCode == KeyCode.X) Application.LoadLevelAsync ("Entrance");
+			if(e.keyCode == KeyCode.C) ConnectStream();
+
+			if(isActive)
+			{
+				if(e.keyCode == KeyCode.Alpha1) captureOriOculus  = true;
+				if(e.keyCode == KeyCode.B)      captureOriBody    = true;
+				if(e.keyCode == KeyCode.H)      captureOriHands   = true;
+				if(e.keyCode == KeyCode.F)      captureOriFeet    = true;
+				if(e.keyCode == KeyCode.D && clientSocket.Connected) DisconnectStream();
+			}
+
+			if(e.keyCode == KeyCode.M)
+			{
+				if(showMarkers)
+				{
+					foreach(string sMarker in markerDict.Keys)
+					{
+						Destroy(markerDict[sMarker]);
+					}
+					markerDict.Clear ();
+					showMarkers = false;
+				}
+				else
+				{
+					showMarkers = true;
+				}
+			}
+
+			if(e.keyCode == KeyCode.P)
+			{
+				toggleDisplay = false;
+				toggleHelp = !toggleHelp;
+			}
+
+			if(e.keyCode == KeyCode.Y)
+			{
+				toggleHelp = false;
+				toggleDisplay = !toggleDisplay;
+			}
+		}
+		
+		if (isActive)
+			GUI.Label (new Rect (Screen.width - 150, 5, 150, 40), "Connected");
+		else
+			GUI.Label (new Rect (Screen.width - 150, 5, 150, 40), "Not Connected");
+		
+		if(toggleDisplay)
+		{
+			String infoFps = "FPS:" + fps.ToString ("0.00") + "\n";
+			GUI.Label(	new Rect(5, 5, 	Screen.width, Screen.height), infoFps + infoMessage);
+		}
+
+		if(toggleHelp)
+		{
+			String text = "VIVE - Very Imersive Virtual Experience\n";
+			text += "Alastair Macleod, Emily Carr University\n";
+			text += "Version 0.1\n";
+			text += "1 - Reset Oculus\n";
+			text += "B - Zero Body\n";
+			text += "H - Zero Hands\n";
+			text += "F - Zero Feet\n";
+			text += "M - Show Markers\n";
+			text += "Y - Debug Data\n";
+			text += "C - Connect\n";
+			text += "D - Disconnect\n";
+			GUI.Label ( new Rect(5, 5, 	Screen.width, Screen.height), text );
+		}
+	}
 	
 	void SetInitialState(GameObject o)
 	{
 		objectDict[o.name] = o;
 		rotationOffsets.Add (o, Quaternion.identity);
 		initialOrientation.Add (o, o.transform.localRotation);
-
 	}
-		
 		
 	// Use this for initialization
 	void Start ()
 	{
-
-		int testValue = test ();
-		Debug.Log ("Test stays: " + testValue);
-
 		toggleDisplay = false;
-
-		infoMessage = "INIT";
+		infoMessage   = "INIT";
 
 		string[] skeletonList =  new string[] {"Hips",  
 			"LeftUpLeg", "LeftLeg", "LeftFoot", "LeftToeBase", 
@@ -134,9 +207,7 @@ public class MocapSocket : MonoBehaviour {
 			BODY_OBJECT
 		};
 
-
 		GameObject[] mocapTagged = GameObject.FindGameObjectsWithTag ("Mocap");
-
 
 		if(mocapTagged != null)
 		{
@@ -206,7 +277,7 @@ public class MocapSocket : MonoBehaviour {
 		}
 
 		Debug.Log("Connected.");
-		MouseNavigator.hasControl = false;
+		if(lockNavigator) MouseNavigator.hasControl = false;
 		isActive = true;
 	}
 
@@ -222,54 +293,10 @@ public class MocapSocket : MonoBehaviour {
 			if (!clientSocket.Connected) return;
 			clientSocket.Disconnect (false);
 		}
-		MouseNavigator.hasControl = true;
+		if(lockNavigator) MouseNavigator.hasControl = true;
 
 	}
-
-	public static Quaternion QuaternionFromMatrix(Matrix4x4 m) {
-		// Adapted from: http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
-		Quaternion q = new Quaternion();
-		q.w = Mathf.Sqrt( Mathf.Max( 0, 1 + m[0,0] + m[1,1] + m[2,2] ) ) / 2; 
-		q.x = Mathf.Sqrt( Mathf.Max( 0, 1 + m[0,0] - m[1,1] - m[2,2] ) ) / 2; 
-		q.y = Mathf.Sqrt( Mathf.Max( 0, 1 - m[0,0] + m[1,1] - m[2,2] ) ) / 2; 
-		q.z = Mathf.Sqrt( Mathf.Max( 0, 1 - m[0,0] - m[1,1] + m[2,2] ) ) / 2; 
-		q.x *= Mathf.Sign( q.x * ( m[2,1] - m[1,2] ) );
-		q.y *= Mathf.Sign( q.y * ( m[0,2] - m[2,0] ) );
-		q.z *= Mathf.Sign( q.z * ( m[1,0] - m[0,1] ) );
-		return q;
-	}
-
-	void OnGUI()
-	{
-		Event e = Event.current;
-
-		if (e.type == EventType.KeyUp)
-		{
-			if(e.keyCode == KeyCode.Y) toggleDisplay = !toggleDisplay;
-			if(e.keyCode == KeyCode.X) Application.LoadLevelAsync ("Entrance");
-			if(e.keyCode == KeyCode.C) ConnectStream();
-			if(isActive)
-			{
-				if(e.keyCode == KeyCode.Alpha1) captureOriOculus = true;
-				if(e.keyCode == KeyCode.B) captureOriBody = true;
-				if(e.keyCode == KeyCode.H) captureOriHands = true;
-				if(e.keyCode == KeyCode.F) captureOriFeet = true;
-				if(e.keyCode == KeyCode.D && clientSocket.Connected) DisconnectStream();
-			}
-		}
-
-		if (isActive)
-			GUI.Label (new Rect (Screen.width - 150, 5, 150, 40), "Connected");
-		else
-			GUI.Label (new Rect (Screen.width - 150, 5, 150, 40), "Not Connected");
-
-		if(toggleDisplay)
-		{
-			String infoFps = "FPS:" + fps.ToString ("0.00") + "\n";
-			GUI.Label(	new Rect(5, 5, 	Screen.width, Screen.height), infoFps + infoMessage);
-		}
-	}
-
+	
 	void TimeClick()
 	{
 		dt += Time.deltaTime;
@@ -310,8 +337,7 @@ public class MocapSocket : MonoBehaviour {
 		return true;
 
 	}
-	
-	
+
 	bool GetSocketData(out string outData)
 	{
 		outData = "";
@@ -436,29 +462,22 @@ public class MocapSocket : MonoBehaviour {
 				items[item_i++] = new SegmentItem(segmentSplit[0], tr, zero, false);
 			}
 			subjectList.Add (subjectName, items);
-			infoMessage += "Adding " + items.Length + " items";
-
-
 		}
 
 		return true;
 	}
-
-
 	
-		
-		
 	// Update is called once per frame
 	void FixedUpdate()
 	{
-		infoMessage = "";
+
 		if (!isActive)
 		{
 			return;
 		}
 		if (!useLocal && clientSocket == null)// || clientSocket.Available == 0)
 		{
-			infoMessage += "NO CONNECTION";
+			infoMessage = "NO CONNECTION";
 			return;
 		}
 
@@ -469,7 +488,7 @@ public class MocapSocket : MonoBehaviour {
 		// Frame rate calculator
 		TimeClick ();
 
-		infoMessage += "Subjects: " + subjectList.Keys.Count + "\n";
+		infoMessage = "Subjects: " + subjectList.Keys.Count + "\n";
 
 		// For each subject
 		foreach(KeyValuePair<String, SegmentItem[]> entry in subjectList)
@@ -491,7 +510,8 @@ public class MocapSocket : MonoBehaviour {
 				if(item.isJoint)
 				{
 					// JOINT
-					Quaternion localOrientation  =  new Quaternion(item.ro[0], item.ro[2], -item.ro[1], item.ro[3]);
+					//Quaternion localOrientation  =  new Quaternion(item.ro[0], item.ro[2], -item.ro[1], item.ro[3]);
+					Quaternion localOrientation  =  new Quaternion(item.ro[0], item.ro[1], item.ro[2], item.ro[3]);
 					GameObject o = null;
 
 					bool isHands  = (subject == LEFT_HAND_OBJECT  || subject == RIGHT_HAND_OBJECT);
@@ -542,36 +562,40 @@ public class MocapSocket : MonoBehaviour {
 					o.SetActive (true);
 
 					// Set Translation and rotation
-					o.transform.localPosition = new Vector3(-item.tr[0] / 100, -item.tr[2] / 100, item.tr[1] / 100);
+					//o.transform.localPosition = new Vector3(-item.tr[0] / 100, -item.tr[2] / 100, item.tr[1] / 100);
+					o.transform.localPosition = new Vector3(item.tr[0], item.tr[1], item.tr[2]);
 					o.transform.localRotation = localOrientation * rotationOffsets[o];
 
 					frameDone = true;
 				}
 				else
 				{
-					/*
-					// Marker
-					Vector3 pos = new Vector3(-item.tr[0] / 100, -item.tr[2] / 100, item.tr[1] / 100);
+					if(showMarkers)
+					{
+						// Marker
 
-					if(markerDict.ContainsKey(item.name))
-					{
-						markerDict[item.name].transform.localPosition = pos;
+						//Vector3 pos = new Vector3(-item.tr[0] / 100, -item.tr[2] / 100, item.tr[1] / 100);
+						Vector3 pos = new Vector3(item.tr[0], item.tr[1], item.tr[2]);
+
+						if(markerDict.ContainsKey(item.name))
+						{
+							markerDict[item.name].transform.localPosition = pos;
+						}
+						else
+						{
+							GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+							cube.name = "marker_" + item.name;
+							cube.transform.localScale = new Vector3(markerSize, markerSize, markerSize);
+							markerDict.Add (item.name, cube);
+							cube.transform.localPosition = pos;
+						}
+						frameDone = true;
 					}
-					else
-					{
-						GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-						markerDict.Add (item.name, cube);
-						cube.transform.localPosition = pos;
-					}*/
-					frameDone = true;
 				}
 			}
 
 			if(frameDone) frameCount++;
 		}
-
-
-
 
 		captureOriOculus = false;
 		captureOriHands = false;

@@ -177,8 +177,12 @@ void ViconClient::run()
                 //Output_GetSegmentStaticRotationQuaternion staticRot = mClient.GetSegmentStaticRotationQuaternion(subjectName, sn.SegmentName);
                 //Output_GetSegmentGlobalRotationQuaternion globalRot = mClient.GetSegmentGlobalRotationQuaternion(subjectName, sn.SegmentName);
 
+                // Convert to unity coordinate system
+                double unityTrans[3] = { -trans.Translation[0] / 100. , -trans.Translation[2] / 100., -trans.Translation[1] / 100. };
+                double unityRot[4] = { localRot.Rotation[0], localRot.Rotation[2], localRot.Rotation[1],  localRot.Rotation[3] };
+
                 std::string segname = sn.SegmentName;
-                subject->setSegment(QString(segname.c_str()), trans.Translation, localRot.Rotation);
+                subject->setSegment(QString(segname.c_str()) ,unityTrans, unityRot);
 
 			}
 
@@ -188,7 +192,8 @@ void ViconClient::run()
                 Output_GetMarkerName mn = mClient.GetMarkerName(subjectName, i);
                 Output_GetMarkerGlobalTranslation trans = mClient.GetMarkerGlobalTranslation(subjectName, mn.MarkerName);
                 std::string markername = mn.MarkerName;
-                subject->setMarker(QString(markername.c_str()), trans.Translation);
+                double unityTrans[3] = { -trans.Translation[0] / 100. , -trans.Translation[2] / 100., -trans.Translation[1] / 100. };
+                subject->setMarker(QString(markername.c_str()), unityTrans);
 
             }
 
