@@ -80,14 +80,15 @@ public class MocapSocket : MonoBehaviour {
 	const string RIGHT_FOOT_OBJECT = "RightFootRigid";
 
 
-	public string hostIp        = "127.0.0.1";
-	public int    port          = 4001;
-	public bool   useLocal      = true;  // connect using a named pipe ( via dll )
-	public bool   lockNavigator = true;  // Set to true to disable the camera when connected
-	public float  markerSize    = 0.3f;  // Size of markers when displayed
-	Boolean       toggleDisplay = false; // Show debug text when true
-	Boolean       toggleHelp    = false; // Show help scren
-	Boolean       showMarkers   = false; // Show markers when true
+	public string      hostIp        = "127.0.0.1";
+	public int         port          = 4001;
+	public bool        useLocal      = true;  // connect using a named pipe ( via dll )
+	public bool        lockNavigator = true;  // Set to true to disable the camera when connected
+	public float       markerSize    = 0.3f;  // Size of markers when displayed
+	private Boolean    toggleDisplay = false; // Show debug text when true
+	private Boolean    toggleHelp    = false; // Show help scren
+	private Boolean    showMarkers   = false; // Show markers when true
+	private GameObject markerGroup;
 
 	List<GameObject> skeletonObjects = new List<GameObject>();
 	List<GameObject> rigidObjects = new List<GameObject>();
@@ -229,6 +230,8 @@ public class MocapSocket : MonoBehaviour {
 
 			//if(s == BODY_OBJECT) o.SetActive (false);
 		}
+
+		markerGroup = new GameObject ("MOCAP_MARKERS");
 
 		ConnectStream();
 	}
@@ -584,6 +587,7 @@ public class MocapSocket : MonoBehaviour {
 						else
 						{
 							GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+							cube.transform.parent = markerGroup.transform;
 							cube.name = "marker_" + item.name;
 							cube.transform.localScale = new Vector3(markerSize, markerSize, markerSize);
 							markerDict.Add (item.name, cube);
