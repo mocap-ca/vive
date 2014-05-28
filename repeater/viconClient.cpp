@@ -1,6 +1,6 @@
 /*
 VIVE - Very Immersive Virtual Experience
-Copyright (C) 2014 Emily Carr University
+Copyright (C) 2014 Alastair Macoeod, Emily Carr University
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -178,8 +178,8 @@ void ViconClient::run()
                 //Output_GetSegmentGlobalRotationQuaternion globalRot = mClient.GetSegmentGlobalRotationQuaternion(subjectName, sn.SegmentName);
 
                 // Convert to unity coordinate system
-                double unityTrans[3] = { -trans.Translation[0] / 100. , -trans.Translation[2] / 100., -trans.Translation[1] / 100. };
-                double unityRot[4] = { localRot.Rotation[0], localRot.Rotation[2], localRot.Rotation[1],  localRot.Rotation[3] };
+                double unityTrans[3] = { -trans.Translation[0] / 100. , -trans.Translation[2] / 100., trans.Translation[1] / 100. };
+                double unityRot[4] = { localRot.Rotation[0], localRot.Rotation[2], -localRot.Rotation[1],  localRot.Rotation[3] };
 
                 std::string segname = sn.SegmentName;
                 subject->setSegment(QString(segname.c_str()) ,unityTrans, unityRot);
