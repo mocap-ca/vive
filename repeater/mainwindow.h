@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <QStandardItemModel>
 #include <QTimer>
 #include "server.h"
-#include "workthread.h"
 #include "testClient.h"
 #include "localServer.h"
 
@@ -77,7 +76,6 @@ private:
     Ui::MainWin *ui;
     MyServer    *server;
     LocalServer *localServer;
-    WorkThread  *worker;
 	QTimer      *timer;
     QStandardItemModel *modelConnections;
 

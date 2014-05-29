@@ -208,7 +208,7 @@ void MainWindow::timerClick()
     QString data;
     QTextStream stream(&data);
 
-    stream << *subjectList;
+    subjectList->read(stream, false);
     ui->textEditData->setText(data);
 }
 

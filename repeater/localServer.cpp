@@ -111,7 +111,7 @@ void LocalServer::process()
         count++;
         QString buffer;
         QTextStream stream(&buffer);
-        stream << *subjectList;  // this is threadsafe.
+        subjectList->read(stream, true);  // this is threadsafe.
 
         listMutex.lock();
 

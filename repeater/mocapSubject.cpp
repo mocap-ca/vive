@@ -54,7 +54,7 @@ void MocapSegment::updateModel()
 }
 
 // serialize as string
-QTextStream& operator << ( QTextStream& stream, MocapSegment &segment)
+QTextStream& operator << ( QTextStream& stream, MocapSegment &segment )
 {
     startProfile("MocapSegment");
     stream << segment.name << "\t";
@@ -87,13 +87,13 @@ void MocapMarker::updateModel()
 }
 
 // serialize as string
-QTextStream& operator << ( QTextStream& stream, MocapMarker &segment)
+QTextStream& operator << ( QTextStream& stream, MocapMarker &marker )
 {
     startProfile("MocapMarker");
-    stream << segment.name << "\t";
-    stream << segment.translation[0] << "\t";
-    stream << segment.translation[1] << "\t";
-    stream << segment.translation[2] << "\n";
+    stream << marker.name << "\t";
+    stream << marker.translation[0] << "\t";
+    stream << marker.translation[1] << "\t";
+    stream << marker.translation[2] << "\n";
     stopProfile("MocapMarker");
     return stream;
 }
@@ -152,11 +152,12 @@ void MocapSubject::setMarker(QString name, double trans[3])
 }
 
 
-MocapSubject::MocapSubject(QString n, QMutex &m, QObject *parent)
+MocapSubject::MocapSubject(QString n, QMutex &m, QObject *parent, bool local)
 : QObject(parent)
 , name(n)
 , mutex(m)
 , modelItem(new QStandardItem(n))
+, isLocal(local)
 {}
 
 void MocapSubject::updateModel()
@@ -165,7 +166,7 @@ void MocapSubject::updateModel()
         (*i).updateModel();
 }
 
-QTextStream& operator << ( QTextStream& stream, MocapSubject &subject)
+QTextStream& operator << ( QTextStream& stream, MocapSubject &subject )
 {
     startProfile("MocapSubject");
 
@@ -174,10 +175,10 @@ QTextStream& operator << ( QTextStream& stream, MocapSubject &subject)
     stream << subject.markers.length() << "\n";
 
     for( QList<MocapSegment>::iterator i = subject.segments.begin(); i != subject.segments.end(); i++)
-        stream << (*i);
+        stream << *i;
 
     for( QList<MocapMarker>::iterator i = subject.markers.begin(); i != subject.markers.end(); i++)
-        stream << (*i);
+        stream << *i;
 
     stopProfile("MocapSubject");
     return stream;
@@ -226,7 +227,7 @@ MocapSubject* MocapSubjectList::find(QString inName, bool add)
 	if(add == false) return NULL;
 
     // Not found - create a new subject
-	MocapSubject *n = new MocapSubject(inName, subjectMutex, this);
+    MocapSubject *n = new MocapSubject(inName, subjectMutex, this, true);
     items.append(n);
 
     // Add it to the model
@@ -249,19 +250,20 @@ void MocapSubjectList::updateModel()
 }
 
 
-QTextStream& operator << ( QTextStream& stream, MocapSubjectList &subjects)
+void MocapSubjectList::read(QTextStream &stream, bool localOnly)
 {
-	subjects.subjectMutex.lock();
-	stream << subjects.items.length() << "\n";
+    subjectMutex.lock();
+    stream << items.length() << "\n";
 
     startProfile("total");
-	for(QList<MocapSubject*>::iterator i = subjects.items.begin(); i != subjects.items.end(); i++)
+    for(QList<MocapSubject*>::iterator i = items.begin(); i != items.end(); i++)
+    {
+        if( localOnly && !(*i)->isLocal ) continue;
         stream << *(*i);
+    }
     stopProfile("total");
 
-	subjects.subjectMutex.unlock();
-
-	return stream;
+    subjectMutex.unlock();
 }
 
 		

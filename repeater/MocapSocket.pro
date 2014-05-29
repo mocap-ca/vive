@@ -19,7 +19,6 @@ QMAKE_LFLAGS += -INCREMENTAL:NO
 SOURCES += main.cpp\
     mainwindow.cpp \
     server.cpp \
-    workthread.cpp \
     mocapSubject.cpp \
     testClient.cpp \
     profilesx.cpp \
@@ -27,7 +26,6 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     server.h \
-    workthread.h \
     mocapSubject.h \
     testClient.h \
     profile.h \

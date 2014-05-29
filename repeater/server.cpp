@@ -130,7 +130,7 @@ void MyServer::process()
         QTextStream stream(&buffer);
         // The following operation is threadsafe.
         startProfile("Fetch");
-        stream << *subjectList;
+        subjectList->read(stream, true);
         stopProfile("Fetch");
 
         startProfile("Wait");
