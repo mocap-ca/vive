@@ -7,6 +7,9 @@ version 2.5.0.0
 
 #pragma once
 
+typedef int int32_t;
+typedef unsigned int uint32_t;
+
 // storage class specifier
 // - to link to NatNet dynamically, define NATNETLIB_IMPORTS and link to the NatNet dynamic lib.
 // - to link to NatNet statically, link to the NatNet static lib
