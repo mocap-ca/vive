@@ -89,6 +89,7 @@ public class MocapSocket : MonoBehaviour {
 	private Boolean    toggleHelp    = false; // Show help scren
 	private Boolean    showMarkers   = false; // Show markers when true
 	private GameObject markerGroup;
+	public string      prefix        = "";
 
 	List<GameObject> skeletonObjects = new List<GameObject>();
 	List<GameObject> rigidObjects = new List<GameObject>();
@@ -110,6 +111,46 @@ public class MocapSocket : MonoBehaviour {
 
 	void OnGUI()
 	{
+		// Display Things
+
+		if (isActive)
+			GUI.Label (new Rect (Screen.width - 150, 5, 150, 40), "Connected");
+		else
+			GUI.Label (new Rect (Screen.width - 150, 5, 150, 40), "Not Connected");
+		
+		if(toggleDisplay)
+		{
+			GUI.Label(	            new Rect(5,   10, 100, 20), "Prefix:");
+			GUI.SetNextControlName("PrefixField");
+			prefix = GUI.TextField (new Rect(110, 10, 200, 20), prefix, 25);
+			String infoFps = "FPS:" + fps.ToString ("0.00") + "\n";
+			GUI.Label(	new Rect(5, 30, 	Screen.width, Screen.height), infoFps + infoMessage);
+		}
+
+		if(toggleHelp)
+		{
+			String text = "VIVE - Very Imersive Virtual Experience\n";
+			text += "Alastair Macleod, Emily Carr University\n";
+			text += "Version 0.1\n";
+			text += "1 - Reset Oculus\n";
+			text += "B - Zero Body\n";
+			text += "H - Zero Hands\n";
+			text += "F - Zero Feet\n";
+			text += "M - Show Markers\n";
+			text += "Y - Debug Data\n";
+			text += "C - Connect\n";
+			text += "D - Disconnect\n";
+			GUI.Label ( new Rect(5, 5, 	Screen.width, Screen.height), text );
+		}
+
+
+		// Don't check keys if prefix field is activated
+
+		if (GUI.GetNameOfFocusedControl ().Equals ("PrefixField")) return;
+
+
+		// Key events
+
 		Event e = Event.current;
 		
 		if (e.type == EventType.KeyUp)
@@ -156,33 +197,6 @@ public class MocapSocket : MonoBehaviour {
 				toggleDisplay = !toggleDisplay;
 			}
 		}
-		
-		if (isActive)
-			GUI.Label (new Rect (Screen.width - 150, 5, 150, 40), "Connected");
-		else
-			GUI.Label (new Rect (Screen.width - 150, 5, 150, 40), "Not Connected");
-		
-		if(toggleDisplay)
-		{
-			String infoFps = "FPS:" + fps.ToString ("0.00") + "\n";
-			GUI.Label(	new Rect(5, 5, 	Screen.width, Screen.height), infoFps + infoMessage);
-		}
-
-		if(toggleHelp)
-		{
-			String text = "VIVE - Very Imersive Virtual Experience\n";
-			text += "Alastair Macleod, Emily Carr University\n";
-			text += "Version 0.1\n";
-			text += "1 - Reset Oculus\n";
-			text += "B - Zero Body\n";
-			text += "H - Zero Hands\n";
-			text += "F - Zero Feet\n";
-			text += "M - Show Markers\n";
-			text += "Y - Debug Data\n";
-			text += "C - Connect\n";
-			text += "D - Disconnect\n";
-			GUI.Label ( new Rect(5, 5, 	Screen.width, Screen.height), text );
-		}
 	}
 	
 	void SetInitialState(GameObject o)
@@ -195,6 +209,7 @@ public class MocapSocket : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
 	{
+
 		toggleDisplay = false;
 		infoMessage   = "INIT";
 
@@ -311,6 +326,8 @@ public class MocapSocket : MonoBehaviour {
 		}
 	}
 
+
+	// Get data from a local pipe (via a dll)
 	bool GetLocalData(out string outData)
 	{
 		outData = "";
@@ -338,9 +355,9 @@ public class MocapSocket : MonoBehaviour {
 		outData = Encoding.ASCII.GetString(socketData);
 
 		return true;
-
 	}
 
+	// Get data from a TCP socket
 	bool GetSocketData(out string outData)
 	{
 		outData = "";
@@ -386,6 +403,7 @@ public class MocapSocket : MonoBehaviour {
 		return false;
 	}
 
+	// Get data, parse and return as a subject list
 	bool GetData(out Dictionary< string, SegmentItem[] > subjectList)
 	{
 		subjectList = new Dictionary< string, SegmentItem[] > ();
@@ -421,6 +439,14 @@ public class MocapSocket : MonoBehaviour {
 		{
 			string[] subjectSplit = lineItems[line++].Split ('\t');
 			string subjectName = subjectSplit[0];
+			// Strip prefix
+			if(prefix.Length > 0 && prefix.Length < subjectName.Length)
+			{
+				if(subjectName.Substring(0, prefix.Length) == prefix)
+				{
+					subjectName = subjectName.Substring (prefix.Length);
+				}
+			}
 			int    noSegments  = Convert.ToInt32 (subjectSplit[1]);
 			int    noMarkers   = Convert.ToInt32 (subjectSplit[2]);
 			infoMessage += subjectName + "  " + noSegments + " segments   " + noMarkers + " markers\n";
@@ -464,7 +490,8 @@ public class MocapSocket : MonoBehaviour {
 				for(int k=0; k < 3; k++) tr[k] = float.Parse (segmentSplit[k+1]);
 				items[item_i++] = new SegmentItem(segmentSplit[0], tr, zero, false);
 			}
-			subjectList.Add (subjectName, items);
+			if(!subjectList.ContainsKey(subjectName))
+				subjectList.Add (subjectName, items);
 		}
 
 		return true;
@@ -498,7 +525,7 @@ public class MocapSocket : MonoBehaviour {
 		{
 			string subject = entry.Key;
 
-			infoMessage += "LOADING: " + subject + "\n";
+			infoMessage += "SUBJECT: " + subject;
 
 			bool frameDone = false;
 
@@ -507,7 +534,7 @@ public class MocapSocket : MonoBehaviour {
 			{
 				if(item == null)
 				{
-					infoMessage += "!skipping null\n";
+					infoMessage += " - skipping null\n";
 					continue;
 				}
 				if(item.isJoint)
@@ -529,10 +556,10 @@ public class MocapSocket : MonoBehaviour {
 							// Rigid objects match on subject name, not segment
 							if ( !objectDict.ContainsKey( subject ) )
 							{
-								infoMessage += "RIGID MISSING:" + subject + "\n";
+								infoMessage += "- Rigid Missing\n";
 								continue;
 							}
-							infoMessage += "RIGID: " + subject + "\n";
+							infoMessage += " (rigid)";
 							o = objectDict[subject];
 						}
 					}
@@ -541,10 +568,10 @@ public class MocapSocket : MonoBehaviour {
 						// Body Joint
 						if ( !objectDict.ContainsKey( item.name) )
 						{
-							infoMessage += "BODY MISSING:" + item.name + "\n";
+							infoMessage += "\n  body missing:" + item.name;
 							continue;
 						}
-						infoMessage += "BODY: " + item.name + "\n";
+						infoMessage += "\n   body: " + item.name;
 						o = objectDict[item.name];
 					}
 
@@ -597,6 +624,8 @@ public class MocapSocket : MonoBehaviour {
 					}
 				}
 			}
+
+			infoMessage += "\n";
 
 			if(frameDone) frameCount++;
 		}
