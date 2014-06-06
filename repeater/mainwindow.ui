@@ -62,7 +62,7 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QLineEdit" name="lineEditHost">
+            <widget class="QLineEdit" name="lineEditViconHost">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -100,7 +100,7 @@
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QLineEdit" name="lineEditPort">
+            <widget class="QLineEdit" name="lineEditViconPort">
              <property name="minimumSize">
               <size>
                <width>50</width>
@@ -139,7 +139,7 @@
             </spacer>
            </item>
            <item row="2" column="1">
-            <widget class="QPushButton" name="pushButtonConnect">
+            <widget class="QPushButton" name="pushButtonConnectVicon">
              <property name="text">
               <string>Connect</string>
              </property>
@@ -334,7 +334,7 @@
            <rect>
             <x>90</x>
             <y>40</y>
-            <width>71</width>
+            <width>111</width>
             <height>20</height>
            </rect>
           </property>
@@ -439,34 +439,6 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_6">
-                <property name="text">
-                 <string>Vicon FPS</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QLineEdit" name="lineEditViconFPS">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="label_16">
-                <property name="text">
-                 <string>NaturalPoint FPS</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QLineEdit" name="lineEditNaturalPointFPS">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
              </layout>
             </widget>
            </widget>
@@ -486,7 +458,7 @@
      <x>0</x>
      <y>0</y>
      <width>776</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
@@ -503,9 +475,9 @@
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
   <tabstop>tabWidget</tabstop>
-  <tabstop>lineEditHost</tabstop>
-  <tabstop>lineEditPort</tabstop>
-  <tabstop>pushButtonConnect</tabstop>
+  <tabstop>lineEditViconHost</tabstop>
+  <tabstop>lineEditViconPort</tabstop>
+  <tabstop>pushButtonConnectVicon</tabstop>
   <tabstop>lineEditViconStatus</tabstop>
   <tabstop>pushButtonStub</tabstop>
   <tabstop>lineEditStubStatus</tabstop>
@@ -515,8 +487,6 @@
   <tabstop>listViewConnections</tabstop>
   <tabstop>lineEditServerFPS</tabstop>
   <tabstop>lineEditLocalFPS</tabstop>
-  <tabstop>lineEditViconFPS</tabstop>
-  <tabstop>lineEditNaturalPointFPS</tabstop>
   <tabstop>plainTextEditLog</tabstop>
  </tabstops>
  <resources/>

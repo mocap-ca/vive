@@ -27,18 +27,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "testClient.h"
 #include "localServer.h"
 
+// Stub any classes that are not required. They will be
+// set to null and ignored.
 #ifdef VICON_CLIENT
-class ViconClient;
+#include "viconClient.h"
 #endif
 
 #ifdef NATURALPOINT_CLIENT
-class NaturalPointClient;
+#include "naturalpointClient.h"
 #endif
 
 
 // 0.2 - Added local (named pipe) server
+// 0.3 - Added base class for clients
 
-#define VIVE_VERSION "0.2"
+#define VIVE_VERSION "0.3"
 
 
 namespace Ui {
@@ -54,17 +57,7 @@ public slots:
     void updateConnectionList(void);
     void showMessage(QString);
 	void timerClick(void);
-    void doStub(void);
 
-#ifdef VICON_CLIENT
-    void doViconConnect(void);
-    void viconConnected(bool);
-#endif
-
-#ifdef NATURALPOINT_CLIENT
-    void doNaturalPointConnect(void);
-    void naturalPointConnected(bool);
-#endif
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -79,17 +72,15 @@ private:
 	QTimer      *timer;
     QStandardItemModel *modelConnections;
 
-#ifdef VICON_CLIENT
-    ViconClient *viconClient;
-#endif
-
-#ifdef NATURALPOINT_CLIENT
-    NaturalPointClient *naturalPointClient;
-#endif
-
     TestClient  *testClient;
 
+    //! List of supported clients
+    QList<BaseClient *> clients;
+
+    //! Mutex to allow access to the subjectList
 	QMutex           subectMutex;
+
+    //! Contains all subject information for the current frame.
 	MocapSubjectList *subjectList;
 };
 

@@ -22,31 +22,58 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <QObject>
 #include <QList>
-#include <QThread>
+#include "baseClient.h"
 #include "ViconStreamClient.h"
-#include "mocapSubject.h"
+#include <QLineEdit>
 
-class ViconClient : public QThread
+class ViconClient : public BaseClient
 {
 	Q_OBJECT
 
 public:
-	ViconClient( MocapSubjectList *subjectList, QObject *parent = NULL);
+    ViconClient( MocapSubjectList *subjectList,
+                 QPushButton *button,
+                 QLineEdit *statusLine,
+                 QLineEdit *hostField,
+                 QLineEdit *portField,
+                 QObject *parent = NULL);
 
-    bool mocapConnect();
-	bool mocapDisconnect();
-
-    bool connected;
-
-	
     ViconDataStreamSDK::CPP::Client mClient;
 
-	MocapSubjectList *subjects;
+    //! @returns "Vicon"
+    virtual QString ClientStr() { return QString("Vicon"); }
 
-	virtual void run();
+    //! Implements QThread (parent of baseclient)
+    virtual void run();
 
-	bool running;
-    size_t count;
+    //! True if thread loop is currently running
+    /*! Set to false just before thread loop completes */
+    bool running;
+
+    //! Connect to vicon
+    /*! @returns true if connection was successful */
+    bool mocapConnect();
+
+    //! Disconnect from vicon
+    /*! @returns false if not connected, or disconnection fails */
+    bool mocapDisconnect();
+
+    //! see BaseClient::mocapStart()
+    virtual void mocapStart();
+
+    //! see BaseClient::mocapStop()
+    virtual void mocapStop();
+
+    //! see BaseClient::ClientId()
+    /*! @returns "Vicon" */
+    virtual QString ClientId() { return "Vicon"; }
+
+    //! see baseClient::UIConnectingState()
+    virtual void UIConnectingState();
+
+    //! @returns true if the service is running
+    virtual bool isRunning() { return running; }
+
     QString host;
     int     port;
 
@@ -57,14 +84,14 @@ public:
         CLIENT_PULL_PRE_FETCH
     };
 
+    QLineEdit *hostField;
+    QLineEdit *portField;
+
 private:
-    bool    frameError;
+    bool          frameError;
     eStreamMode   streamMode;
 
-signals:
-    void outMessage(QString);
-    void connectedEvent(bool);
-    void newFrame(unsigned int);
+
 
 };
 

@@ -23,25 +23,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <QObject>
 #include <QList>
-#include <QThread>
+#include <QPushButton>
+#include "baseClient.h"
 #include "mocapSubject.h"
 
-class TestClient : public QThread
+class TestClient : public BaseClient
 {
 	Q_OBJECT
 
+public slots:
+    void mocapStart();
+    void mocapStop();
+
 public:
-	TestClient( MocapSubjectList *subjectList, QObject *parent = NULL);
+    TestClient( MocapSubjectList *subjectList,
+                QPushButton *button,
+                QLineEdit *statusLine,
+                QObject *parent = NULL);
 
-	friend QTextStream& operator << (QTextStream &, TestClient &);
-
-	MocapSubjectList *subjects;
+    //! @returns "Test"
+    virtual QString ClientStr() { return QString("Test"); }
 
 	virtual void run();
 
-	bool running;
+    //! @returns true if the service is running
+    virtual bool isRunning() { return running; }
 
-	size_t count;
+	bool running;
 
     float val, mousex, mousey;
 

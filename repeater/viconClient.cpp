@@ -18,29 +18,41 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "viconClient.h"
-
-
 #include <string>
 #include <sstream>
+#include <QMessageBox>
+#include <QCompleter>
 
 using namespace ViconDataStreamSDK::CPP;
 
-ViconClient::ViconClient(MocapSubjectList *sList, QObject *parent)
-: QThread(parent)
-, subjects(sList)
-, connected(false)
+ViconClient::ViconClient(MocapSubjectList *sList,
+                         QPushButton *button,
+                         QLineEdit *statusLine,
+                         QLineEdit *inHostField,
+                         QLineEdit *inPortField,
+                         QObject *parent)
+: BaseClient(BaseClient::CL_Vicon, sList, button, statusLine, parent)
 , running(false)
-, count(0)
 , port(0)
 , frameError(false)
 , streamMode(SERVER_PUSH)
+, hostField(inHostField)
+, portField(inPortField)
 {
-}
+    QStringList wordList;
+    wordList << "192.168.11.1" << "127.0.0.1";
+    QCompleter *completer = new QCompleter(wordList, inHostField);
+    hostField->setCompleter(completer);
+    hostField->setText(wordList[0]);
+    portField->setText("801");
 
+}
 
 // This function must emit a connected event before returning, to renable the button
 bool ViconClient::mocapConnect()
 {
+    emit stateConnecting();
+
     QString connectionString;
     QTextStream stream(&connectionString);
     stream << host << ":" << port;
@@ -56,7 +68,7 @@ bool ViconClient::mocapConnect()
             case Result::ClientConnectionFailed : outMessage("Error: Connection Failed"); break;
             default: outMessage("Error: Could not connect");
         }
-        emit connectedEvent(false);
+        emit stateDisconnected();
         return false;
     }
 
@@ -81,25 +93,27 @@ bool ViconClient::mocapConnect()
 
     outMessage("Connected to vicon server.");
 
-    emit connectedEvent(true);
-
+    emit stateConnected();
 
 	return true;
 }
 
 bool ViconClient::mocapDisconnect()
 {
+
     if(!connected)
     {
-        emit connectedEvent(false);
+        emit stateDisconnected();
         return false;
     }
+
+    emit stateDisconnecting();
 
     outMessage("Disconnecting from Vicon");
 	Output_Disconnect output = mClient.Disconnect();
     connected = false;
 
-    emit connectedEvent(false);
+    emit stateDisconnected();
 
 	return output.Result == Result::Success;
 }
@@ -166,24 +180,16 @@ void ViconClient::run()
 			for(unsigned int i = 0; i < sc.SegmentCount; i++)
 			{
 				Output_GetSegmentName sn = mClient.GetSegmentName(subjectName, i);
-
-                //Output_GetSegmentLocalTranslation trans = mClient.GetSegmentLocalTranslation(subjectName, sn.SegmentName);
-
-                //Output_GetSegmentLocalRotationEulerXYZ rot = mClient.GetSegmentLocalRotationEulerXYZ(subjectName, sn.SegmentName);
-
-
                 Output_GetSegmentLocalTranslation         trans     = mClient.GetSegmentLocalTranslation(subjectName, sn.SegmentName);
                 Output_GetSegmentLocalRotationQuaternion  localRot  = mClient.GetSegmentLocalRotationQuaternion(subjectName, sn.SegmentName);
-                //Output_GetSegmentStaticRotationQuaternion staticRot = mClient.GetSegmentStaticRotationQuaternion(subjectName, sn.SegmentName);
-                //Output_GetSegmentGlobalRotationQuaternion globalRot = mClient.GetSegmentGlobalRotationQuaternion(subjectName, sn.SegmentName);
 
                 // Convert to unity coordinate system
+                // TODO: convert to opengl instead
                 double unityTrans[3] = { -trans.Translation[0] / 100. , -trans.Translation[2] / 100., trans.Translation[1] / 100. };
                 double unityRot[4] = { localRot.Rotation[0], localRot.Rotation[2], -localRot.Rotation[1],  localRot.Rotation[3] };
 
                 std::string segname = sn.SegmentName;
                 subject->setSegment(QString(segname.c_str()) ,unityTrans, unityRot);
-
 			}
 
             Output_GetMarkerCount mc = mClient.GetMarkerCount(subjectName);
@@ -194,19 +200,56 @@ void ViconClient::run()
                 std::string markername = mn.MarkerName;
                 double unityTrans[3] = { -trans.Translation[0] / 100. , -trans.Translation[2] / 100., -trans.Translation[1] / 100. };
                 subject->setMarker(QString(markername.c_str()), unityTrans);
-
             }
-
-
 		}
 
         emit newFrame(frameNumber);
         count++;
 	}
 
-    outMessage("Vicon Service has finished");
+    outMessage("Service finished");
 
     mocapDisconnect();
 }
+
+
+void ViconClient::mocapStart()
+{
+    host = hostField->text();
+    port = portField->text().toInt();
+    if(port == 0)
+    {
+        QMessageBox::warning(NULL,"Error", "Invalid Port", QMessageBox::Ok);
+        return;
+    }
+
+    // start (connection is handled on other thread as it can be slow)
+    this->start();
+}
+
+void ViconClient::UIConnectingState()
+{
+    QString host_ = hostField->text();
+    int port_ = portField->text().toInt();
+    if(port == 0)
+    {
+        QMessageBox::warning(NULL,"Error", "Invalid Port", QMessageBox::Ok);
+        return;
+    }
+
+    // start (connection is handled on other thread as it can be slow)
+    this->host = host_;
+    this->port = port_;
+
+    BaseClient::UIConnectingState();
+}
+
+
+void ViconClient::mocapStop()
+{
+    running = false;
+}
+
+
 
 	

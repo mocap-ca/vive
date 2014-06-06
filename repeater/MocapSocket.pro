@@ -22,14 +22,16 @@ SOURCES += main.cpp\
     mocapSubject.cpp \
     testClient.cpp \
     profilesx.cpp \
-    localServer.cpp
+    localServer.cpp \
+    baseclient.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
     mocapSubject.h \
     testClient.h \
     profile.h \
-    localServer.h
+    localServer.h \
+    baseclient.h
 
 FORMS    += mainwindow.ui
 

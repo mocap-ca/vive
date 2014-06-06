@@ -23,22 +23,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <string>
 #include <sstream>
 // #include <windows.h>
+#include <QLineEdit>
+#include <QPushButton>
 
-
-TestClient::TestClient(MocapSubjectList *sList, QObject *parent)
-: QThread(parent)
-, subjects(sList)
+TestClient::TestClient(MocapSubjectList *sList,
+                       QPushButton *button,
+                       QLineEdit *statusLine,
+                       QObject *parent)
+    : BaseClient(BaseClient::CL_Stub, sList, button, statusLine, parent)
 , running(false)
-, count(0)
 , val(0)
 , mousex(0)
 , mousey(0)
 {}
 
+void TestClient::mocapStart()
+{
+    this->start();
+}
+
+void TestClient::mocapStop()
+{
+    running = false;
+}
+
 
 void TestClient::run()
 {
+    emit stateConnected();
     running = true;
+    connected = true;
     outMessage("Test client starting.");
 	while(running)
 	{
@@ -54,7 +68,6 @@ void TestClient::run()
         //tr[1] = (double)qrand() / (double)RAND_MAX;
         subject->setSegment("root", tr, ro);
 
-
         tr[0] = 10.0f;
         tr[2] = 10.0f;
         subject->setMarker("marker1", tr);
@@ -64,6 +77,7 @@ void TestClient::run()
         this->usleep(10000);
 		count++;
 	}
+    emit stateDisconnected();
     outMessage("Test client ended.");
 }
 

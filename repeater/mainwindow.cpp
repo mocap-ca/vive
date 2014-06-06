@@ -23,14 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <QMessageBox>
 #include <QCompleter>
 
-#ifdef VICON_CLIENT
-#include "viconClient.h"
-#endif
-
-#ifdef NATURALPOINT_CLIENT
-#include "naturalpointClient.h"
-#endif
-
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -55,10 +47,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->listViewConnections->setModel(modelConnections);
     ui->treeViewData->setModel(&subjectList->model);
 
-
     for(size_t i=1; i < 16; i++)
         ui->treeViewData->setColumnWidth(i, 50);
-
 
     // Start tcp server
     server = new MyServer(subjectList);
@@ -74,19 +64,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
 #ifdef VICON_CLIENT
     // Vicon Client
-    viconClient = new ViconClient(subjectList, this);
-    QStringList wordList;
-    wordList << "192.168.11.1" << "127.0.0.1";
-    QCompleter *completer = new QCompleter(wordList, this);
-    ui->lineEditHost->setCompleter(completer);
-    ui->lineEditHost->setText(wordList[0]);
-
-    ui->lineEditPort->setText("801");
-    ok &= (bool)QObject::connect(viconClient, SIGNAL(outMessage(QString)),   this, SLOT(showMessage(QString)));
-    ok &= (bool)QObject::connect(ui->pushButtonConnect, SIGNAL(clicked()),   this, SLOT(doViconConnect()));
-    ok &= (bool)QObject::connect(viconClient, SIGNAL(connectedEvent(bool)),  this, SLOT(viconConnected(bool)));
+    ViconClient *viconClient = new ViconClient(subjectList,
+                                               ui->pushButtonConnectVicon,
+                                               ui->lineEditViconStatus,
+                                               ui->lineEditViconHost,
+                                               ui->lineEditViconPort,
+                                               this);
     ok &= (bool)QObject::connect(viconClient, SIGNAL(newFrame(uint)),      server, SLOT(process()));
     ok &= (bool)QObject::connect(viconClient, SIGNAL(newFrame(uint)), localServer, SLOT(process()));
+    clients.append(viconClient);
 #else
     ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->ViconTab));
 #endif
@@ -106,11 +92,11 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 
     // Stub Client
-    testClient  = new TestClient(subjectList, this);
-    ok &= (bool)QObject::connect(testClient,         SIGNAL(outMessage(QString)),  this, SLOT(showMessage(QString)));
-    ok &= (bool)QObject::connect(testClient,         SIGNAL(newFrame(int)),        server, SLOT(process()));
-    ok &= (bool)QObject::connect(testClient,         SIGNAL(newFrame(int)),        localServer, SLOT(process()));
-    ok &= (bool)QObject::connect(ui->pushButtonStub, SIGNAL(clicked()),            this, SLOT(doStub()));
+    testClient  = new TestClient(subjectList,
+                                 ui->pushButtonStub,
+                                 ui->lineEditStubStatus,
+                                 this);
+    clients.append(testClient);
 
     // Window refresh timer
 	timer = new QTimer(this);
@@ -128,80 +114,34 @@ MainWindow::~MainWindow()
     server->stop();
     localServer->stop();
 
-#ifdef VICON_CLIENT
-    bool vRunning = viconClient->running;
-    if(vRunning) viconClient->running=false;
-    if(vRunning) viconClient->wait();
-#endif
+    // Stop all clients
+    for( QList<BaseClient *>::iterator i = clients.begin(); i!=clients.end(); i++)
+    {
+        (*i)->mocapStop();
+    }
 
-    bool tRunning = testClient->running;
-    if(tRunning) testClient->running=false;
-    if(tRunning) testClient->wait();
+    // Wait for all clients to stop
+    for( QList<BaseClient *>::iterator i = clients.begin(); i!=clients.end(); i++)
+    {
+        (*i)->wait();
+    }
 
     delete ui;
 }
 
 
-void MainWindow::doStub()
-{
-    if(!testClient->running)
-    {
-        testClient->start();
-        ui->pushButtonStub->setText("Stop");
-        ui->treeViewData->expandAll();
-    }
-    else
-    {
-        testClient->running = false;
-        ui->pushButtonStub->setText("Start");
-    }
 
-
-
-}
 
 void MainWindow::timerClick()
 {
-    ui->lineEditServerFPS->setText(QString("%1").arg(server->count));
-    server->count = 0;
-    ui->lineEditLocalFPS->setText(QString("%1").arg(localServer->count));
-    localServer->count = 0;
+    QString msg = QString("TCP FPS: %1   Pipe FPS: %1").arg(server->count).arg(localServer->count);
+    this->statusBar()->showMessage(msg);
 
-#ifdef VICON_CLIENT
-    if(viconClient->running)
+    for(QList<BaseClient*>::iterator i = clients.begin(); i != clients.end(); i++)
     {
-        ui->lineEditViconStatus->setText(QString("%1").arg(viconClient->count));
-        ui->lineEditViconFPS->setText(QString("%1").arg(viconClient->count));
-        viconClient->count = 0;
-    }
-    else
-#endif
-    {
-        ui->lineEditViconStatus->setText("Not Connected");
+        (*i)->tick();
     }
 
-#ifdef NATURALPOINT_CLIENT
-    if(naturalPointClient->running)
-    {
-        ui->lineEditNPStatus->setText(QString("%1").arg(naturalPointClient->count));
-//        ui->lineEditNPFPS->setText(QString("%1").arg(naturalPointClient->count));
-        naturalPointClient->count = 0;
-    }
-    else
-#endif
-    {
-        ui->lineEditNPStatus->setText("Not Connected");
-    }
-
-    if(testClient->running)
-    {
-        ui->lineEditStubStatus->setText(QString("%1").arg(testClient->count));
-        testClient->count = 0;
-    }
-    else
-    {
-        ui->lineEditStubStatus->setText(QString(""));
-    }
 
     subjectList->updateModel();
 
@@ -230,51 +170,8 @@ void MainWindow::showMessage(QString msg)
     ui->plainTextEditLog->appendPlainText(msg);
 }
 
-#ifdef VICON_CLIENT
-void MainWindow::viconConnected(bool con)
-{
-    if(con)
-    {
-        ui->pushButtonConnect->setEnabled(true);
-        ui->pushButtonConnect->setText("Disconnect");
-    }
-    else
-    {
-        ui->pushButtonConnect->setEnabled(true);
-        ui->pushButtonConnect->setText("Connect");
-    }
-}
 
-void MainWindow::doViconConnect()
-{
-    if(!viconClient->connected)
-    {
-        QString host = ui->lineEditHost->text();
-        int port = ui->lineEditPort->text().toInt();
-        if(port == 0)
-        {
-            QMessageBox::warning(this,"Error", "Invalid Port", QMessageBox::Ok);
-            return;
-        }
 
-        // start (connection is handled on other thread as it can be slow)
-        viconClient->host = host;
-        viconClient->port = port;
-        ui->pushButtonConnect->setEnabled(false);
-        ui->pushButtonConnect->setText("Connecting");
-        viconClient->start();
-    }
-    else
-    {
-        viconClient->running = false;
-        ui->pushButtonConnect->setEnabled(false);
-        ui->pushButtonConnect->setText("Disconnecting");
-        // Stop the thread from running, this will call disconnect
-        viconClient->running = false;
-
-    }
-}
-#endif // VICON_CLIENT
 
 #ifdef NATURALPOINT_CLIENT
 
