@@ -1,0 +1,248 @@
+/*
+NatNetTypes defines the public, common data structures and types
+used when working with NatNetServer and NatNetClient objects.
+
+version 2.5.0.0
+*/
+
+#pragma once
+
+typedef int int32_t;
+typedef unsigned int uint32_t;
+
+// storage class specifier
+// - to link to NatNet dynamically, define NATNETLIB_IMPORTS and link to the NatNet dynamic lib.
+// - to link to NatNet statically, link to the NatNet static lib
+#ifdef NATNETLIB_EXPORTS
+#define DLLCLASS __declspec( dllexport )
+#else
+#ifdef NATNETLIB_IMPORTS
+#define DLLCLASS __declspec( dllimport )
+#else
+#define DLLCLASS 
+#endif
+#endif
+
+// model limits
+#define MAX_MODELS                  200     // maximum number of MarkerSets 
+#define MAX_RIGIDBODIES             1000    // maximum number of RigidBodies
+#define MAX_NAMELENGTH              256     // maximum length for strings
+#define MAX_MARKERS                 200     // maximum number of markers per MarkerSet
+#define MAX_RBMARKERS               10      // maximum number of markers per RigidBody
+#define MAX_SKELETONS               100     // maximum number of skeletons
+#define MAX_SKELRIGIDBODIES         200     // maximum number of RididBodies per Skeleton
+#define MAX_LABELED_MARKERS         1000    // maximum number of labeled markers per frame
+
+#define MAX_PACKETSIZE				100000	// max size of packet (actual packet size is dynamic)
+
+// Client/server message ids
+#define NAT_PING                    0 
+#define NAT_PINGRESPONSE            1
+#define NAT_REQUEST                 2
+#define NAT_RESPONSE                3
+#define NAT_REQUEST_MODELDEF        4
+#define NAT_MODELDEF                5
+#define NAT_REQUEST_FRAMEOFDATA     6
+#define NAT_FRAMEOFDATA             7
+#define NAT_MESSAGESTRING           8
+#define NAT_UNRECOGNIZED_REQUEST    100
+
+#define UNDEFINED                   999999.9999
+
+typedef enum NAT_EulerOrder
+{
+    NAT_XYZs, NAT_XYXs, NAT_XZYs, NAT_XZXs, NAT_YZXs, NAT_YZYs, NAT_YXZs, NAT_YXYs, NAT_ZXYs, NAT_ZXZs, NAT_ZYXs, NAT_ZYZs,
+    NAT_ZYXr, NAT_XYXr, NAT_YZXr, NAT_XZXr, NAT_XZYr, NAT_YZYr, NAT_ZXYr, NAT_YXYr, NAT_YXZr, NAT_ZXZr, NAT_XYZr, NAT_ZYZr
+} NAT_EulerOrder;
+
+
+// NatNet uses to set reporting level of messages.
+// Clients use to set level of messages to receive.
+typedef enum Verbosity
+{
+    Verbosity_None=0,   
+    Verbosity_Info,     
+    Verbosity_Warning, 
+    Verbosity_Error,
+    Verbosity_Debug,
+} Verbosity;
+
+// NatNet error reporting codes
+typedef enum ErrorCode
+{
+    ErrorCode_OK = 0,					
+    ErrorCode_Internal,				
+    ErrorCode_External,				
+    ErrorCode_Network,			
+    ErrorCode_Other				
+} ErrorCode;
+
+// NatNet connection types
+typedef enum ConnectionType
+{
+    ConnectionType_Multicast = 0,
+    ConnectionType_Unicast
+} ConnectionType;
+
+// NatNet data types
+typedef enum DataDescriptors
+{
+    Descriptor_MarkerSet = 0,
+    Descriptor_RigidBody,
+    Descriptor_Skeleton
+} DataDescriptors;
+
+typedef float MarkerData[3];                // posX, posY, posZ
+
+
+// sender
+typedef struct
+{
+    char szName[MAX_NAMELENGTH];            // host app's name
+    unsigned char Version[4];               // host app's version [major.minor.build.revision]
+    unsigned char NatNetVersion[4];         // host app's NatNet version [major.minor.build.revision]
+
+} sSender;
+
+// packet
+// note : only used by clients who are depacketizing NatNet packets directly
+typedef struct
+{
+    unsigned short iMessage;                // message ID (e.g. NAT_FRAMEOFDATA)
+    unsigned short nDataBytes;              // Num bytes in payload
+    union
+    {
+        unsigned char  cData[MAX_PACKETSIZE];
+        char           szData[MAX_PACKETSIZE];
+        unsigned long  lData[MAX_PACKETSIZE/4];
+        float          fData[MAX_PACKETSIZE/4];
+        sSender        Sender;
+    } Data;                                 // payload - statically allocated for convenience.  Actual packet size is determined by  nDataBytes
+
+} sPacket;
+
+// Mocap server application description
+typedef struct
+{
+    bool HostPresent;                       // host is present and accounted for
+    char szHostComputerName[MAX_NAMELENGTH];// host computer name
+    unsigned char HostComputerAddress[4];   // host IP address
+    char szHostApp[MAX_NAMELENGTH];         // name of host app 
+    unsigned char HostAppVersion[4];        // version of host app
+    unsigned char NatNetVersion[4];         // host app's version of NatNet
+
+} sServerDescription;
+
+// Marker
+typedef struct
+{
+    int32_t ID;                                 // Unique identifier
+    float x;                                // x position
+    float y;                                // y position
+    float z;                                // z position
+    float size;                             // marker size
+} sMarker;
+
+// MarkerSet Definition
+typedef struct
+{
+    char szName[MAX_NAMELENGTH];            // MarkerSet name
+    int32_t nMarkers;                           // # of markers in MarkerSet
+    char** szMarkerNames;                   // array of marker names
+
+} sMarkerSetDescription;
+
+// MarkerSet Data (single frame of one MarkerSet)
+typedef struct
+{
+    char szName[MAX_NAMELENGTH];            // MarkerSet name
+    int32_t nMarkers;                           // # of markers in MarkerSet
+    MarkerData* Markers;                    // Array of marker data ( [nMarkers][3] )
+
+} sMarkerSetData;
+
+// Rigid Body Definition
+typedef struct
+{
+    char szName[MAX_NAMELENGTH];            // RigidBody name
+    int32_t ID;                                 // RigidBody identifier
+    int32_t parentID;                           // ID of parent Rigid Body (in case hierarchy exists)
+    float offsetx, offsety, offsetz;        // offset position relative to parent
+} sRigidBodyDescription;
+
+// Rigid Body Data (single frame of one rigid body)
+typedef struct sRigidBodyData
+{
+    int32_t ID;                                 // RigidBody identifier
+    float x, y, z;                          // Position
+    float qx, qy, qz, qw;                   // Orientation
+    int32_t nMarkers;                           // Number of markers associated with this rigid body
+    MarkerData* Markers;                    // Array of marker data ( [nMarkers][3] )
+    int32_t* MarkerIDs;                         // Array of marker IDs
+    float* MarkerSizes;                     // Array of marker sizes
+    float MeanError;                        // Mean measure-to-solve deviation
+    sRigidBodyData()
+    {
+        Markers = 0; MarkerIDs = 0; MarkerSizes = 0;
+    }
+} sRigidBodyData;
+
+// Skeleton Description
+typedef struct sSkeletonDescription
+{
+    char szName[MAX_NAMELENGTH];                             // Skeleton name
+    int32_t skeletonID;                                          // Skeleton identifier
+    int32_t nRigidBodies;                                        // # of rigid bodies (bones) in skeleton
+    sRigidBodyDescription RigidBodies[MAX_SKELRIGIDBODIES];  // array of rigid body (bone) descriptions 
+} sSkeletonDescription;
+
+
+// Skeleton Data
+typedef struct
+{
+    int32_t skeletonID;                                          // Skeleton identifier
+    int32_t nRigidBodies;                                        // # of rigid bodies
+    sRigidBodyData* RigidBodyData;                           // Array of RigidBody data
+} sSkeletonData;
+
+// Tracked Object data description.  
+// A Mocap Server application (e.g. Arena or TrackingTools) may contain multiple
+// tracked "objects (e.g. RigidBody, MarkerSet).  Each object will have its
+// own DataDescription.
+typedef struct 
+{
+    int32_t type;
+    union
+    {
+        sMarkerSetDescription* MarkerSetDescription;
+        sRigidBodyDescription* RigidBodyDescription;
+        sSkeletonDescription*  SkeletonDescription;
+    } Data;									
+} sDataDescription;
+
+// All data descriptions for current session (as defined by host app)
+typedef struct
+{
+    int32_t nDataDescriptions;
+    sDataDescription arrDataDescriptions[MAX_MODELS];
+} sDataDescriptions;
+
+// Single frame of data (for all tracked objects)
+typedef struct
+{
+    int32_t iFrame;                                 // host defined frame number
+    int32_t nMarkerSets;                            // # of marker sets in this frame of data
+    sMarkerSetData MocapData[MAX_MODELS];       // MarkerSet data
+    int32_t nOtherMarkers;                          // # of undefined markers
+    MarkerData* OtherMarkers;                   // undefined marker data
+    int32_t nRigidBodies;                           // # of rigid bodies
+    sRigidBodyData RigidBodies[MAX_RIGIDBODIES];// Rigid body data
+    int32_t nSkeletons;                             // # of Skeletons
+    sSkeletonData Skeletons[MAX_SKELETONS];     // Skeleton data
+    int32_t nLabeledMarkers;                        // # of Labeled Markers
+    sMarker LabeledMarkers[MAX_LABELED_MARKERS];// Labeled Marker data (labeled markers not associated with a "MarkerSet")
+    float fLatency;                             // host defined time delta between capture and send
+    uint32_t Timecode;                      // SMPTE timecode (if available)
+    uint32_t TimecodeSubframe;              // timecode sub-frame data
+
+} sFrameOfMocapData;
