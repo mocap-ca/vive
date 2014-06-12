@@ -9,11 +9,11 @@ BaseClient::BaseClient(ClientId clientId,
         QObject *parent)
 : QThread(parent)
 , subjects(subjectList)
+, button(pushButton)
+, statusLine(lineEditStatus)
 , connected(false)
 , count(0)
 , id(clientId)
-, button(pushButton)
-, statusLine(lineEditStatus)
 {
     QObject::connect(button, SIGNAL(clicked()),                  this,   SLOT(handleButtonClick()),     Qt::QueuedConnection);
     QObject::connect(this,   SIGNAL(stateConnecting()),          this,   SLOT(UIConnectingState()),     Qt::QueuedConnection);

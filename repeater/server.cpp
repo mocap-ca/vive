@@ -38,10 +38,10 @@ QString ServerConnection::str()
 
 MyServer::MyServer(MocapSubjectList *sList, QObject *parent)
 : QObject(parent)
+, running(true)
+, count(0)
 , working(false)
 , subjectList(sList)
-, count(0)
-, running(true)
 {}
 
 void MyServer::listen(int port)

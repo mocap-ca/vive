@@ -79,14 +79,20 @@ MainWindow::MainWindow(QWidget *parent) :
 
 #ifdef NATURALPOINT_CLIENT
     // NaturalPoint Client
-    naturalPointClient = new NaturalPointClient(subjectList, this);
-    ui->lineEditNPHost->setText(naturalPointClient->host);
-    ui->lineEditNPPort->setText(QString::number(naturalPointClient->port));
-    ok &= (bool)QObject::connect(naturalPointClient, SIGNAL(outMessage(QString)),   this, SLOT(showMessage(QString)));
-    ok &= (bool)QObject::connect(naturalPointClient, SIGNAL(connectedEvent(bool)),  this, SLOT(naturalPointConnected(bool)));
-    ok &= (bool)QObject::connect(ui->pushButtonNPConnect, SIGNAL(clicked()),   this, SLOT(doNaturalPointConnect()));
+    NaturalPointClient *naturalPointClient = new NaturalPointClient(subjectList,
+                                                                    ui->pushButtonNPConnect,
+                                                                    ui->lineEditNPStatus,
+                                                                    ui->lineEditNPHost,
+                                                                    ui->lineEditNPPort,
+                                                                    this);
+//    ui->lineEditNPHost->setText(naturalPointClient->host);
+//    ui->lineEditNPPort->setText(QString::number(naturalPointClient->port));
+//    ok &= (bool)QObject::connect(naturalPointClient, SIGNAL(outMessage(QString)),   this, SLOT(showMessage(QString)));
+//    ok &= (bool)QObject::connect(naturalPointClient, SIGNAL(connectedEvent(bool)),  this, SLOT(naturalPointConnected(bool)));
+//    ok &= (bool)QObject::connect(ui->pushButtonNPConnect, SIGNAL(clicked()),   this, SLOT(doNaturalPointConnect()));
     ok &= (bool)QObject::connect(naturalPointClient, SIGNAL(newFrame(uint)),      server, SLOT(process()));
     ok &= (bool)QObject::connect(naturalPointClient, SIGNAL(newFrame(uint)), localServer, SLOT(process()));
+    clients.append(naturalPointClient);
 #else
     ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->NPTab));
 #endif
@@ -163,58 +169,11 @@ void MainWindow::updateConnectionList(void)
         modelConnections->appendRow( new QStandardItem( *i ));
 }
 
-
 // append some text to the log window
 void MainWindow::showMessage(QString msg)
 {
     ui->plainTextEditLog->appendPlainText(msg);
 }
-
-
-
-
-#ifdef NATURALPOINT_CLIENT
-
-void MainWindow::naturalPointConnected(bool con)
-{
-    if(con)
-    {
-        ui->pushButtonNPConnect->setEnabled(true);
-        ui->pushButtonNPConnect->setText("Disconnect");
-    }
-    else
-    {
-        ui->pushButtonNPConnect->setEnabled(true);
-        ui->pushButtonNPConnect->setText("Connect");
-    }
-}
-
-void MainWindow::doNaturalPointConnect()
-{
-    if(naturalPointClient->connected == false) {
-        QString host = ui->lineEditNPHost->text();
-
-        int port = ui->lineEditNPPort->text().toInt();
-        if(port == 0)
-        {
-            QMessageBox::warning(this,"Error", "Invalid Port", QMessageBox::Ok);
-            return;
-        }
-
-        naturalPointClient->host = host;
-        naturalPointClient->port = port;
-
-        ui->pushButtonNPConnect->setEnabled(false);
-        ui->pushButtonNPConnect->setText("Connecting");
-        naturalPointClient->start();
-    } else {
-        naturalPointClient->running = false;
-        ui->pushButtonNPConnect->setEnabled(false);
-        ui->pushButtonNPConnect->setText("Disconnecting");
-    }
-}
-
-#endif
 
 void MainWindow::mouseMoveEvent(QMouseEvent *e)
 {

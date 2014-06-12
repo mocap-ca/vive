@@ -5,8 +5,8 @@
 #-------------------------------------------------
 
 CONFIG   += qt
-CONFIG   += vicon
-#CONFIG   += naturalpoint
+#CONFIG   += vicon
+CONFIG   += naturalpoint
 QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets

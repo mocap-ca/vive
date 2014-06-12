@@ -24,10 +24,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 LocalServer::LocalServer(MocapSubjectList *sList, QObject *parent)
 : QObject(parent)
+, running(true)
+, count(0)
 , working(false)
 , subjectList(sList)
-, count(0)
-, running(true)
 {}
 
 void LocalServer::listen()
@@ -175,7 +175,7 @@ int LocalServer::checkAlive()
                 break;
             }
 
-            if(s->state() == QAbstractSocket::ConnectedState)
+            if(s->state() == QLocalSocket::ConnectedState)
                 ret++;
         }
 

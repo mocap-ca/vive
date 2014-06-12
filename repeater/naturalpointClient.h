@@ -23,43 +23,62 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <QObject>
 #include <QList>
-#include <QThread>
+#include "baseClient.h"
 #include <QUdpSocket>
 #include "mocapSubject.h"
 
 #include "NatNetTypes.h"
 #include "CMNatNetPacketParser.h"
 
-class NaturalPointClient : public QThread
+class NaturalPointClient : public BaseClient
 {
     Q_OBJECT
 
 public:
-    NaturalPointClient( MocapSubjectList *subjectList, QObject *parent = NULL);
+    NaturalPointClient( MocapSubjectList *subjectList,
+                       QPushButton *button,
+                       QLineEdit *statusLine,
+                       QLineEdit *hostField,
+                       QLineEdit *portField,
+                       QObject *parent = NULL);
 
     bool mocapConnect();
     bool mocapDisconnect();
 
-    bool connected;
     QHostAddress connectGroupAddress;
     QUdpSocket *socket;
 
-    MocapSubjectList *subjects;
     CMNatNetPacketParser mParser;
 
+    virtual QString ClientStr() { return QString("NaturalPoint"); }
+    
+    //! Implements QThread (parent of baseclient)
     virtual void run();
 
+    //! True if thread loop is currently running
+    /*! Set to false just before thread loop completes */
     bool running;
-    size_t count;
+
+    //! see BaseClient::mocapStart()
+    virtual void mocapStart();
+    
+    //! see BaseClient::mocapStop()
+    virtual void mocapStop();
+    
+    //! see BaseClient::ClientId()
+    virtual QString ClientId() { return "NaturalPoint"; }
+    
+    //! see baseClient::UIConnectingState()
+    virtual void UIConnectingState();
+    
+    //! @returns true if the service is running
+    virtual bool isRunning() { return running; }
+
     QString host;
     int     port;
 
-private:
-
-signals:
-    void outMessage(QString);
-    void connectedEvent(bool);
-    void newFrame(unsigned int);
+    QLineEdit *hostField;
+    QLineEdit *portField;
 };
 
 #endif // NATURALPOINTCLIENT_H
