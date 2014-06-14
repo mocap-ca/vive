@@ -206,7 +206,7 @@ void NaturalPointConnector::outMessage(QString _t1)
 }
 struct qt_meta_stringdata_NaturalPointClient_t {
     QByteArrayData data[3];
-    char stringdata[34];
+    char stringdata[41];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -216,10 +216,11 @@ struct qt_meta_stringdata_NaturalPointClient_t {
 static const qt_meta_stringdata_NaturalPointClient_t qt_meta_stringdata_NaturalPointClient = {
     {
 QT_MOC_LITERAL(0, 0, 18),
-QT_MOC_LITERAL(1, 19, 12),
-QT_MOC_LITERAL(2, 32, 0)
+QT_MOC_LITERAL(1, 19, 19),
+QT_MOC_LITERAL(2, 39, 0)
     },
-    "NaturalPointClient\0viconMessage\0\0"
+    "NaturalPointClient\0naturalPointMessage\0"
+    "\0"
 };
 #undef QT_MOC_LITERAL
 
@@ -250,7 +251,7 @@ void NaturalPointClient::qt_static_metacall(QObject *_o, QMetaObject::Call _c, i
     if (_c == QMetaObject::InvokeMetaMethod) {
         NaturalPointClient *_t = static_cast<NaturalPointClient *>(_o);
         switch (_id) {
-        case 0: _t->viconMessage((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 0: _t->naturalPointMessage((*reinterpret_cast< QString(*)>(_a[1]))); break;
         default: ;
         }
     }

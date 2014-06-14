@@ -103,7 +103,8 @@ public:
     QLineEdit *portField;
 
 public slots:
-    void viconMessage(QString);
+    void naturalPointMessage(QString);
+    
     
 private:
     bool          frameError;

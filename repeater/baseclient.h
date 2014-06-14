@@ -56,10 +56,9 @@ public:
     //! signals a message to be displayed
     void outMessage(QString s);
 
+public slots:
     //! signal that a new frame is available and should be pushed out
     void newFrame(uint i);
-
-public slots:
 
     //! Subclass should prepare then start the thread/timer
     virtual void mocapStart() = 0;

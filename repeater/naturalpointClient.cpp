@@ -152,7 +152,8 @@ NaturalPointClient::NaturalPointClient(MocapSubjectList *sList,
     connect(naturalpoint, SIGNAL(connected()),     this, SLOT(UIConnectedState()));
     connect(naturalpoint, SIGNAL(disconnecting()), this, SLOT(UIDisconnectingState()));
     connect(naturalpoint, SIGNAL(disconnected()),  this, SLOT(UIDisconnectedState()));
-    connect(naturalpoint, SIGNAL(outMessage(QString)), this, SLOT(viconMessage(QString)));
+    connect(naturalpoint, SIGNAL(outMessage(QString)), this, SLOT(naturalPointMessage(QString)));
+    connect(naturalpoint, SIGNAL(newFrame(uint)), this, SLOT(newFrame(uint)));
 
     QStringList wordList;
     wordList << "239.255.42.99" << "127.0.0.1";
@@ -211,7 +212,7 @@ void NaturalPointClient::mocapWait()
     naturalpoint->wait();
 }
 
-void NaturalPointClient::viconMessage(QString m)
+void NaturalPointClient::naturalPointMessage(QString m)
 {
     outMessage(m);
 }
