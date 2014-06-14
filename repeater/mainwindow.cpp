@@ -47,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->listViewConnections->setModel(modelConnections);
     ui->treeViewData->setModel(&subjectList->model);
 
-    for(size_t i=1; i < 16; i++)
+    for(int i=1; i < 16; i++)
         ui->treeViewData->setColumnWidth(i, 50);
 
     // Start tcp server
@@ -70,8 +70,6 @@ MainWindow::MainWindow(QWidget *parent) :
                                                ui->lineEditViconHost,
                                                ui->lineEditViconPort,
                                                this);
-    ok &= (bool)QObject::connect(viconClient, SIGNAL(newFrame(uint)),      server, SLOT(process()));
-    ok &= (bool)QObject::connect(viconClient, SIGNAL(newFrame(uint)), localServer, SLOT(process()));
     clients.append(viconClient);
 #else
     ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->ViconTab));
@@ -129,18 +127,24 @@ MainWindow::~MainWindow()
     // Wait for all clients to stop
     for( QList<BaseClient *>::iterator i = clients.begin(); i!=clients.end(); i++)
     {
-        (*i)->wait();
+        (*i)->mocapWait();
     }
 
     delete ui;
 }
 
 
+void MainWindow::processFrame(BaseClient::ClientId, uint)
+{
+    server->process();
+    localServer->process();
+}
+
 
 
 void MainWindow::timerClick()
 {
-    QString msg = QString("TCP FPS: %1   Pipe FPS: %1").arg(server->count).arg(localServer->count);
+    QString msg = QString("TCP FPS: %1   Pipe FPS: %2").arg(server->count).arg(localServer->count);
     this->statusBar()->showMessage(msg);
 
     for(QList<BaseClient*>::iterator i = clients.begin(); i != clients.end(); i++)

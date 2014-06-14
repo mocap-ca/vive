@@ -7,7 +7,7 @@
 #include <QLineEdit>
 #include "mocapSubject.h"
 
-class BaseClient : public QThread
+class BaseClient : public QObject
 {
 
 
@@ -41,8 +41,6 @@ public:
     QLineEdit *statusLine;
 
 
-public:
-
     //! True if currently connected
     bool connected;
 
@@ -59,17 +57,20 @@ public:
     void outMessage(QString s);
 
     //! signal that a new frame is available and should be pushed out
-    void newFrame(unsigned int i);
+    void newFrame(uint i);
 
 public slots:
 
-    //! Subclass should prepare then start the thread
+    //! Subclass should prepare then start the thread/timer
     virtual void mocapStart() = 0;
 
     //! Subclass this to cleanly break out of the thread loop
     virtual void mocapStop() = 0;
 
-    //! Change ui to show we are connected, and start thread
+    //! Subclass should wait for threads to stop and return
+    virtual void mocapWait() = 0;
+
+    //! Change ui to show we are connected
     /*! This must be called from the main window only */
     virtual void UIConnectingState();
 
@@ -100,7 +101,7 @@ signals:
     void stateDisconnecting();
     void stateDisconnected();
     void outMessage_(QString);
-    void newFrame_(ClientId, unsigned int);
+    void updateFrame(BaseClient::ClientId, uint);
 
 };
 

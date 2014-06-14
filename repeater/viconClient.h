@@ -26,6 +26,49 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "ViconStreamClient.h"
 #include <QLineEdit>
 
+// Inherits from qthread - cannot modify gui
+class ViconConnector : public QThread
+{
+    Q_OBJECT
+
+public:
+
+    enum eStreamMode
+    {
+        SERVER_PUSH,
+        CLIENT_PULL,
+        CLIENT_PULL_PRE_FETCH
+    };
+
+    ViconConnector(QObject *parent, MocapSubjectList *subjectList);
+    virtual void run();
+
+    bool connect();
+    void stop();
+
+    MocapSubjectList *subjects;
+    bool    running;
+    QString host;
+    int     port;
+    size_t  count;
+
+    ViconDataStreamSDK::CPP::Client mClient;
+    eStreamMode   streamMode;
+
+
+
+signals:
+    void connecting();
+    void connected();
+    void disconnecting();
+    void disconnected();
+    void newFrame(uint);
+    void outMessage(QString);
+
+};
+
+
+// Inherits from qobject - runs under main thread.
 class ViconClient : public BaseClient
 {
 	Q_OBJECT
@@ -38,25 +81,14 @@ public:
                  QLineEdit *portField,
                  QObject *parent = NULL);
 
-    ViconDataStreamSDK::CPP::Client mClient;
+
 
     //! @returns "Vicon"
     virtual QString ClientStr() { return QString("Vicon"); }
 
-    //! Implements QThread (parent of baseclient)
-    virtual void run();
-
     //! True if thread loop is currently running
     /*! Set to false just before thread loop completes */
     bool running;
-
-    //! Connect to vicon
-    /*! @returns true if connection was successful */
-    bool mocapConnect();
-
-    //! Disconnect from vicon
-    /*! @returns false if not connected, or disconnection fails */
-    bool mocapDisconnect();
 
     //! see BaseClient::mocapStart()
     virtual void mocapStart();
@@ -64,34 +96,25 @@ public:
     //! see BaseClient::mocapStop()
     virtual void mocapStop();
 
+    //! see BaseClient::mocapWait();
+    virtual void mocapWait();
+
     //! see BaseClient::ClientId()
     /*! @returns "Vicon" */
     virtual QString ClientId() { return "Vicon"; }
 
-    //! see baseClient::UIConnectingState()
-    virtual void UIConnectingState();
-
     //! @returns true if the service is running
     virtual bool isRunning() { return running; }
 
-    QString host;
-    int     port;
-
-    enum eStreamMode
-    {
-        SERVER_PUSH,
-        CLIENT_PULL,
-        CLIENT_PULL_PRE_FETCH
-    };
-
+    ViconConnector *vicon;
     QLineEdit *hostField;
     QLineEdit *portField;
 
+public slots:
+    void viconMessage(QString);
+
 private:
     bool          frameError;
-    eStreamMode   streamMode;
-
-
 
 };
 

@@ -37,9 +37,9 @@ FORMS    += mainwindow.ui
 
 CONFIG(vicon) {
     DEFINES += VICON_CLIENT
-    INCLUDEPATH += C:/cpp/api/viconDataStream/Win32/CPP/
-    DEPENDPATH  += C:/cpp/api/viconDataStream/Win32/CPP/
-    LIBS += C:/cpp/api/viconDataStream/Win32/CPP/ViconDataStreamSDK_CPP.lib
+    INCLUDEPATH += C:/cpp/api/viconDataStream/Win64/CPP/
+    DEPENDPATH  += C:/cpp/api/viconDataStream/Win64/CPP/
+    LIBS += C:/cpp/api/viconDataStream/Win64/CPP/ViconDataStreamSDK_CPP.lib
     SOURCES += viconClient.cpp
     HEADERS += viconClient.h
 #win32: INCLUDEPATH += C:\cpp\api\viconDataStream\Win32\CPP
