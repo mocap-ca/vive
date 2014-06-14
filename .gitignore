@@ -3,3 +3,5 @@
 /Icon?
 repeater/Debug
 repeater/MocapSocket.build
+build-*/
+*.pro.user
