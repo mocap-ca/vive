@@ -59,7 +59,7 @@ public:
     void outMessage(QString s);
 
     //! signal that a new frame is available and should be pushed out
-    void newFrame(unsigned int i);
+    void newFrame(uint i);
 
 public slots:
 
@@ -100,7 +100,7 @@ signals:
     void stateDisconnecting();
     void stateDisconnected();
     void outMessage_(QString);
-    void newFrame_(ClientId, unsigned int);
+    void updateFrame(ClientId, unsigned int);
 
 };
 
