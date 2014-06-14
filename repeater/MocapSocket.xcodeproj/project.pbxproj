@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		FF11450BBE2AB9BB67B2F536 /* Qt Preprocess */ = {
+		F4DD966C3934CCEED5D39FFF /* Qt Preprocess */ = {
 			isa = PBXAggregateTarget;
 			buildConfigurationList = 6CC3B5D2136C7CD6A5CF5A59 /* Build configuration list for PBXNativeTarget "MocapSocket" */;
 			buildPhases = (
@@ -48,11 +48,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		2C5CAF4D19495C1700AB2AB2 /* PBXContainerItemProxy */ = {
+		2C6E2CF7194CF8B900FACC02 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 6DB9C3763D02B1415CD9D565 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = FF11450BBE2AB9BB67B2F536;
+			remoteGlobalIDString = F4DD966C3934CCEED5D39FFF;
 			remoteInfo = "Qt Preprocess";
 		};
 /* End PBXContainerItemProxy section */
@@ -80,8 +80,8 @@
 		26CC0AAB41CE82AF021E40D8 /* unix.conf */ = {isa = PBXFileReference; lastKnownFileType = file; name = unix.conf; path = ../../../../Qt/5.2.1/clang_64/mkspecs/common/unix.conf; sourceTree = "<absolute>"; };
 		29B9FE8F3847D6BA84CA7814 /* clang.conf */ = {isa = PBXFileReference; lastKnownFileType = file; name = clang.conf; path = ../../../../Qt/5.2.1/clang_64/mkspecs/common/clang.conf; sourceTree = "<absolute>"; };
 		2B843C171FCCBEFE6E4B54F5 /* qt_lib_testlib_private.pri */ = {isa = PBXFileReference; lastKnownFileType = file; name = qt_lib_testlib_private.pri; path = ../../../../Qt/5.2.1/clang_64/mkspecs/modules/qt_lib_testlib_private.pri; sourceTree = "<absolute>"; };
-		2C5CAF4E19495F5000AB2AB2 /* viconClient.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = viconClient.cpp; sourceTree = SOURCE_ROOT; };
-		2C5CAF4F19495F5000AB2AB2 /* viconClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = viconClient.h; sourceTree = SOURCE_ROOT; };
+		2C6E2CF8194CF92900FACC02 /* viconClient.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = viconClient.cpp; sourceTree = SOURCE_ROOT; };
+		2C6E2CF9194CF92900FACC02 /* viconClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = viconClient.h; sourceTree = SOURCE_ROOT; };
 		2CFE7515C12DAE19515D422B /* QtWidgets.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtWidgets.framework; path = ../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework; sourceTree = "<absolute>"; };
 		2EEF8774B848AE5839B260CC /* qt_lib_printsupport_private.pri */ = {isa = PBXFileReference; lastKnownFileType = file; name = qt_lib_printsupport_private.pri; path = ../../../../Qt/5.2.1/clang_64/mkspecs/modules/qt_lib_printsupport_private.pri; sourceTree = "<absolute>"; };
 		2F442A73AE8C9A0D3EDB54AA /* qt_lib_xml.pri */ = {isa = PBXFileReference; lastKnownFileType = file; name = qt_lib_xml.pri; path = ../../../../Qt/5.2.1/clang_64/mkspecs/modules/qt_lib_xml.pri; sourceTree = "<absolute>"; };
@@ -133,7 +133,6 @@
 		8AA7BC29BB15968C626C6F3C /* qt_lib_openglextensions.pri */ = {isa = PBXFileReference; lastKnownFileType = file; name = qt_lib_openglextensions.pri; path = ../../../../Qt/5.2.1/clang_64/mkspecs/modules/qt_lib_openglextensions.pri; sourceTree = "<absolute>"; };
 		8D467E7358ADF4E3703F837B /* mainwindow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mainwindow.cpp; sourceTree = "<absolute>"; };
 		8D9815BDB5BD9F90D2BC05C5 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
-		8DDA48B8740394684114EE2D /* MocapSocket.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MocapSocket.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E009FFAE38DEDAACE24A696 /* qt_lib_xmlpatterns.pri */ = {isa = PBXFileReference; lastKnownFileType = file; name = qt_lib_xmlpatterns.pri; path = ../../../../Qt/5.2.1/clang_64/mkspecs/modules/qt_lib_xmlpatterns.pri; sourceTree = "<absolute>"; };
 		95E4B54E29FE27129D2A42FB /* qt_lib_sql_private.pri */ = {isa = PBXFileReference; lastKnownFileType = file; name = qt_lib_sql_private.pri; path = ../../../../Qt/5.2.1/clang_64/mkspecs/modules/qt_lib_sql_private.pri; sourceTree = "<absolute>"; };
 		9AE56C86DF8319F6F49E18F5 /* qt_lib_quick.pri */ = {isa = PBXFileReference; lastKnownFileType = file; name = qt_lib_quick.pri; path = ../../../../Qt/5.2.1/clang_64/mkspecs/modules/qt_lib_quick.pri; sourceTree = "<absolute>"; };
@@ -142,6 +141,7 @@
 		9DD2E2AB1E1C59452B0AAA55 /* qt_lib_macextras.pri */ = {isa = PBXFileReference; lastKnownFileType = file; name = qt_lib_macextras.pri; path = ../../../../Qt/5.2.1/clang_64/mkspecs/modules/qt_lib_macextras.pri; sourceTree = "<absolute>"; };
 		9E0A0CEB40AC6441FA1B94F6 /* qmake.conf */ = {isa = PBXFileReference; lastKnownFileType = file; name = qmake.conf; path = "../../../../Qt/5.2.1/clang_64/mkspecs/macx-xcode/qmake.conf"; sourceTree = "<absolute>"; };
 		AB5A5FDB454235DCE616E173 /* qt_lib_positioning_private.pri */ = {isa = PBXFileReference; lastKnownFileType = file; name = qt_lib_positioning_private.pri; path = ../../../../Qt/5.2.1/clang_64/mkspecs/modules/qt_lib_positioning_private.pri; sourceTree = "<absolute>"; };
+		AB745978DF0F41D1801ABDA6 /* .qmake.stash */ = {isa = PBXFileReference; lastKnownFileType = file; path = .qmake.stash; sourceTree = "<absolute>"; };
 		AC92BE93DE94BDA77FE0A61C /* qt_lib_multimediawidgets.pri */ = {isa = PBXFileReference; lastKnownFileType = file; name = qt_lib_multimediawidgets.pri; path = ../../../../Qt/5.2.1/clang_64/mkspecs/modules/qt_lib_multimediawidgets.pri; sourceTree = "<absolute>"; };
 		AE9A35040C04681776A5A429 /* qt_lib_macextras_private.pri */ = {isa = PBXFileReference; lastKnownFileType = file; name = qt_lib_macextras_private.pri; path = ../../../../Qt/5.2.1/clang_64/mkspecs/modules/qt_lib_macextras_private.pri; sourceTree = "<absolute>"; };
 		B75F30E7B74B38B2479BC238 /* qt_lib_opengl_private.pri */ = {isa = PBXFileReference; lastKnownFileType = file; name = qt_lib_opengl_private.pri; path = ../../../../Qt/5.2.1/clang_64/mkspecs/modules/qt_lib_opengl_private.pri; sourceTree = "<absolute>"; };
@@ -178,6 +178,7 @@
 		F7C225706590DF8833A3FC8D /* qt_lib_positioning.pri */ = {isa = PBXFileReference; lastKnownFileType = file; name = qt_lib_positioning.pri; path = ../../../../Qt/5.2.1/clang_64/mkspecs/modules/qt_lib_positioning.pri; sourceTree = "<absolute>"; };
 		F9FC9844FA37F0E128932343 /* qt_lib_printsupport.pri */ = {isa = PBXFileReference; lastKnownFileType = file; name = qt_lib_printsupport.pri; path = ../../../../Qt/5.2.1/clang_64/mkspecs/modules/qt_lib_printsupport.pri; sourceTree = "<absolute>"; };
 		FAB1FC70F1710C41EB15BFDD /* qt_lib_svg_private.pri */ = {isa = PBXFileReference; lastKnownFileType = file; name = qt_lib_svg_private.pri; path = ../../../../Qt/5.2.1/clang_64/mkspecs/modules/qt_lib_svg_private.pri; sourceTree = "<absolute>"; };
+		FC8083D68F5C423335BB57FD /* MocapSocket.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MocapSocket.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCFA473352C3E78E97634C01 /* mocapSubject.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mocapSubject.cpp; sourceTree = "<absolute>"; };
 		FD3E96972EC8C8B6474F7177 /* qt_lib_webkitwidgets_private.pri */ = {isa = PBXFileReference; lastKnownFileType = file; name = qt_lib_webkitwidgets_private.pri; path = ../../../../Qt/5.2.1/clang_64/mkspecs/modules/qt_lib_webkitwidgets_private.pri; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
@@ -255,8 +256,8 @@
 		2EB56BE3C2D93CDAB0C52E67 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				2C5CAF4E19495F5000AB2AB2 /* viconClient.cpp */,
-				2C5CAF4F19495F5000AB2AB2 /* viconClient.h */,
+				2C6E2CF8194CF92900FACC02 /* viconClient.cpp */,
+				2C6E2CF9194CF92900FACC02 /* viconClient.h */,
 				682A50D19E416195436708E4 /* main.cpp */,
 				8D467E7358ADF4E3703F837B /* mainwindow.cpp */,
 				DFDEE4E5C0388AFEE9CCCD5F /* server.cpp */,
@@ -318,6 +319,7 @@
 			children = (
 				F38EA967A98A39AF0A288DA3 /* MocapSocket.pro */,
 				A3E1AA9917EC82D3446C262A /* .. */,
+				AB745978DF0F41D1801ABDA6 /* .qmake.stash */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<Group>";
@@ -468,7 +470,7 @@
 		FE0A091FDBFB3E9C31B7A1BD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DDA48B8740394684114EE2D /* MocapSocket.app */,
+				FC8083D68F5C423335BB57FD /* MocapSocket.app */,
 			);
 			name = Products;
 			sourceTree = "<Group>";
@@ -476,7 +478,7 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		0223DA1500361A0F07850B34 /* MocapSocket */ = {
+		9FAFD831CCA020F73D8A2E79 /* MocapSocket */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6CC3B5D2136C7CD6A5CF5A59 /* Build configuration list for PBXNativeTarget "MocapSocket" */;
 			buildPhases = (
@@ -486,11 +488,11 @@
 			buildRules = (
 			);
 			dependencies = (
-				6D5C61FEE145EE5F01D0960C /* PBXTargetDependency */,
+				40211B1929A354913221ED2E /* PBXTargetDependency */,
 			);
 			name = MocapSocket;
 			productName = MocapSocket;
-			productReference = 8DDA48B8740394684114EE2D /* MocapSocket.app */;
+			productReference = FC8083D68F5C423335BB57FD /* MocapSocket.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -512,8 +514,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				0223DA1500361A0F07850B34 /* MocapSocket */,
-				FF11450BBE2AB9BB67B2F536 /* Qt Preprocess */,
+				9FAFD831CCA020F73D8A2E79 /* MocapSocket */,
+				F4DD966C3934CCEED5D39FFF /* Qt Preprocess */,
 			);
 		};
 /* End PBXProject section */
@@ -570,10 +572,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		6D5C61FEE145EE5F01D0960C /* PBXTargetDependency */ = {
+		40211B1929A354913221ED2E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = FF11450BBE2AB9BB67B2F536 /* Qt Preprocess */;
-			targetProxy = 2C5CAF4D19495C1700AB2AB2 /* PBXContainerItemProxy */;
+			target = F4DD966C3934CCEED5D39FFF /* Qt Preprocess */;
+			targetProxy = 2C6E2CF7194CF8B900FACC02 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

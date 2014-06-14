@@ -17,104 +17,41 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-
-
+#include "naturalpointClient.h"
 #include <stdio.h>
 #include <assert.h>
-#include "naturalpointClient.h"
 
 #include <QMessageBox>
 #include <QCompleter>
 
-NaturalPointClient::NaturalPointClient(MocapSubjectList *sList,
-                                       QPushButton *button,
-                                       QLineEdit *statusLine,
-                                       QLineEdit *inHostField,
-                                       QLineEdit *inPortField,
-                                       QObject *parent)
-    : BaseClient(BaseClient::CL_NaturalPoint, sList, button, statusLine, parent)
-    , running(false)
-    , host("239.255.42.99")
-    , port(1511)
-    , hostField(inHostField)
-    , portField(inPortField)
+NaturalPointConnector::NaturalPointConnector(QObject *parent, MocapSubjectList *s)
+: QThread(parent)
+, subjects(s)
+, running(false)
+, host("239.255.42.99")
+, port(1511)
+{}
+
+void NaturalPointConnector::run()
 {
-    QStringList wordList;
-    wordList << "239.255.42.99" << "127.0.0.1";
-    QCompleter *completer = new QCompleter(wordList, inHostField);
-    hostField->setCompleter(completer);
-    hostField->setText(wordList[0]);
-    portField->setText("1511");
-}
-
-// This function must emit a connected event before returning, to renable the button
-bool NaturalPointClient::mocapConnect()
-{
-    emit stateConnecting();
-
-    socket = new QUdpSocket();
-    if( socket->bind(QHostAddress::AnyIPv4, port, QUdpSocket::ShareAddress) == false ){
-        outMessage("Failed to bind NaturalPoint port");
-        return false;
-    }
-
-    connectGroupAddress = QHostAddress(host);
-    if( socket->joinMulticastGroup(QHostAddress(host)) ) {
-        outMessage("Listening for NaturalPoint data over multicast.");
-        connected = true;
-        emit stateConnected();
-        return true;
-    } else {
-        outMessage("Error joining multicast group:");
-        outMessage(socket->errorString());
-        emit stateDisconnected();
-        return false;
-    }
-}
-
-bool NaturalPointClient::mocapDisconnect()
-{
-    if(!connected)
+    emit connecting();
+    if(!connect())
     {
-        emit stateDisconnected();
-        return false;
-    }
-
-    outMessage("Disconnecting from NaturalPoint");
-    connected = false;
-    socket->leaveMulticastGroup(connectGroupAddress);
-    socket->close();
-
-    emit stateDisconnected();
-
-    return true;
-}
-
-
-void NaturalPointClient::run()
-{
-    MocapSubject *subject = NULL;
-    running = true;
-
-    if(!mocapConnect())
-    {
-        running = false;
+        emit disconnected();
         return;
     }
-
+    emit connected();
+    
+    MocapSubject *subject = NULL;
+    running = true;
+    
     while(running)
     {
-
-        if(!connected)
-        {
-            this->msleep(100);
-            continue;
-        }
-
         if( socket->hasPendingDatagrams() == false) {
+            this->msleep(10);
             continue;
         }
-
+        
         char  szData[20000];
         qint64 datagramSize = socket->readDatagram(szData, sizeof(szData));
         sFrameOfMocapData *frameData = mParser.parse(szData, (int)datagramSize );
@@ -127,26 +64,26 @@ void NaturalPointClient::run()
             }
             continue;
         }
-
+        
         unsigned int subjectCount = frameData->nRigidBodies;
         for(unsigned int iSubject=0; iSubject < subjectCount; iSubject++)
         {
             sRigidBodyData *rb = &frameData->RigidBodies[iSubject];
-
+            
             // ASSUMPTION:  rb => frameData->MocapData[rb->ID-1].szName
             int markerSetID = rb->ID-1;
             assert(markerSetID>=0 && markerSetID<frameData->nMarkerSets);
             sMarkerSetData *markerSet = &frameData->MocapData[rb->ID-1];
-
+            
             // Find/Create the subject by name.
             char* subjectName = markerSet->szName;
             subject = subjects->find(QString(subjectName));
-
+            
             // Load the subject's translation and rotation quaternion.
             double t[3] = {rb->x, rb->y, rb->z};
             double r[4] = {rb->qx, rb->qy, rb->qz, rb->qw};
             subject->setSegment(QString("root"), t, r);
-
+            
             for(int iMarker=0; iMarker < rb->nMarkers; iMarker++)
             {
                 MarkerData *m = &rb->Markers[iMarker];
@@ -158,50 +95,124 @@ void NaturalPointClient::run()
                 }
             }
         }
-
+        
         emit newFrame(frameData->iFrame);
         count++;
     }
-
-    outMessage("NaturalPoint Service has finished");
-
-    mocapDisconnect();
+    
+    outMessage("Disconnecting from NaturalPoint");
+    socket->leaveMulticastGroup(connectGroupAddress);
+    socket->close();
+    
+    outMessage("NaturalPointConnector has finished");
+    emit disconnected();
 }
+
+bool NaturalPointConnector::connect()
+{
+    socket = new QUdpSocket();
+    if( socket->bind(QHostAddress::AnyIPv4, port, QUdpSocket::ShareAddress) == false ){
+        outMessage("Failed to bind NaturalPoint port");
+        return false;
+    }
+    
+    connectGroupAddress = QHostAddress(host);
+    if( socket->joinMulticastGroup(QHostAddress(host)) == false ) {
+        outMessage("Error joining multicast group:");
+        outMessage(socket->errorString());
+        return false;
+    }
+    
+    outMessage("Listening for NaturalPoint data over multicast.");
+    return true;
+}
+
+void NaturalPointConnector::stop()
+{
+    emit disconnecting();
+    running = false;
+}
+
+
+//--------------------------------
+
+NaturalPointClient::NaturalPointClient(MocapSubjectList *sList,
+                                       QPushButton *button,
+                                       QLineEdit *statusLine,
+                                       QLineEdit *inHostField,
+                                       QLineEdit *inPortField,
+                                       QObject *parent)
+    : BaseClient(BaseClient::CL_NaturalPoint, sList, button, statusLine, parent)
+    , running(false)
+    , hostField(inHostField)
+    , portField(inPortField)
+{
+    naturalpoint = new NaturalPointConnector(this, sList);
+    connect(naturalpoint, SIGNAL(connecting()),    this, SLOT(UIConnectingState()));
+    connect(naturalpoint, SIGNAL(connected()),     this, SLOT(UIConnectedState()));
+    connect(naturalpoint, SIGNAL(disconnecting()), this, SLOT(UIDisconnectingState()));
+    connect(naturalpoint, SIGNAL(disconnected()),  this, SLOT(UIDisconnectedState()));
+    connect(naturalpoint, SIGNAL(outMessage(QString)), this, SLOT(viconMessage(QString)));
+
+    QStringList wordList;
+    wordList << "239.255.42.99" << "127.0.0.1";
+    QCompleter *completer = new QCompleter(wordList, inHostField);
+    hostField->setCompleter(completer);
+    hostField->setText(wordList[0]);
+    portField->setText("1511");
+}
+
+//bool NaturalPointClient::mocapDisconnect()
+//{
+//    if(!connected)
+//    {
+//        emit stateDisconnected();
+//        return false;
+//    }
+//
+//    outMessage("Disconnecting from NaturalPoint");
+//    connected = false;
+//    socket->leaveMulticastGroup(connectGroupAddress);
+//    socket->close();
+//
+//    emit stateDisconnected();
+//
+//    return true;
+//}
+//
 
 void NaturalPointClient::mocapStart()
 {
-    host = hostField->text();
-    port = portField->text().toInt();
-    if(port == 0)
+    if(naturalpoint->running)
+    {
+        emit outMessage("Skipping attempt to start already running vicon server... this is probably a bug");
+        return;
+    }
+
+    naturalpoint->host = hostField->text();
+    naturalpoint->port = portField->text().toInt();
+    if(naturalpoint->port == 0)
     {
         QMessageBox::warning(NULL,"Error", "Invalid Port", QMessageBox::Ok);
         return;
     }
     
     // start (connection is handled on other thread as it can be slow)
-    this->start();
+    naturalpoint->start();
 }
-
-void NaturalPointClient::UIConnectingState()
-{
-    QString host_ = hostField->text();
-    int port_ = portField->text().toInt();
-    if(port == 0)
-    {
-        QMessageBox::warning(NULL,"Error", "Invalid Port", QMessageBox::Ok);
-        return;
-    }
-    
-    // start (connection is handled on other thread as it can be slow)
-    this->host = host_;
-    this->port = port_;
-    
-    BaseClient::UIConnectingState();
-}
-
 
 void NaturalPointClient::mocapStop()
 {
-    running = false;
+    naturalpoint->stop();
+}
+
+void NaturalPointClient::mocapWait()
+{
+    naturalpoint->wait();
+}
+
+void NaturalPointClient::viconMessage(QString m)
+{
+    outMessage(m);
 }
 

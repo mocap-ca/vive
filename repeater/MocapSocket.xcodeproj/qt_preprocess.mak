@@ -100,6 +100,7 @@ moc_mocapSubject.cpp: ../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Version
 moc_testClient.cpp: ../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QObject \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QList \
 		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QPushButton \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QTimer \
 		baseclient.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QThread \
 		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QLineEdit \
@@ -140,13 +141,16 @@ moc_baseclient.cpp: ../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/
 
 moc_naturalpointClient.cpp: ../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QObject \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QList \
+		baseclient.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QThread \
-		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QUdpSocket \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QPushButton \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QLineEdit \
 		mocapSubject.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QTextStream \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QMutex \
 		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItemModel \
 		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItem \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QUdpSocket \
 		NatNetTypes.h \
 		CMNatNetPacketParser.h \
 		naturalpointClient.h

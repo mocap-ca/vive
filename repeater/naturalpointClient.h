@@ -30,6 +30,38 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "NatNetTypes.h"
 #include "CMNatNetPacketParser.h"
 
+class NaturalPointConnector : public QThread
+{
+    Q_OBJECT
+    
+public:
+    NaturalPointConnector(QObject *parent, MocapSubjectList *subjectList);
+    
+    //! Implements QThread (parent of baseclient)
+    virtual void run();
+    bool connect();
+    void stop();
+    
+    QHostAddress connectGroupAddress;
+    QUdpSocket *socket;
+    
+    CMNatNetPacketParser mParser;
+    
+    MocapSubjectList *subjects;
+    bool    running;
+    QString host;
+    int     port;
+    size_t  count;
+
+signals:
+    void connecting();
+    void connected();
+    void disconnecting();
+    void disconnected();
+    void newFrame(uint);
+    void outMessage(QString);
+};
+
 class NaturalPointClient : public BaseClient
 {
     Q_OBJECT
@@ -45,16 +77,8 @@ public:
     bool mocapConnect();
     bool mocapDisconnect();
 
-    QHostAddress connectGroupAddress;
-    QUdpSocket *socket;
-
-    CMNatNetPacketParser mParser;
-
     virtual QString ClientStr() { return QString("NaturalPoint"); }
     
-    //! Implements QThread (parent of baseclient)
-    virtual void run();
-
     //! True if thread loop is currently running
     /*! Set to false just before thread loop completes */
     bool running;
@@ -64,21 +88,25 @@ public:
     
     //! see BaseClient::mocapStop()
     virtual void mocapStop();
-    
+
+    //! see BaseClient::mocapWait();
+    virtual void mocapWait();
+
     //! see BaseClient::ClientId()
     virtual QString ClientId() { return "NaturalPoint"; }
-    
-    //! see baseClient::UIConnectingState()
-    virtual void UIConnectingState();
     
     //! @returns true if the service is running
     virtual bool isRunning() { return running; }
 
-    QString host;
-    int     port;
-
+    NaturalPointConnector *naturalpoint;
     QLineEdit *hostField;
     QLineEdit *portField;
+
+public slots:
+    void viconMessage(QString);
+    
+private:
+    bool          frameError;
 };
 
 #endif // NATURALPOINTCLIENT_H
