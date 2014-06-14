@@ -38,19 +38,19 @@ MocapSegment::MocapSegment(QString n, double tr[3], double localRot[4] )
 {
     for(size_t i=0; i < 3; i++)  translation[i] = tr[i];
     for(size_t i=0; i < 4; i++)  localRotation[i]  = localRot[i];
-
-    modelItems << new QStandardItem(name);
-    for(size_t i=0; i < 3; i++) modelItems << new QStandardItem(QString::number(translation[i], 'f', PREC));
-    for(size_t i=0; i < 4; i++) modelItems << new QStandardItem(QString::number(localRotation[i], 'f', PREC));
-
-    updateModel();
 }
 
 void MocapSegment::updateModel()
 {
+    if(modelItems.length() == 0)
+    {
+        modelItems << new QStandardItem(name);
+        for(size_t i=0; i < 3; i++) modelItems << new QStandardItem(QString::number(translation[i], 'f', PREC));
+        for(size_t i=0; i < 4; i++) modelItems << new QStandardItem(QString::number(localRotation[i], 'f', PREC));
+    }
     modelItems[0]->setText(name);
-    for(size_t i=0; i < 3; i++)  modelItems[i+1]->setText(QString::number(translation[i],   'f', PREC));
-    for(size_t i=0; i < 4; i++)  modelItems[i+4]->setText(QString::number(localRotation[i], 'f', PREC));
+    for(int i=0; i < 3; i++)  modelItems[i+1]->setText(QString::number(translation[i],   'f', PREC));
+    for(int i=0; i < 4; i++)  modelItems[i+4]->setText(QString::number(localRotation[i], 'f', PREC));
 }
 
 // serialize as string
@@ -74,16 +74,18 @@ MocapMarker::MocapMarker(QString n, double tr[3])
 : name(n)
 {
     for(size_t i=0; i < 3; i++) translation[i] = tr[i];
-    modelItems << new QStandardItem(name);
-    for(size_t i=0; i < 3; i++) modelItems << new QStandardItem(QString::number(translation[i], 'f', PREC));
-    updateModel();
 }
 
 void MocapMarker::updateModel()
 {
+    if(modelItems.length() == 0)
+    {
+        modelItems << new QStandardItem(name);
+        for(size_t i=0; i < 3; i++) modelItems << new QStandardItem(QString::number(translation[i], 'f', PREC));
+    }
     modelItems[0]->setText(name);
-    size_t i=1;
-    for(; i < 4; i++)  modelItems[i]->setText(QString::number(translation[i-1],     'f', PREC));
+    int i=1;
+    for(; i < 4; i++)  modelItems[i]->setText(QString::number(translation[i-1], 'f', PREC));
 }
 
 // serialize as string
@@ -203,8 +205,6 @@ MocapSubjectList::MocapSubjectList(QObject *parent)
     headers << "rz";
     headers << "rw";
     model.setHorizontalHeaderLabels(headers);
-
-
 }
 
 MocapSubjectList::~MocapSubjectList()

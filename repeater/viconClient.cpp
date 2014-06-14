@@ -25,121 +25,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 using namespace ViconDataStreamSDK::CPP;
 
-ViconClient::ViconClient(MocapSubjectList *sList,
-                         QPushButton *button,
-                         QLineEdit *statusLine,
-                         QLineEdit *inHostField,
-                         QLineEdit *inPortField,
-                         QObject *parent)
-: BaseClient(BaseClient::CL_Vicon, sList, button, statusLine, parent)
-, running(false)
-, port(0)
-, frameError(false)
-, streamMode(SERVER_PUSH)
-, hostField(inHostField)
-, portField(inPortField)
+ViconConnector::ViconConnector(QObject *parent, MocapSubjectList *s)
+    : QThread(parent)
+    , subjects(s)
+    , running(false)
+    , host("")
+    , port(0)
+    , streamMode(SERVER_PUSH)
+{}
+
+void ViconConnector::run()
 {
-    QStringList wordList;
-    wordList << "192.168.11.1" << "127.0.0.1";
-    QCompleter *completer = new QCompleter(wordList, inHostField);
-    hostField->setCompleter(completer);
-    hostField->setText(wordList[0]);
-    portField->setText("801");
-
-}
-
-// This function must emit a connected event before returning, to renable the button
-bool ViconClient::mocapConnect()
-{
-    emit stateConnecting();
-
-    QString connectionString;
-    QTextStream stream(&connectionString);
-    stream << host << ":" << port;
-    outMessage(QString("Connecting to: %1").arg(connectionString));
-
-    Output_Connect output = mClient.Connect( connectionString.toUtf8().data() );
-    if(output.Result != Result::Success)
+    emit connecting();
+    if(!connect())
     {
-        switch(output.Result)
-        {
-            case Result::InvalidHostName : outMessage("Error: Invalid host name"); break;
-            case Result::ClientAlreadyConnected : outMessage("Error: Client Already Connected"); break;
-            case Result::ClientConnectionFailed : outMessage("Error: Connection Failed"); break;
-            default: outMessage("Error: Could not connect");
-        }
-        emit stateDisconnected();
-        return false;
+        emit disconnected();
+        return;
     }
+    emit connected();
 
-	mClient.EnableSegmentData();
-	mClient.EnableMarkerData();
-    //mClient.EnableUnlabeledMarkerData();
-
-    switch(streamMode)
-    {
-        case SERVER_PUSH : mClient.SetStreamMode(StreamMode::ServerPush); break;
-        case CLIENT_PULL : mClient.SetStreamMode(StreamMode::ClientPull); break;
-        case CLIENT_PULL_PRE_FETCH : mClient.SetStreamMode(StreamMode::ClientPullPreFetch); break;
-    }
-
-    Output_SetAxisMapping axisResult = mClient.SetAxisMapping(Direction::Forward, Direction::Up, Direction::Right);
-    if(axisResult.Result != Result::Success)
-    {
-        outMessage("Could not set Axis");
-    }
-
-    connected = true;
-
-    outMessage("Connected to vicon server.");
-
-    emit stateConnected();
-
-	return true;
-}
-
-bool ViconClient::mocapDisconnect()
-{
-
-    if(!connected)
-    {
-        emit stateDisconnected();
-        return false;
-    }
-
-    emit stateDisconnecting();
-
-    outMessage("Disconnecting from Vicon");
-	Output_Disconnect output = mClient.Disconnect();
-    connected = false;
-
-    emit stateDisconnected();
-
-	return output.Result == Result::Success;
-}
-
-
-void ViconClient::run()
-{
-	MocapSubject *subject;
+    MocapSubject *subject;
 
     running = true;
 
-    if(!mocapConnect())
-    {
-        running = false;
-        return;
-    }
+    bool frameError = false;
 
     while(running)
-	{
-
-        if(!connected)
-        {
-            this->msleep(100);
-            continue;
-        }
-
+    {
         Output_GetFrame rf = mClient.GetFrame();
         if(rf.Result == Result::NoFrame) continue;
         if(rf.Result != Result::Success)
@@ -152,34 +64,34 @@ void ViconClient::run()
 
         frameError = false;
 
-		Output_GetFrameNumber rfn = mClient.GetFrameNumber();
-		unsigned int frameNumber = 0;
-		unsigned int subjectCount = 0;
+        Output_GetFrameNumber rfn = mClient.GetFrameNumber();
+        unsigned int frameNumber = 0;
+        unsigned int subjectCount = 0;
 
-		if (rfn.Result == Result::Success)
-			frameNumber = rfn.FrameNumber;
+        if (rfn.Result == Result::Success)
+            frameNumber = rfn.FrameNumber;
 
-		Output_GetSubjectCount rsc = mClient.GetSubjectCount();
-		if (rsc.Result == Result::Success)
-			subjectCount = rsc.SubjectCount;
+        Output_GetSubjectCount rsc = mClient.GetSubjectCount();
+        if (rsc.Result == Result::Success)
+            subjectCount = rsc.SubjectCount;
 
-		for(unsigned int i=0; i < subjectCount; i++)
-		{
-			Output_GetSubjectName rsn = mClient.GetSubjectName(i);
-			if(rsn.Result != Result::Success) continue;
+        for(unsigned int i=0; i < subjectCount; i++)
+        {
+            Output_GetSubjectName rsn = mClient.GetSubjectName(i);
+            if(rsn.Result != Result::Success) continue;
 
-			std::string subjectName = rsn.SubjectName;
-			subject = subjects->find(QString(subjectName.c_str()));
+            std::string subjectName = rsn.SubjectName;
+            subject = subjects->find(QString(subjectName.c_str()));
 
-			Output_GetSubjectRootSegmentName srs = mClient.GetSubjectRootSegmentName(subjectName);
-			if(srs.Result != Result::Success) continue;
+            Output_GetSubjectRootSegmentName srs = mClient.GetSubjectRootSegmentName(subjectName);
+            if(srs.Result != Result::Success) continue;
 
-			Output_GetSegmentCount sc = mClient.GetSegmentCount(subjectName);
-			if(sc.Result  != Result::Success) continue;
+            Output_GetSegmentCount sc = mClient.GetSegmentCount(subjectName);
+            if(sc.Result  != Result::Success) continue;
 
-			for(unsigned int i = 0; i < sc.SegmentCount; i++)
-			{
-				Output_GetSegmentName sn = mClient.GetSegmentName(subjectName, i);
+            for(unsigned int i = 0; i < sc.SegmentCount; i++)
+            {
+                Output_GetSegmentName sn = mClient.GetSegmentName(subjectName, i);
                 Output_GetSegmentLocalTranslation         trans     = mClient.GetSegmentLocalTranslation(subjectName, sn.SegmentName);
                 Output_GetSegmentLocalRotationQuaternion  localRot  = mClient.GetSegmentLocalRotationQuaternion(subjectName, sn.SegmentName);
 
@@ -190,7 +102,7 @@ void ViconClient::run()
 
                 std::string segname = sn.SegmentName;
                 subject->setSegment(QString(segname.c_str()) ,unityTrans, unityRot);
-			}
+            }
 
             Output_GetMarkerCount mc = mClient.GetMarkerCount(subjectName);
             for(unsigned int i=0; i < mc.MarkerCount; i++)
@@ -201,55 +113,126 @@ void ViconClient::run()
                 double unityTrans[3] = { -trans.Translation[0] / 100. , -trans.Translation[2] / 100., -trans.Translation[1] / 100. };
                 subject->setMarker(QString(markername.c_str()), unityTrans);
             }
-		}
+        }
 
         emit newFrame(frameNumber);
         count++;
-	}
-
-    outMessage("Service finished");
-
-    mocapDisconnect();
-}
-
-
-void ViconClient::mocapStart()
-{
-    host = hostField->text();
-    port = portField->text().toInt();
-    if(port == 0)
-    {
-        QMessageBox::warning(NULL,"Error", "Invalid Port", QMessageBox::Ok);
-        return;
     }
 
-    // start (connection is handled on other thread as it can be slow)
-    this->start();
+    emit outMessage("Disconnecting from Vicon");
+    mClient.Disconnect();
+
+    emit disconnected();
 }
 
-void ViconClient::UIConnectingState()
+void ViconConnector::stop()
 {
-    QString host_ = hostField->text();
-    int port_ = portField->text().toInt();
-    if(port == 0)
-    {
-        QMessageBox::warning(NULL,"Error", "Invalid Port", QMessageBox::Ok);
-        return;
-    }
-
-    // start (connection is handled on other thread as it can be slow)
-    this->host = host_;
-    this->port = port_;
-
-    BaseClient::UIConnectingState();
-}
-
-
-void ViconClient::mocapStop()
-{
+    emit disconnecting();
     running = false;
 }
 
+// This function must emit a connected event before returning, to renable the button
+bool ViconConnector::connect()
+{
+    QString connectionString;
+    QTextStream stream(&connectionString);
+    stream << host << ":" << port;
+    emit outMessage(QString("Connecting to: %1").arg(connectionString));
+
+    Output_Connect output = mClient.Connect( connectionString.toUtf8().data() );
+    if(output.Result != Result::Success)
+    {
+        switch(output.Result)
+        {
+            case Result::InvalidHostName :        emit outMessage("Error: Invalid host name"); break;
+            case Result::ClientAlreadyConnected : emit outMessage("Error: Client Already Connected"); break;
+            case Result::ClientConnectionFailed : emit outMessage("Error: Connection Failed"); break;
+            default: emit outMessage("Error: Could not connect");
+        }
+        return false;
+    }
+
+    mClient.EnableSegmentData();
+    mClient.EnableMarkerData();
+    //mClient.EnableUnlabeledMarkerData();
+
+    switch(streamMode)
+    {
+        case SERVER_PUSH : mClient.SetStreamMode(StreamMode::ServerPush); break;
+        case CLIENT_PULL : mClient.SetStreamMode(StreamMode::ClientPull); break;
+        case CLIENT_PULL_PRE_FETCH : mClient.SetStreamMode(StreamMode::ClientPullPreFetch); break;
+    }
+
+    Output_SetAxisMapping axisResult = mClient.SetAxisMapping(Direction::Forward, Direction::Up, Direction::Right);
+    if(axisResult.Result != Result::Success)
+    {
+        emit outMessage("Could not set Axis");
+    }
+
+    emit outMessage("Connected to vicon server.");
+
+    return true;
+}
 
 
-	
+ViconClient::ViconClient(MocapSubjectList *sList,
+                         QPushButton *button,
+                         QLineEdit *statusLine,
+                         QLineEdit *inHostField,
+                         QLineEdit *inPortField,
+                         QObject *parent)
+: BaseClient(BaseClient::CL_Vicon, sList, button, statusLine, parent)
+, running(false)
+, frameError(false)
+, hostField(inHostField)
+, portField(inPortField)
+{
+    vicon = new ViconConnector(this, sList);
+    connect(vicon, SIGNAL(connecting()),    this, SLOT(UIConnectingState()));
+    connect(vicon, SIGNAL(connected()),     this, SLOT(UIConnectedState()));
+    connect(vicon, SIGNAL(disconnecting()), this, SLOT(UIDisconnectingState()));
+    connect(vicon, SIGNAL(disconnected()),  this, SLOT(UIDisconnectedState()));
+    connect(vicon, SIGNAL(outMessage(QString)), this, SLOT(viconMessage(QString)));
+    QStringList wordList;
+    wordList << "192.168.11.1" << "127.0.0.1";
+    QCompleter *completer = new QCompleter(wordList, inHostField);
+    hostField->setCompleter(completer);
+    hostField->setText(wordList[0]);
+    portField->setText("801");
+
+}
+
+void ViconClient::mocapStop()
+{
+    vicon->stop();
+}
+
+void ViconClient::mocapStart()
+{
+    if(vicon->running)
+    {
+        emit outMessage("Skipping attempt to start already running vicon server... this is probably a bug");
+        return;
+    }
+    vicon->host = hostField->text();
+    vicon->port = portField->text().toInt();
+
+    if(vicon->port == 0)
+    {
+        QMessageBox::warning(NULL,"Error", "Invalid Port", QMessageBox::Ok);
+        return;
+    }
+
+    // start (connection is handled on other thread as it can be slow)
+    vicon->start();
+}
+
+void ViconClient::mocapWait()
+{
+    vicon->wait();
+}
+
+void ViconClient::viconMessage(QString m)
+{
+    outMessage(m);
+}

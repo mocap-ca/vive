@@ -35,50 +35,56 @@ TestClient::TestClient(MocapSubjectList *sList,
 , val(0)
 , mousex(0)
 , mousey(0)
-{}
+{
+    timer = new QTimer(this);
+    timer->setInterval(1000 / 60);
+    connect(timer, SIGNAL(timeout()), this, SLOT(runOne()));
+}
 
 void TestClient::mocapStart()
 {
-    this->start();
+    outMessage("Test client starting.");
+    timer->start();
+    emit stateConnected();
+    running = true;
+    connected = true;
 }
 
 void TestClient::mocapStop()
 {
+    timer->stop();
     running = false;
-}
-
-
-void TestClient::run()
-{
-    emit stateConnected();
-    running = true;
-    connected = true;
-    outMessage("Test client starting.");
-	while(running)
-	{
-		MocapSubject *subject;
-
-		subject = subjects->find(QString("TEST"));
-
-        val += 0.1f;
-        if(val >= 10.0f) val = 0.0f;
-
-        double tr[3] = { mousex, val, mousey };
-        double ro[4] = { 0, 0, 0, 0 };
-        //tr[1] = (double)qrand() / (double)RAND_MAX;
-        subject->setSegment("root", tr, ro);
-
-        tr[0] = 10.0f;
-        tr[2] = 10.0f;
-        subject->setMarker("marker1", tr);
-
-        emit newFrame(0);
-
-        this->usleep(10000);
-		count++;
-	}
+    connected = false;
     emit stateDisconnected();
     outMessage("Test client ended.");
+}
+
+void TestClient::mocapWait()
+{
+    return;
+}
+
+void TestClient::runOne()
+{
+    MocapSubject *subject;
+
+    subject = subjects->find(QString("TEST"));
+
+    val += 0.1f;
+    if(val >= 10.0f) val = 0.0f;
+
+    double tr[3] = { mousex, val, mousey };
+    double ro[4] = { 0, 0, 0, 0 };
+    //tr[1] = (double)qrand() / (double)RAND_MAX;
+    subject->setSegment("root", tr, ro);
+
+    tr[0] = 10.0f;
+    tr[2] = 10.0f;
+    subject->setMarker("marker1", tr);
+
+    emit updateFrame(BaseClient::CL_Stub, (uint)count);
+
+    count++;
 }
 
 

@@ -78,6 +78,7 @@ public class MocapSocket : MonoBehaviour {
 	const string RIGHT_HAND_OBJECT = "RightHandRigid";
 	const string LEFT_FOOT_OBJECT  = "LeftFootRigid";
 	const string RIGHT_FOOT_OBJECT = "RightFootRigid";
+	const string TEST_OBJECT       = "TEST";
 
 
 	public string      hostIp        = "127.0.0.1";
@@ -545,10 +546,11 @@ public class MocapSocket : MonoBehaviour {
 					GameObject o = null;
 
 					bool isHands  = (subject == LEFT_HAND_OBJECT  || subject == RIGHT_HAND_OBJECT);
+					bool isTest   = (subject == TEST_OBJECT );
 					bool isFeet   = (subject == RIGHT_FOOT_OBJECT || subject == LEFT_FOOT_OBJECT);
 					bool isOculus = (subject == OCULUS_OBJECT);
 
-					if ( isHands || isFeet || isOculus )
+					if ( isHands || isFeet || isOculus || isTest )
 					{
 						// Rigidbody joint
 						if(item.name == "root")

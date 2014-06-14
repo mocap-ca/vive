@@ -40,8 +40,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 // 0.2 - Added local (named pipe) server
 // 0.3 - Added base class for clients
+// 0.4 - Baseclient inherits from QObject now instead of QThread
+//     - Fixed stub and broken connection
 
-#define VIVE_VERSION "0.3"
+#define VIVE_VERSION "0.4"
 
 
 namespace Ui {
@@ -57,6 +59,7 @@ public slots:
     void updateConnectionList(void);
     void showMessage(QString);
 	void timerClick(void);
+    void processFrame(BaseClient::ClientId, uint);
 
 
 public:

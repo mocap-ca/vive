@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <QObject>
 #include <QList>
 #include <QPushButton>
+#include <QTimer>
 #include "baseClient.h"
 #include "mocapSubject.h"
 
@@ -34,6 +35,8 @@ class TestClient : public BaseClient
 public slots:
     void mocapStart();
     void mocapStop();
+    void mocapWait();
+    void runOne();
 
 public:
     TestClient( MocapSubjectList *subjectList,
@@ -44,18 +47,15 @@ public:
     //! @returns "Test"
     virtual QString ClientStr() { return QString("Test"); }
 
-	virtual void run();
-
     //! @returns true if the service is running
     virtual bool isRunning() { return running; }
+
+    QTimer *timer;
 
 	bool running;
 
     float val, mousex, mousey;
 
-signals:
-    void outMessage(QString);
-    void newFrame(int);
 };
 
 

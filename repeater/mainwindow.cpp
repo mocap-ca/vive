@@ -70,8 +70,6 @@ MainWindow::MainWindow(QWidget *parent) :
                                                ui->lineEditViconHost,
                                                ui->lineEditViconPort,
                                                this);
-    ok &= (bool)QObject::connect(viconClient, SIGNAL(updateFrame(BaseClient::ClientId, uint )),      server, SLOT(process()));
-    ok &= (bool)QObject::connect(viconClient, SIGNAL(updateFrame(BaseClient::CliebtId, uint )), localServer, SLOT(process()));
     clients.append(viconClient);
 #else
     ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->ViconTab));
@@ -123,12 +121,18 @@ MainWindow::~MainWindow()
     // Wait for all clients to stop
     for( QList<BaseClient *>::iterator i = clients.begin(); i!=clients.end(); i++)
     {
-        (*i)->wait();
+        (*i)->mocapWait();
     }
 
     delete ui;
 }
 
+
+void MainWindow::processFrame(BaseClient::ClientId, uint)
+{
+    server->process();
+    localServer->process();
+}
 
 
 

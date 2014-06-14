@@ -7,7 +7,7 @@ BaseClient::BaseClient(ClientId clientId,
         QPushButton *pushButton,
         QLineEdit *lineEditStatus,
         QObject *parent)
-: QThread(parent)
+: QObject(parent)
 , subjects(subjectList)
 , connected(false)
 , count(0)
@@ -15,12 +15,13 @@ BaseClient::BaseClient(ClientId clientId,
 , button(pushButton)
 , statusLine(lineEditStatus)
 {
-    QObject::connect(button, SIGNAL(clicked()),                  this,   SLOT(handleButtonClick()),     Qt::QueuedConnection);
-    QObject::connect(this,   SIGNAL(stateConnecting()),          this,   SLOT(UIConnectingState()),     Qt::QueuedConnection);
-    QObject::connect(this,   SIGNAL(stateConnected()),           this,   SLOT(UIConnectedState()),      Qt::QueuedConnection);
-    QObject::connect(this,   SIGNAL(stateDisconnecting()),       this,   SLOT(UIDisconnectingState()),  Qt::QueuedConnection);
-    QObject::connect(this,   SIGNAL(stateDisconnected()),        this,   SLOT(UIDisconnectedState()),   Qt::QueuedConnection);
-    QObject::connect(this,   SIGNAL(outMessage_(QString)),       parent, SLOT(showMessage(QString)),     Qt::QueuedConnection);
+    QObject::connect(button, SIGNAL(clicked()),                  this,   SLOT(handleButtonClick()));
+    QObject::connect(this,   SIGNAL(stateConnecting()),          this,   SLOT(UIConnectingState()));
+    QObject::connect(this,   SIGNAL(stateConnected()),           this,   SLOT(UIConnectedState()));
+    QObject::connect(this,   SIGNAL(stateDisconnecting()),       this,   SLOT(UIDisconnectingState()));
+    QObject::connect(this,   SIGNAL(stateDisconnected()),        this,   SLOT(UIDisconnectedState()));
+    QObject::connect(this,   SIGNAL(outMessage_(QString)),       parent, SLOT(showMessage(QString)));
+    QObject::connect(this,   SIGNAL(updateFrame(BaseClient::ClientId,uint)), parent, SLOT(processFrame(BaseClient::ClientId, uint)));
 }
 
 void BaseClient::tick()
@@ -56,8 +57,6 @@ void BaseClient::handleButtonClick()
     else
     {
         mocapStart();
-
-        this->start();
     }
 }
 
