@@ -157,7 +157,7 @@ NaturalPointClient::NaturalPointClient(MocapSubjectList *sList,
     connect(naturalpoint, SIGNAL(newFrame(uint)), this, SLOT(newFrame(uint)));
 
     QStringList wordList;
-    wordList << "192.168.1.93"  << "239.255.42.99" << "127.0.0.1";
+    wordList << "239.255.42.99";
     QCompleter *completer = new QCompleter(wordList, inHostField);
     hostField->setCompleter(completer);
     hostField->setText(wordList[0]);

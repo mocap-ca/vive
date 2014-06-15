@@ -38,11 +38,9 @@ class MocapSegment
 private:
     MocapSegment(QString name, double tr[3], double rot[4]);
     QString name;
-    QList<QStandardItem*> modelItems;
 	double translation[3];
     double localRotation[4];
     friend QTextStream& operator << (  QTextStream&, MocapSegment& );
-    void updateModel();
 };
 
 class MocapMarker
@@ -51,10 +49,8 @@ class MocapMarker
 private:
     MocapMarker(QString name, double tr[3]);
     QString name;
-    QList<QStandardItem*> modelItems;
     double translation[3];
     friend QTextStream& operator << ( QTextStream&, MocapMarker& );
-    void updateModel();
 };
 
 
@@ -73,14 +69,12 @@ public:
 
     void setMarker(QString name, double trans[3]);
 
-    void updateModel();
 
 private :
     QList<MocapSegment> segments;
     QList<MocapMarker> markers;
-    QStandardItem *modelItem;
 	QString name;
-	QMutex &mutex;
+    QMutex &mutex;
 
 public :
     bool isLocal;
@@ -92,20 +86,13 @@ class MocapSubjectList : public QObject
 	Q_OBJECT
 public:
 	MocapSubjectList(QObject *parent = NULL);
-    ~MocapSubjectList();
-	MocapSubject* find(QString name, bool add=true);
 
-    QStandardItemModel model;
+	MocapSubject* find(QString name, bool add=true);
 
     void read(QTextStream &stream, bool localOnly);
 
-public slots:
-    void updateModel();
-
-protected:
 	QMutex subjectMutex;
 
-private:
 	QList<MocapSubject*> items;
 };
 

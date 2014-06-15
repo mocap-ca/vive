@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	subjectList = new MocapSubjectList(this);
     modelConnections = new QStandardItemModel(this);
     ui->listViewConnections->setModel(modelConnections);
-    ui->treeViewData->setModel(&subjectList->model);
+    //ui->treeViewData->setModel(&subjectList->model);
 
     for(int i=1; i < 16; i++)
         ui->treeViewData->setColumnWidth(i, 50);
@@ -153,7 +153,7 @@ void MainWindow::timerClick()
     }
 
 
-    subjectList->updateModel();
+    //subjectList->updateModel();
 
     QString data;
     QTextStream stream(&data);

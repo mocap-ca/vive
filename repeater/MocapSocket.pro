@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     testClient.cpp \
     profilesx.cpp \
     localServer.cpp \
-    baseclient.cpp
+    baseclient.cpp \
+    mocapModel.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
@@ -31,7 +32,8 @@ HEADERS  += mainwindow.h \
     testClient.h \
     profile.h \
     localServer.h \
-    baseclient.h
+    baseclient.h \
+    mocapModel.h
 
 FORMS    += mainwindow.ui
 
