@@ -46,6 +46,8 @@ public:
     bool connect();
     void stop();
 
+
+
     MocapSubjectList *subjects;
     bool    running;
     QString host;
@@ -105,6 +107,9 @@ public:
 
     //! @returns true if the service is running
     virtual bool isRunning() { return running; }
+
+    //! @return true if we are connected
+    virtual bool isConnected();
 
     ViconConnector *vicon;
     QLineEdit *hostField;

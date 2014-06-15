@@ -120,6 +120,7 @@ bool NaturalPointConnector::connect()
     if( socket->joinMulticastGroup(QHostAddress(host)) == false ) {
         outMessage("Error joining multicast group:");
         outMessage(socket->errorString());
+        delete socket;
         return false;
     }
     
@@ -156,11 +157,16 @@ NaturalPointClient::NaturalPointClient(MocapSubjectList *sList,
     connect(naturalpoint, SIGNAL(newFrame(uint)), this, SLOT(newFrame(uint)));
 
     QStringList wordList;
-    wordList << "239.255.42.99" << "127.0.0.1";
+    wordList << "192.168.1.93"  << "239.255.42.99" << "127.0.0.1";
     QCompleter *completer = new QCompleter(wordList, inHostField);
     hostField->setCompleter(completer);
     hostField->setText(wordList[0]);
     portField->setText("1511");
+}
+
+bool NaturalPointClient::isConnected()
+{
+    return naturalpoint->running;
 }
 
 //bool NaturalPointClient::mocapDisconnect()
@@ -186,7 +192,7 @@ void NaturalPointClient::mocapStart()
 {
     if(naturalpoint->running)
     {
-        emit outMessage("Skipping attempt to start already running vicon server... this is probably a bug");
+        emit outMessage("Skipping attempt to start already running natural point server... this is probably a bug");
         return;
     }
 

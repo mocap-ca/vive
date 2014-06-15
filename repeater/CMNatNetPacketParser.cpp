@@ -26,7 +26,10 @@ CMNatNetPacketParser::~CMNatNetPacketParser() {
     }
 }
 
+#ifdef _MACOS
 #pragma mark - Data Parsing
+#endif
+
 
 bool DecodeTimecode(unsigned int inTimecode, unsigned int inTimecodeSubframe, int* hour, int* minute, int* second, int* frame, int* subframe)
 {
@@ -41,14 +44,20 @@ bool DecodeTimecode(unsigned int inTimecode, unsigned int inTimecodeSubframe, in
 	return bValid;
 }
 
+
+
 bool TimecodeStringify(unsigned int inTimecode, unsigned int inTimecodeSubframe, char *Buffer, int BufferSize)
 {
 	bool bValid;
 	int hour, minute, second, frame, subframe;
 	bValid = DecodeTimecode(inTimecode, inTimecodeSubframe, &hour, &minute, &second, &frame, &subframe);
     
+#ifdef _WIN32
+    sprintf_s(Buffer,BufferSize,"%2d:%2d:%2d:%2d.%d",hour, minute, second, frame, subframe);
+#else
     snprintf(Buffer,BufferSize,"%2d:%2d:%2d:%2d.%d",hour, minute, second, frame, subframe);
-	for(unsigned int i=0; i<strlen(Buffer); i++)
+#endif
+    for(unsigned int i=0; i<strlen(Buffer); i++)
 		if(Buffer[i]==' ')
 			Buffer[i]='0';
     

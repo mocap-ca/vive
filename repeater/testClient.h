@@ -50,6 +50,8 @@ public:
     //! @returns true if the service is running
     virtual bool isRunning() { return running; }
 
+    virtual bool isConnected() { return running; }
+
     QTimer *timer;
 
 	bool running;

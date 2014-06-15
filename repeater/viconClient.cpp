@@ -125,6 +125,9 @@ void ViconConnector::run()
     emit disconnected();
 }
 
+
+
+
 void ViconConnector::stop()
 {
     emit disconnecting();
@@ -200,6 +203,11 @@ ViconClient::ViconClient(MocapSubjectList *sList,
     hostField->setText(wordList[0]);
     portField->setText("801");
 
+}
+
+bool ViconClient::isConnected()
+{
+    return vicon->running;
 }
 
 void ViconClient::mocapStop()

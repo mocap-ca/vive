@@ -47,14 +47,12 @@ void TestClient::mocapStart()
     timer->start();
     emit stateConnected();
     running = true;
-    connected = true;
 }
 
 void TestClient::mocapStop()
 {
     timer->stop();
     running = false;
-    connected = false;
     emit stateDisconnected();
     outMessage("Test client ended.");
 }

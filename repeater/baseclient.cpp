@@ -11,7 +11,6 @@ BaseClient::BaseClient(ClientId clientId,
 , subjects(subjectList)
 , button(pushButton)
 , statusLine(lineEditStatus)
-, connected(false)
 , count(0)
 , id(clientId)
 {
@@ -50,7 +49,7 @@ void BaseClient::newFrame(uint i)
 
 void BaseClient::handleButtonClick()
 {
-    if(connected)
+    if(isConnected())
     {
         mocapStop();
     }

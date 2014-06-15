@@ -41,6 +41,7 @@ public:
     virtual void run();
     bool connect();
     void stop();
+
     
     QHostAddress connectGroupAddress;
     QUdpSocket *socket;
@@ -97,6 +98,9 @@ public:
     
     //! @returns true if the service is running
     virtual bool isRunning() { return running; }
+
+    //! @returns true if the service is connected
+    virtual bool isConnected();
 
     NaturalPointConnector *naturalpoint;
     QLineEdit *hostField;

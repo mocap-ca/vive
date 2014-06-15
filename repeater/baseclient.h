@@ -9,8 +9,6 @@
 
 class BaseClient : public QObject
 {
-
-
     Q_OBJECT
 public:
 
@@ -21,7 +19,6 @@ public:
         CL_Vicon = 100,
         CL_NaturalPoint
     } ClientId;
-
 
     explicit BaseClient(ClientId id,
                         MocapSubjectList *subjectList,
@@ -40,10 +37,6 @@ public:
     //! Line edit to display the status
     QLineEdit *statusLine;
 
-
-    //! True if currently connected
-    bool connected;
-
     //! Frame counter
     size_t count;
 
@@ -52,6 +45,9 @@ public:
 
     //! @returns a string of the client id, e.g. "Vicon".
     virtual QString ClientStr() = 0;
+
+    //! @returns true if client is currently connected
+    virtual bool isConnected() = 0;
 
     //! signals a message to be displayed
     void outMessage(QString s);
