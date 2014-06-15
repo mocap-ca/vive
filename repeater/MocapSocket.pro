@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 CONFIG   += qt
-CONFIG   += vicon
+#CONFIG   += vicon
 CONFIG   += naturalpoint
 QT       += core gui network
 
