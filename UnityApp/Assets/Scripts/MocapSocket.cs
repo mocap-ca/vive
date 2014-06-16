@@ -112,26 +112,79 @@ public class MocapSocket : MonoBehaviour {
 
 	void OnGUI()
 	{
+
+		int wid1 = 70;
+		int wid2 = 120;
+		int wid3 = 120;
+		int x1 = 5;
+		int x2 = x1 + wid1 + 5;
+		int x3 = x2 + wid2 + 5;
+		int y = 0;
+		int rowh = 23;
+
 		// Display Things
 
-		if (isActive)
-			GUI.Label (new Rect (Screen.width - 150, 5, 150, 40), "Connected");
-		else
-			GUI.Label (new Rect (Screen.width - 150, 5, 150, 40), "Not Connected");
-		
+		GUI.skin.GetStyle ("Label").alignment = TextAnchor.UpperLeft;
+
+		if(Time.fixedTime < 2)
+		{
+			GUIStyle st = new GUIStyle(GUI.skin.GetStyle("Label"));
+			st.alignment = TextAnchor.MiddleCenter;
+			int w = 200;
+			GUI.Label (new Rect (Screen.width/2 - w/2, Screen.height * 0.382f, w, 40), "Press P for help", st);
+		}
+
+
 		if(toggleDisplay)
 		{
-			GUI.Label(	            new Rect(5,   10, 100, 20), "Prefix:");
+			if (isActive) 
+			{
+				String infoFps = "Connected " + fps.ToString ("0.00") + " fps\n";
+				GUI.Label (new Rect (Screen.width - 150, 5, 150, 40), infoFps);
+			}
+			else
+			{
+				GUI.Label (new Rect (Screen.width - 150, 5, 150, 40), "Not Connected");
+			}
+
+			y+=10;
+
+			// Rows
+			GUI.Label(	            new Rect(x1, y, wid1, rowh), "Host:");
+			GUI.SetNextControlName("IPField");
+			hostIp = GUI.TextField (new Rect(x2, y, wid2, rowh), hostIp, rowh);
+			useLocal = GUI.Toggle ( new Rect(x3	, y,  wid3, rowh), useLocal, "Local");	
+
+			y+=25;
+
+			GUI.Label(	            new Rect(x1, y, wid1, rowh), "Port:");
+			GUI.SetNextControlName("PortField");
+			port = int.Parse (GUI.TextField (new Rect(x2, y, wid2, rowh), port.ToString(), rowh));
+			if(isActive)
+			{
+				if(GUI.Button ( new Rect(x3	, y,  wid3, rowh), "Disconnect")) DisconnectStream();
+			}
+			else
+			{
+				if( GUI.Button ( new Rect(x3	, y,  wid3, rowh), "Connect")) ConnectStream	();
+			}
+
+			y+=25;
+
+			GUI.Label(	            new Rect(x1, y, wid1, rowh), "Prefix:");
 			GUI.SetNextControlName("PrefixField");
-			prefix = GUI.TextField (new Rect(110, 10, 200, 20), prefix, 25);
-			String infoFps = "FPS:" + fps.ToString ("0.00") + "\n";
-			GUI.Label(	new Rect(5, 30, 	Screen.width, Screen.height), infoFps + infoMessage);
+			prefix = GUI.TextField (new Rect(x2, y, wid2, rowh), prefix, rowh);
+			y+=25;
+
+			GUI.Label(	new Rect(x1, y, Screen.width-10, Screen.height-y-5), infoMessage);
+
+			MouseNavigator.topCrop = y;
 		}
 
 		if(toggleHelp)
 		{
 			String text = "VIVE - Very Imersive Virtual Experience\n";
-			text += "Alastair Macleod, Emily Carr University\n";
+			text += "Alastair Macleod, Emily Carr University, The Sawmill\n";
 			text += "Version 0.1\n";
 			text += "1 - Reset Oculus\n";
 			text += "B - Zero Body\n";
@@ -145,9 +198,11 @@ public class MocapSocket : MonoBehaviour {
 		}
 
 
-		// Don't check keys if prefix field is activated
+		// Don't check keys if a field is activated
 
 		if (GUI.GetNameOfFocusedControl ().Equals ("PrefixField")) return;
+		if (GUI.GetNameOfFocusedControl ().Equals ("IPField")) return;
+		if (GUI.GetNameOfFocusedControl ().Equals ("PortField")) return;
 
 
 		// Key events
@@ -211,6 +266,7 @@ public class MocapSocket : MonoBehaviour {
 	void Start ()
 	{
 
+
 		toggleDisplay = false;
 		infoMessage   = "INIT";
 
@@ -233,7 +289,7 @@ public class MocapSocket : MonoBehaviour {
 				Debug.Log ("Adding Rigid Object: " + o.name);
 				rigidObjects.Add (o);
 				SetInitialState(o);
-				if(o.name != OCULUS_OBJECT) o.SetActive (false);
+				if(o.name.ToLower() != OCULUS_OBJECT.ToLower()) o.SetActive (false);
 			}
 		}
 
@@ -257,7 +313,7 @@ public class MocapSocket : MonoBehaviour {
 		if (useLocal)
 		{
 			Debug.Log ("Connect Local");
-			if( !isConnected())
+			if( isConnected())
 			{
 				Debug.Log ("Local Connection Exists");
 				return;
@@ -280,22 +336,16 @@ public class MocapSocket : MonoBehaviour {
 			try
 			{
 				clientSocket.Connect (ipEndPoint);
-				
-				if (clientSocket.Connected == false)
-				{
-					Debug.Log("Client is not connected.");
-					return;
-				}
+				if (clientSocket.Connected == false) return;
 				clientSocket.Blocking = false;
 			}
 			catch( SocketException e)
 			{
-				Debug.Log ("Socket Exception: " + e.ToString ());
+				//Debug.Log ("Socket Exception: " + e.ToString ());
 				return;
 			}
 		}
 
-		Debug.Log("Connected.");
 		if(lockNavigator) MouseNavigator.hasControl = false;
 		isActive = true;
 	}
@@ -524,7 +574,7 @@ public class MocapSocket : MonoBehaviour {
 		// For each subject
 		foreach(KeyValuePair<String, SegmentItem[]> entry in subjectList)
 		{
-			string subject = entry.Key;
+			string subject = entry.Key.ToLower();
 
 			infoMessage += "SUBJECT: " + subject;
 
@@ -545,10 +595,10 @@ public class MocapSocket : MonoBehaviour {
 					Quaternion localOrientation  =  new Quaternion(item.ro[0], item.ro[1], item.ro[2], item.ro[3]);
 					GameObject o = null;
 
-					bool isHands  = (subject == LEFT_HAND_OBJECT  || subject == RIGHT_HAND_OBJECT);
-					bool isTest   = (subject == TEST_OBJECT );
-					bool isFeet   = (subject == RIGHT_FOOT_OBJECT || subject == LEFT_FOOT_OBJECT);
-					bool isOculus = (subject == OCULUS_OBJECT);
+					bool isHands  = (subject == LEFT_HAND_OBJECT.ToLower()  || subject == RIGHT_HAND_OBJECT.ToLower());
+					bool isTest   = (subject == TEST_OBJECT.ToLower() );
+					bool isFeet   = (subject == RIGHT_FOOT_OBJECT.ToLower() || subject == LEFT_FOOT_OBJECT.ToLower());
+					bool isOculus = (subject == OCULUS_OBJECT.ToLower());
 
 					if ( isHands || isFeet || isOculus || isTest )
 					{

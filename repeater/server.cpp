@@ -213,3 +213,7 @@ int MyServer::checkAlive()
 	return ret;
 }
 
+int MyServer::numberOfConnections()
+{
+    return connections.length();
+}

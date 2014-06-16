@@ -1,11 +1,11 @@
 #include "mocapModel.h"
 #include <QMutex>
+#include <QList>
 
 MocapModel::MocapModel(QObject *parent, MocapSubjectList *s)
-    : QObject(parent)
+    : QAbstractItemModel(parent)
     , subjects(s)
 {
-    model = new QStandardItemModel(this);
     QStringList headers;
     headers << "Name";
     headers << "tx";
@@ -15,23 +15,79 @@ MocapModel::MocapModel(QObject *parent, MocapSubjectList *s)
     headers << "ry";
     headers << "rz";
     headers << "rw";
-    model->setHorizontalHeaderLabels(headers);
+    setHeaderData(0, Qt::Horizontal, QString("HELLO"), Qt::DisplayRole);
 }
 
-void MocapModel::updateModel()
+
+QModelIndex MocapModel::index(int row, int column, const QModelIndex &parent)const
+{
+    return QModelIndex();
+};
+
+QModelIndex MocapModel::parent(const QModelIndex &child)const
+{
+    return QModelIndex();
+};
+
+int         MocapModel::rowCount(const QModelIndex &parent)const
+{
+    return -1;
+};
+
+int         MocapModel::columnCount(const QModelIndex &parent)const
+{
+    return -1;
+};
+
+QVariant    MocapModel::data(const QModelIndex &index, int role)const
+{
+    return NULL;
+};
+
+void MocapModel::update()
 {
     QMutexLocker lock(&subjects->subjectMutex);
 
+    //QMap<MocapSubject*, QStandardItem*>::iterator it;
+    //QList<MocapSubject*> deleteList = subjectItems.keys();
+
     // For each Subject
-   /* for(QList<MocapSubject*>::iterator i = subjects->items.begin(); i != subjects->items.end(); i++)
+    for(QList<MocapSubject*>::iterator i = subjects->items.begin(); i != subjects->items.end(); i++)
     {
         MocapSubject *subject = *i;
-        QList<QStandardItem*> subjectItems;
-        QStandardItem *subjectModel = new QStandardItem();
-        subjectItems << subjectModel;
-        for(size_t i=0; i < 8; i++) subjectItems << new QStandardItem();
-        subjectItems.appendRow(items);
-        model->appendRow(subjectItems);
+
+        //deleteList.removeAll(subject);
+        QStandardItem *subjectNode = NULL;
+        //it = subjectItems.find(subject);
+        /*if(it != subjectItems.end())
+        {
+            subjectNode = *it;
+        }
+        else
+        {
+            QList<QStandardItem*> subjectItems;
+            subjectNode = new QStandardItem(subject->data.name);
+            subjectItems << subjectNode;
+            for(size_t i=0; i < 8; i++) subjectItems << new QStandardItem();
+            //subjectItems.appendRow(items);
+            model->appendRow(subjectItems);
+        }*/
+    }
+
+    /*
+    for(QList<MocapSubject *>::iterator j = deleteList.begin();
+            j != deleteList.end();  j++)
+    {
+        MocapSubject*  delSubject = *j;
+        QStandardItem* delItem = subjectItems[ delSubject ];
+        QModelIndex    delIndex = model->indexFromItem(delItem);
+        model->removeRows(0, 1, delIndex);
+        subjectItems.remove(delSubject);
+        delete delSubject;
+        delete delItem;
+    }*/
+
+    /*
 
         // For each segment
         for( QList<MocapSegment>::iterator i = segments.begin(); i != segments.end(); i++)

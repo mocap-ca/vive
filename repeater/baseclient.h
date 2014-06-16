@@ -6,19 +6,33 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include "mocapSubject.h"
+#include "defines.h"
+
+class BaseConnector : public QThread
+{
+    Q_OBJECT
+
+public:
+    BaseConnector(QObject *parent);
+
+    virtual bool connect() = 0;
+    virtual void stop()    = 0;
+
+signals:
+    void connecting();
+    void connected();
+    void disconnecting();
+    void disconnected();
+    void newFrame(uint);
+    void outMessage(QString);
+    void updateSubject(SubjectData *);
+
+};
 
 class BaseClient : public QObject
 {
     Q_OBJECT
 public:
-
-    typedef enum eClientId
-    {
-        CL_None = 0,
-        CL_Stub = 1,
-        CL_Vicon = 100,
-        CL_NaturalPoint
-    } ClientId;
 
     explicit BaseClient(ClientId id,
                         MocapSubjectList *subjectList,
@@ -49,10 +63,13 @@ public:
     //! @returns true if client is currently connected
     virtual bool isConnected() = 0;
 
-    //! signals a message to be displayed
-    void outMessage(QString s);
+    //! links base connector signals
+    bool linkConnector(BaseConnector *);
 
 public slots:
+    //! signals a message to be displayed
+    void outMessage(QString);
+
     //! signal that a new frame is available and should be pushed out
     void newFrame(uint i);
 
@@ -87,8 +104,12 @@ public slots:
     //! Called once a second by the main thread
     void tick();
 
-    //! @returns true if the service is currently running
-    virtual bool isRunning() = 0;
+    //! Update a mocap subject in the model
+    void update(SubjectData*);
+
+    //! Adds one to the fps counter
+    void addCount();
+
 
 signals:
     void stateConnecting();
@@ -96,7 +117,7 @@ signals:
     void stateDisconnecting();
     void stateDisconnected();
     void outMessage_(QString);
-    void updateFrame(BaseClient::ClientId, uint);
+    void updateFrame(ClientId, uint);
 
 };
 

@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <QLineEdit>
 
 // Inherits from qthread - cannot modify gui
-class ViconConnector : public QThread
+class ViconConnector : public BaseConnector
 {
     Q_OBJECT
 
@@ -40,15 +40,12 @@ public:
         CLIENT_PULL_PRE_FETCH
     };
 
-    ViconConnector(QObject *parent, MocapSubjectList *subjectList);
+    ViconConnector(QObject *parent);
     virtual void run();
 
     bool connect();
     void stop();
 
-
-
-    MocapSubjectList *subjects;
     bool    running;
     QString host;
     int     port;
@@ -56,16 +53,6 @@ public:
 
     ViconDataStreamSDK::CPP::Client mClient;
     eStreamMode   streamMode;
-
-
-
-signals:
-    void connecting();
-    void connected();
-    void disconnecting();
-    void disconnected();
-    void newFrame(uint);
-    void outMessage(QString);
 
 };
 
@@ -114,9 +101,6 @@ public:
     ViconConnector *vicon;
     QLineEdit *hostField;
     QLineEdit *portField;
-
-public slots:
-    void viconMessage(QString);
 
 private:
     bool          frameError;

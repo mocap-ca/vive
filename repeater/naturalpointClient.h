@@ -30,12 +30,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "NatNetTypes.h"
 #include "CMNatNetPacketParser.h"
 
-class NaturalPointConnector : public QThread
+class NaturalPointConnector : public BaseConnector
 {
     Q_OBJECT
     
 public:
-    NaturalPointConnector(QObject *parent, MocapSubjectList *subjectList);
+    NaturalPointConnector(QObject *parent);
     
     //! Implements QThread (parent of baseclient)
     virtual void run();
@@ -105,9 +105,6 @@ public:
     NaturalPointConnector *naturalpoint;
     QLineEdit *hostField;
     QLineEdit *portField;
-
-public slots:
-    void naturalPointMessage(QString);
     
     
 private:

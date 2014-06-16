@@ -187,3 +187,8 @@ int LocalServer::checkAlive()
     return ret;
 }
 
+int LocalServer::numberOfConnections()
+{
+    return connections.length();
+}
+

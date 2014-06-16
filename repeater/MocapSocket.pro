@@ -33,7 +33,8 @@ HEADERS  += mainwindow.h \
     profile.h \
     localServer.h \
     baseclient.h \
-    mocapModel.h
+    mocapModel.h \
+    defines.h
 
 FORMS    += mainwindow.ui
 

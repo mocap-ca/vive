@@ -73,6 +73,7 @@ public:
     void getConnectionList(QList<QString>&);
 	int working;
 	MocapSubjectList *subjectList;
+    int numberOfConnections();
 
 
 };

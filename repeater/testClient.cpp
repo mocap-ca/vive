@@ -26,35 +26,86 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <QLineEdit>
 #include <QPushButton>
 
+TestConnector::TestConnector(QObject *parent)
+    : BaseConnector(parent)
+    , running(false)
+    , val(0)
+    , mousex(0)
+    , mousey(0)
+    , count(0)
+{}
+
+void TestConnector::run()
+{
+    running = true;
+    emit connecting();
+    QThread::sleep(2);
+    emit connected();
+    while(running)
+    {
+        SubjectData *subject = new SubjectData(QString("TEST"), CL_Stub);
+
+        val += 0.1f;
+        if(val >= 10.0f) val = 0.0f;
+
+        double tr[3] = { mousex, val, mousey };
+        double ro[4] = { 0, 0, 0, 0 };
+        //tr[1] = (double)qrand() / (double)RAND_MAX;
+        subject->setSegment("root", tr, ro);
+
+        tr[0] = 10.0f;
+        tr[2] = 10.0f;
+        subject->setMarker("marker1", tr);
+
+        emit updateSubject(subject);
+        emit newFrame(count);
+
+        count++;
+
+        QThread::usleep(1000 / 60);
+    }
+    emit disconnecting();
+    QThread::sleep(2);
+    emit disconnected();
+}
+
+bool TestConnector::connect()
+{
+    return true;
+}
+
+void TestConnector::stop()
+{
+    running = false;
+}
+
 TestClient::TestClient(MocapSubjectList *sList,
                        QPushButton *button,
                        QLineEdit *statusLine,
                        QObject *parent)
-    : BaseClient(BaseClient::CL_Stub, sList, button, statusLine, parent)
-, running(false)
-, val(0)
-, mousex(0)
-, mousey(0)
+    : BaseClient(CL_Stub, sList, button, statusLine, parent)
+, connector(NULL)
 {
-    timer = new QTimer(this);
-    timer->setInterval(1000 / 60);
-    connect(timer, SIGNAL(timeout()), this, SLOT(runOne()));
+    connector = new TestConnector(this);
+    linkConnector(connector);
 }
+
 
 void TestClient::mocapStart()
 {
-    outMessage("Test client starting.");
-    timer->start();
-    emit stateConnected();
-    running = true;
+    if(connector->running)
+    {
+        emit outMessage("Skipping attempt to start already running test server... this is probably a bug");
+        return;
+    }
+
+    // Handed on other thread to mimic other servers
+    connector->start();
 }
 
 void TestClient::mocapStop()
 {
-    timer->stop();
-    running = false;
-    emit stateDisconnected();
-    outMessage("Test client ended.");
+    connector->stop();
 }
 
 void TestClient::mocapWait()
@@ -62,27 +113,5 @@ void TestClient::mocapWait()
     return;
 }
 
-void TestClient::runOne()
-{
-    MocapSubject *subject;
-
-    subject = subjects->find(QString("TEST"));
-
-    val += 0.1f;
-    if(val >= 10.0f) val = 0.0f;
-
-    double tr[3] = { mousex, val, mousey };
-    double ro[4] = { 0, 0, 0, 0 };
-    //tr[1] = (double)qrand() / (double)RAND_MAX;
-    subject->setSegment("root", tr, ro);
-
-    tr[0] = 10.0f;
-    tr[2] = 10.0f;
-    subject->setMarker("marker1", tr);
-
-    emit updateFrame(BaseClient::CL_Stub, (uint)count);
-
-    count++;
-}
 
 

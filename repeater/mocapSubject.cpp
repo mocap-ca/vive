@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define PREC 8
 
-MocapSegment::MocapSegment(QString n, double tr[3], double localRot[4] )
+MocapSegment::MocapSegment(const QString n, const double tr[3], const double localRot[4] )
 : name(n)
 {
     for(size_t i=0; i < 3; i++)  translation[i] = tr[i];
@@ -55,7 +55,7 @@ QTextStream& operator << ( QTextStream& stream, MocapSegment &segment )
 }
 
 
-MocapMarker::MocapMarker(QString n, double tr[3])
+MocapMarker::MocapMarker(const QString n, const double tr[3])
 : name(n)
 {
     for(size_t i=0; i < 3; i++) translation[i] = tr[i];
@@ -74,16 +74,46 @@ QTextStream& operator << ( QTextStream& stream, MocapMarker &marker )
 
 
 
-/*
-    Mocap Subject
-*/
 
+/************************
+ *    Subject Data      *
+ ************************/
+
+SubjectData::SubjectData(QString n, ClientId id)
+    : name(n)
+    , client(id)
+{}
+
+SubjectData::SubjectData(const SubjectData& other)
+    : name(other.name)
+    , client(other.client)
+{
+    for(QList<MocapSegment>::const_iterator si = other.segments.begin(); si != other.segments.end(); si++)
+    {
+        segments.append(MocapSegment( (*si).name, (*si).translation, (*si).localRotation));
+    }
+    for(QList<MocapMarker>::const_iterator mi = other.markers.begin(); mi != other.markers.end(); mi++)
+    {
+        markers.append(MocapMarker( (*mi).name, (*mi).translation ));
+    }
+}
+
+void SubjectData::update(SubjectData &other)
+{
+    // TODO : remove markers as needed
+    for(QList<MocapSegment>::iterator si = other.segments.begin(); si != other.segments.end(); si++)
+    {
+        setSegment( (*si).name, (*si).translation, (*si).localRotation);
+    }
+    for(QList<MocapMarker>::iterator mi = other.markers.begin(); mi != other.markers.end(); mi++)
+    {
+        setMarker( (*mi).name, (*mi).translation );
+    }
+}
 
 // Set the translation and rotation for an item
-void MocapSubject::setSegment(QString name, double trans[3], double rot[4])
+void SubjectData::setSegment(QString name, double trans[3], double rot[4])
 {
-	QMutexLocker lock(&mutex);
-
     for(QList<MocapSegment>::iterator i = segments.begin(); i != segments.end(); i++)
 	{
         // Update existing segment
@@ -102,10 +132,8 @@ void MocapSubject::setSegment(QString name, double trans[3], double rot[4])
 }
 
 // Set the translation and rotation for an item
-void MocapSubject::setMarker(QString name, double trans[3])
+void SubjectData::setMarker(QString name, double trans[3])
 {
-    QMutexLocker lock(&mutex);
-
     for(QList<MocapMarker>::iterator i = markers.begin(); i != markers.end(); i++)
     {
         // Update existing marker
@@ -123,24 +151,37 @@ void MocapSubject::setMarker(QString name, double trans[3])
 }
 
 
-MocapSubject::MocapSubject(QString n, QMutex &m, QObject *parent, bool local)
+
+/********************
+    Mocap Subject
+********************/
+
+MocapSubject::MocapSubject(const SubjectData &data, QObject *parent, QMutex *m, bool local)
 : QObject(parent)
-, name(n)
+, data(data)
 , mutex(m)
 , isLocal(local)
-{}
+{
+}
 
+
+bool MocapSubject::operator ==(const SubjectData &other)
+{
+    if(this->data.client != other.client) return false;
+    if(this->data.name != other.name) return false;
+    return true;
+}
 
 QTextStream& operator << ( QTextStream& stream, MocapSubject &subject )
 {
-    stream << subject.name.toUtf8().data() << "\t";
-    stream << subject.segments.length() << "\t";
-    stream << subject.markers.length() << "\n";
+    stream << subject.data.name.toUtf8().data() << "\t";
+    stream << subject.data.segments.length() << "\t";
+    stream << subject.data.markers.length() << "\n";
 
-    for( QList<MocapSegment>::iterator i = subject.segments.begin(); i != subject.segments.end(); i++)
+    for( QList<MocapSegment>::iterator i = subject.data.segments.begin(); i != subject.data.segments.end(); i++)
         stream << *i;
 
-    for( QList<MocapMarker>::iterator i = subject.markers.begin(); i != subject.markers.end(); i++)
+    for( QList<MocapMarker>::iterator i = subject.data.markers.begin(); i != subject.data.markers.end(); i++)
         stream << *i;
 
     return stream;
@@ -157,26 +198,18 @@ MocapSubjectList::MocapSubjectList(QObject *parent)
 
 
 // Find the named subjectm or optionally add it.
-MocapSubject* MocapSubjectList::find(QString inName, bool add)
+MocapSubject* MocapSubjectList::find(QString inName, ClientId id)
 {
 	QMutexLocker lock(&subjectMutex);
 
 	for(QList<MocapSubject*>::iterator i = items.begin(); i != items.end(); i++)
 	{
-		if( (*i)->name == inName )
+        if( (*i)->data.name == inName && (*i)->data.client == id )
 			return *i;
 	}
+    return NULL;
 
-	if(add == false) return NULL;
-
-    // Not found - create a new subject
-    MocapSubject *n = new MocapSubject(inName, subjectMutex, this, true);
-    items.append(n);
-
-	return n;
 }
-
-
 
 
 void MocapSubjectList::read(QTextStream &stream, bool localOnly)
@@ -195,5 +228,25 @@ void MocapSubjectList::read(QTextStream &stream, bool localOnly)
     subjectMutex.unlock();
 }
 
-		
-		
+void MocapSubjectList::update(SubjectData *inSubject)
+{
+    QMutexLocker lock(&subjectMutex);
+    bool found = false;
+    for(QList<MocapSubject*>::iterator i = items.begin(); i != items.end(); i++)
+    {
+        MocapSubject *s = *i;
+
+        if( (*s) == (*inSubject)  )
+        {
+            s->data.update(*inSubject);
+            found = true;
+            delete inSubject;
+            return;
+        }
+    }
+    if(!found)
+    {
+        items.append( new MocapSubject(*inSubject, this, &subjectMutex, true ) );
+    }
+
+}

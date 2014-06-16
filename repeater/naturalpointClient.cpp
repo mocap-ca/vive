@@ -24,9 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <QMessageBox>
 #include <QCompleter>
 
-NaturalPointConnector::NaturalPointConnector(QObject *parent, MocapSubjectList *s)
-: QThread(parent)
-, subjects(s)
+NaturalPointConnector::NaturalPointConnector(QObject *parent)
+: BaseConnector(parent)
 , running(false)
 , host("239.255.42.99")
 , port(1511)
@@ -42,7 +41,7 @@ void NaturalPointConnector::run()
     }
     emit connected();
     
-    MocapSubject *subject = NULL;
+    SubjectData *subject = NULL;
     running = true;
     
     while(running)
@@ -77,7 +76,7 @@ void NaturalPointConnector::run()
             
             // Find/Create the subject by name.
             char* subjectName = markerSet->szName;
-            subject = subjects->find(QString(subjectName));
+            subject = new SubjectData(QString(subjectName), CL_NaturalPoint);
             
             // Load the subject's translation and rotation quaternion.
             double t[3] = {rb->x, rb->y, rb->z};
@@ -94,6 +93,8 @@ void NaturalPointConnector::run()
                     subject->setMarker(QString::number(iMarker), markerPos);
                 }
             }
+
+            emit updateSubject(subject);
         }
         
         emit newFrame(frameData->iFrame);
@@ -143,18 +144,13 @@ NaturalPointClient::NaturalPointClient(MocapSubjectList *sList,
                                        QLineEdit *inHostField,
                                        QLineEdit *inPortField,
                                        QObject *parent)
-    : BaseClient(BaseClient::CL_NaturalPoint, sList, button, statusLine, parent)
+    : BaseClient(CL_NaturalPoint, sList, button, statusLine, parent)
     , running(false)
     , hostField(inHostField)
     , portField(inPortField)
 {
-    naturalpoint = new NaturalPointConnector(this, sList);
-    connect(naturalpoint, SIGNAL(connecting()),    this, SLOT(UIConnectingState()));
-    connect(naturalpoint, SIGNAL(connected()),     this, SLOT(UIConnectedState()));
-    connect(naturalpoint, SIGNAL(disconnecting()), this, SLOT(UIDisconnectingState()));
-    connect(naturalpoint, SIGNAL(disconnected()),  this, SLOT(UIDisconnectedState()));
-    connect(naturalpoint, SIGNAL(outMessage(QString)), this, SLOT(naturalPointMessage(QString)));
-    connect(naturalpoint, SIGNAL(newFrame(uint)), this, SLOT(newFrame(uint)));
+    naturalpoint = new NaturalPointConnector(this);
+    linkConnector(naturalpoint);
 
     QStringList wordList;
     wordList << "239.255.42.99";
@@ -218,8 +214,4 @@ void NaturalPointClient::mocapWait()
     naturalpoint->wait();
 }
 
-void NaturalPointClient::naturalPointMessage(QString m)
-{
-    outMessage(m);
-}
 

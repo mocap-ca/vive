@@ -1,7 +1,8 @@
 @SET BUILD=..\build-MocapSocket-Desktop_Qt_5_3_0_MSVC2013_64bit-Release\release\MocapSocket.exe
 @SET OUTDIR=Deployment
 @SET QTDIR=C:\cpp\api\Qt\5.3\msvc2013_64\bin
-@REM SET VICONDIR=C:\cpp\api\viconDataStream\Win64\CPP
+@SET VICONDIR=C:\cpp\api\viconDataStream\Win64\CPP
+
 
 @IF NOT EXIST %OUTDIR% MKDIR %OUTDIR% 
 @IF NOT EXIST %OUTDIR%\platforms MKDIR %OUTDIR%\platforms
@@ -23,15 +24,15 @@ COPY %QTDIR%\libGLESv2.dll %OUTDIR%
 COPY %QTDIR%\libEGL.dll %OUTDIR%
 COPY %QTDIR%\..\plugins\platforms\qwindows.dll %OUTDIR%\platforms\qwindows.dll
 
-@IF NOT DEFINED VICON GOTO SkipVicon
+@REM 	IF NOT DEFINED VICON GOTO SkipVicon
 
 @IF EXIST %VICONDIR% GOTO ViconExists
 @ECHO Could not find Vicon: %VICONDIR%
 :ViconExists
 
-@COPY %VICON%\boost_python-vc90-mt-1_48.dll %OUTDIR%
-@COPY %VICON%\boost_thread-vc90-mt-1_48.dll %OUTDIR%
-@COPY %VICON%\ViconDataStreamSDK_CPP.dll %OUTDIR%
+COPY %VICONDIR%\boost_python-vc90-mt-1_48.dll %OUTDIR%
+COPY %VICONDIR%\boost_thread-vc90-mt-1_48.dll %OUTDIR%
+COPY %VICONDIR%\ViconDataStreamSDK_CPP.dll %OUTDIR%
 
 :SkipVicon
 

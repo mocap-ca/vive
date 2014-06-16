@@ -25,9 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 using namespace ViconDataStreamSDK::CPP;
 
-ViconConnector::ViconConnector(QObject *parent, MocapSubjectList *s)
-    : QThread(parent)
-    , subjects(s)
+ViconConnector::ViconConnector(QObject *parent)
+    : BaseConnector(parent)
     , running(false)
     , host("")
     , port(0)
@@ -44,7 +43,7 @@ void ViconConnector::run()
     }
     emit connected();
 
-    MocapSubject *subject;
+    SubjectData *subject;
 
     running = true;
 
@@ -75,13 +74,15 @@ void ViconConnector::run()
         if (rsc.Result == Result::Success)
             subjectCount = rsc.SubjectCount;
 
+        // For each subject
         for(unsigned int i=0; i < subjectCount; i++)
         {
             Output_GetSubjectName rsn = mClient.GetSubjectName(i);
             if(rsn.Result != Result::Success) continue;
 
             std::string subjectName = rsn.SubjectName;
-            subject = subjects->find(QString(subjectName.c_str()));
+
+            subject = new SubjectData(subjectName.c_str(), CL_Vicon);
 
             Output_GetSubjectRootSegmentName srs = mClient.GetSubjectRootSegmentName(subjectName);
             if(srs.Result != Result::Success) continue;
@@ -113,6 +114,7 @@ void ViconConnector::run()
                 double unityTrans[3] = { -trans.Translation[0] / 100. , -trans.Translation[2] / 100., -trans.Translation[1] / 100. };
                 subject->setMarker(QString(markername.c_str()), unityTrans);
             }
+            emit updateSubject(subject);
         }
 
         emit newFrame(frameNumber);
@@ -184,18 +186,15 @@ ViconClient::ViconClient(MocapSubjectList *sList,
                          QLineEdit *inHostField,
                          QLineEdit *inPortField,
                          QObject *parent)
-: BaseClient(BaseClient::CL_Vicon, sList, button, statusLine, parent)
+: BaseClient(CL_Vicon, sList, button, statusLine, parent)
 , running(false)
 , frameError(false)
 , hostField(inHostField)
 , portField(inPortField)
 {
-    vicon = new ViconConnector(this, sList);
-    connect(vicon, SIGNAL(connecting()),    this, SLOT(UIConnectingState()));
-    connect(vicon, SIGNAL(connected()),     this, SLOT(UIConnectedState()));
-    connect(vicon, SIGNAL(disconnecting()), this, SLOT(UIDisconnectingState()));
-    connect(vicon, SIGNAL(disconnected()),  this, SLOT(UIDisconnectedState()));
-    connect(vicon, SIGNAL(outMessage(QString)), this, SLOT(viconMessage(QString)));
+    vicon = new ViconConnector(this);
+    linkConnector(vicon);
+
     QStringList wordList;
     wordList << "192.168.11.1" << "127.0.0.1";
     QCompleter *completer = new QCompleter(wordList, inHostField);
@@ -240,7 +239,3 @@ void ViconClient::mocapWait()
     vicon->wait();
 }
 
-void ViconClient::viconMessage(QString m)
-{
-    outMessage(m);
-}

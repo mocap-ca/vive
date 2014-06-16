@@ -18,13 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #pragma strict
+ 
+var rot           : Vector2 = new Vector2( 0.0f, 0.5f);
+var distance      : float   = 10.0f;
+var interest      : Vector3 = new Vector3( 0.0f, 1.0f, 0.0f );
+var orbitScale    : float   = 5.0f;
+var trackingScale : float   = 100.0f;
+var zoomScale     : float   = 2000.0f;
 
-var rot = new Vector2( 0.0f, 0.5f);
-var distance : float = 10.0f;
-var interest = new Vector3( 0.0f, 1.0f, 0.0f );
-var orbitScale : float = 5.0f;
-var trackingScale : float = 100.0f;
-var zoomScale : float = 2000.0f;
 
 private var offset       : Vector2;
 private var track        : Vector2;
@@ -37,6 +38,7 @@ private var orbiting     : boolean = false;
 private var zooming      : boolean = false;
 
 static var hasControl : boolean = true;
+static var topCrop    : int     = 0;
 
 function Start()
 {
@@ -47,10 +49,16 @@ function Start()
 	interest = t.localPosition;
 }
 
+
 function Update ()
 {
 	if(!hasControl) return;
 
+	// If a gui is showing, make a dead space at the top of the screen
+	if(  topCrop > 0 
+		&& (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2) )
+	    &&  Screen.height - Input.mousePosition.y < topCrop) 
+	    	return;
 
     /* Orbiting */
     

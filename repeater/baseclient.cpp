@@ -1,6 +1,13 @@
 #include "baseclient.h"
 
 #include <QString>
+#include <QMutexLocker>
+
+BaseConnector::BaseConnector(QObject *parent)
+: QThread(parent)
+{}
+
+
 
 BaseClient::BaseClient(ClientId clientId,
         MocapSubjectList *subjectList,
@@ -20,12 +27,12 @@ BaseClient::BaseClient(ClientId clientId,
     QObject::connect(this,   SIGNAL(stateDisconnecting()),       this,   SLOT(UIDisconnectingState()));
     QObject::connect(this,   SIGNAL(stateDisconnected()),        this,   SLOT(UIDisconnectedState()));
     QObject::connect(this,   SIGNAL(outMessage_(QString)),       parent, SLOT(showMessage(QString)));
-    QObject::connect(this,   SIGNAL(updateFrame(BaseClient::ClientId,uint)), parent, SLOT(processFrame(BaseClient::ClientId, uint)));
+    QObject::connect(this,   SIGNAL(updateFrame(ClientId,uint)), parent, SLOT(processFrame(ClientId, uint)));
 }
 
 void BaseClient::tick()
 {
-    if(isRunning())
+    if(isConnected())
     {
         statusLine->setText(QString("%1").arg(count));
         count=0;
@@ -34,6 +41,11 @@ void BaseClient::tick()
     {
         statusLine->setText(QString("Not Connected"));
     }
+}
+
+void BaseClient::addCount()
+{
+    count++;
 }
 
 void BaseClient::outMessage(QString msg)
@@ -46,18 +58,12 @@ void BaseClient::newFrame(uint i)
     emit updateFrame(this->id, i);
 }
 
-
 void BaseClient::handleButtonClick()
 {
-    if(isConnected())
-    {
-        mocapStop();
-    }
-    else
-    {
-        mocapStart();
-    }
+    if(isConnected()) { mocapStop();  }
+    else              { mocapStart(); }
 }
+
 
 void BaseClient::UIConnectingState()
 {
@@ -84,3 +90,21 @@ void BaseClient::UIDisconnectedState()
 }
 
 
+bool BaseClient::linkConnector(BaseConnector *c)
+{
+    bool ok = true;
+    ok &= (bool)connect(c, SIGNAL(connecting()),                this, SLOT(UIConnectingState()));
+    ok &= (bool)connect(c, SIGNAL(connected()),                 this, SLOT(UIConnectedState()));
+    ok &= (bool)connect(c, SIGNAL(disconnecting()),             this, SLOT(UIDisconnectingState()));
+    ok &= (bool)connect(c, SIGNAL(disconnected()),              this, SLOT(UIDisconnectedState()));
+    ok &= (bool)connect(c, SIGNAL(outMessage(QString)),         this, SLOT(outMessage(QString)));
+    ok &= (bool)connect(c, SIGNAL(newFrame(uint)),              this, SLOT(newFrame(uint)));
+    ok &= (bool)connect(c, SIGNAL(newFrame(uint)),              this, SLOT(addCount()));
+    ok &= (bool)connect(c, SIGNAL(updateSubject(SubjectData*)), this, SLOT(update(SubjectData*)));
+    return ok;
+}
+
+void BaseClient::update(SubjectData *s)
+{
+    subjects->update(s);
+}

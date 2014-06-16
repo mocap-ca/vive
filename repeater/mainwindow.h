@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "server.h"
 #include "testClient.h"
 #include "localServer.h"
+#include "mocapModel.h"
 
 // Stub any classes that are not required. They will be
 // set to null and ignored.
@@ -42,8 +43,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 // 0.3 - Added base class for clients
 // 0.4 - Baseclient inherits from QObject now instead of QThread
 //     - Fixed stub and broken connection
+// 0.5 - Pulled SubjectData out of MocapSubject
+//     - clients message SubjectData out, rather than touching MocapSubjectList directly
+//     - fixed fps counters
+//     - TODO: write model for tree view of data (not really a priority right now)
 
-#define VIVE_VERSION "0.4"
+#define VIVE_VERSION "0.5"
 
 
 namespace Ui {
@@ -59,7 +64,7 @@ public slots:
     void updateConnectionList(void);
     void showMessage(QString);
 	void timerClick(void);
-    void processFrame(BaseClient::ClientId, uint);
+    void processFrame(ClientId, uint);
 
 
 public:
@@ -85,6 +90,9 @@ private:
 
     //! Contains all subject information for the current frame.
 	MocapSubjectList *subjectList;
+
+    //! Holds the QStandardItems to represent *subjectList
+    MocapModel *subjectModel;
 };
 
 #endif // MAINWINDOW_H

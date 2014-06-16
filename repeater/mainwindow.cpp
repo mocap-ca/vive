@@ -42,13 +42,17 @@ MainWindow::MainWindow(QWidget *parent) :
     splitSizes << 2;
     ui->splitter->setSizes(splitSizes);
 
+
 	subjectList = new MocapSubjectList(this);
+    subjectModel = new MocapModel(this, subjectList);
+    ui->treeViewData->setModel(subjectModel);
+    //for(int i=1; i < 16; i++)
+    //    ui->treeViewData->setColumnWidth(i, 50);
+
+
     modelConnections = new QStandardItemModel(this);
     ui->listViewConnections->setModel(modelConnections);
-    //ui->treeViewData->setModel(&subjectList->model);
 
-    for(int i=1; i < 16; i++)
-        ui->treeViewData->setColumnWidth(i, 50);
 
     // Start tcp server
     server = new MyServer(subjectList);
@@ -83,13 +87,6 @@ MainWindow::MainWindow(QWidget *parent) :
                                                                     ui->lineEditNPHost,
                                                                     ui->lineEditNPPort,
                                                                     this);
-//    ui->lineEditNPHost->setText(naturalPointClient->host);
-//    ui->lineEditNPPort->setText(QString::number(naturalPointClient->port));
-//    ok &= (bool)QObject::connect(naturalPointClient, SIGNAL(outMessage(QString)),   this, SLOT(showMessage(QString)));
-//    ok &= (bool)QObject::connect(naturalPointClient, SIGNAL(connectedEvent(bool)),  this, SLOT(naturalPointConnected(bool)));
-//    ok &= (bool)QObject::connect(ui->pushButtonNPConnect, SIGNAL(clicked()),   this, SLOT(doNaturalPointConnect()));
-    ok &= (bool)QObject::connect(naturalPointClient, SIGNAL(newFrame(uint)),      server, SLOT(process()));
-    ok &= (bool)QObject::connect(naturalPointClient, SIGNAL(newFrame(uint)), localServer, SLOT(process()));
     clients.append(naturalPointClient);
 #else
     ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->NPTab));
@@ -134,7 +131,7 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::processFrame(BaseClient::ClientId, uint)
+void MainWindow::processFrame(ClientId, uint)
 {
     server->process();
     localServer->process();
@@ -144,16 +141,41 @@ void MainWindow::processFrame(BaseClient::ClientId, uint)
 
 void MainWindow::timerClick()
 {
-    QString msg = QString("TCP FPS: %1   Pipe FPS: %2").arg(server->count).arg(localServer->count);
-    this->statusBar()->showMessage(msg);
+    // Prepare the status bar message
+    QStringList msgs;
+    msgs.append( QString("FPS:  ") );
 
+    int    serverConnections = server->numberOfConnections();
+    size_t serverFps         = server->count;
+    ui->lineEditServerFPS->setText(QString("%1").arg(serverFps));
+    if(serverConnections > 0) msgs.append( QString("TCP: #%1 @ %2   ").arg(serverConnections).arg(serverFps) );
+    server->count = 0;
+
+    int    localConnections  = localServer->numberOfConnections();
+    size_t localServerFps    = localServer->count;
+    ui->lineEditLocalFPS->setText(QString("%1").arg(localServerFps));
+    if(localConnections > 0)  msgs.append( QString("Local: #%1 @ %2   ").arg(localConnections).arg(localServerFps) );
+    localServer->count = 0;
+
+    for(QList<BaseClient*>::iterator i = clients.begin(); i!= clients.end(); i++)
+    {
+        BaseClient *c = *i;
+        if(!c->isConnected() || c->count == 0) continue;
+        QString name = c->ClientStr();
+        size_t count = c->count;
+        msgs.append( QString("%1 @ %2").arg(name).arg(count));
+    }
+
+    this->statusBar()->showMessage(msgs.join(" - "));
+
+    // Send a tick to each client (resets counters)
     for(QList<BaseClient*>::iterator i = clients.begin(); i != clients.end(); i++)
     {
         (*i)->tick();
     }
 
 
-    //subjectList->updateModel();
+    subjectModel->update();
 
     QString data;
     QTextStream stream(&data);
@@ -181,7 +203,7 @@ void MainWindow::showMessage(QString msg)
 
 void MainWindow::mouseMoveEvent(QMouseEvent *e)
 {
-    testClient->mousex = e->x() * 4.0;
-    testClient->mousey = e->y() * 4.0;
+    //testClient->mousex = e->x() * 4.0;
+    //testClient->mousey = e->y() * 4.0;
 }
 

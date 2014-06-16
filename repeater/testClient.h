@@ -24,9 +24,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <QObject>
 #include <QList>
 #include <QPushButton>
-#include <QTimer>
 #include "baseClient.h"
 #include "mocapSubject.h"
+
+class TestConnector : public BaseConnector
+{
+    Q_OBJECT
+public:
+    TestConnector(QObject *parent);
+
+    virtual bool connect();
+    virtual void stop();
+    virtual void run();
+
+    bool running;
+
+    float val, mousex, mousey;
+
+    uint count;
+
+
+};
 
 class TestClient : public BaseClient
 {
@@ -36,7 +54,6 @@ public slots:
     void mocapStart();
     void mocapStop();
     void mocapWait();
-    void runOne();
 
 public:
     TestClient( MocapSubjectList *subjectList,
@@ -48,15 +65,12 @@ public:
     virtual QString ClientStr() { return QString("Test"); }
 
     //! @returns true if the service is running
-    virtual bool isRunning() { return running; }
+    virtual bool isRunning() { return connector->running; }
 
-    virtual bool isConnected() { return running; }
+    virtual bool isConnected() { return connector->running; }
 
-    QTimer *timer;
+    TestConnector *connector;
 
-	bool running;
-
-    float val, mousex, mousey;
 
 };
 
