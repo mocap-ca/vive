@@ -55,13 +55,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     // Start tcp server
-    server = new MyServer(subjectList);
+    server = new MyServer(ServerConnection::CON_TCP, 4001, subjectList, this);
     ok &= (bool)QObject::connect(server, SIGNAL(connectionsChanged()),    this, SLOT(updateConnectionList()));
     ok &= (bool)QObject::connect(server, SIGNAL(outMessage(QString)),     this, SLOT(showMessage(QString)));
-    server->listen(4001);
+    server->listen();
 
     // Start local server
-    localServer = new LocalServer(subjectList);
+    localServer = new MyServer(ServerConnection::CON_PIPE, 0, subjectList, this);
     ok &= (bool)QObject::connect(localServer, SIGNAL(connectionsChanged()), this, SLOT(updateConnectionList()));
     ok &= (bool)QObject::connect(localServer, SIGNAL(outMessage(QString)),  this, SLOT(showMessage(QString)));
     localServer->listen();
@@ -73,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent) :
                                                ui->lineEditViconStatus,
                                                ui->lineEditViconHost,
                                                ui->lineEditViconPort,
+                                               ui->checkBoxViconYUp,
                                                this);
     clients.append(viconClient);
 #else

@@ -19,43 +19,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 
 #include "server.h"
-#include "profile.h"
-
 #include <sstream>
 
-ServerConnection::ServerConnection(QTcpSocket *socket, QObject *parent)
-: QObject(parent)
-, name(socket->peerAddress().toString())
-, socket(socket)
 
-
-{}
-
-QString ServerConnection::str()
-{
-	return name;
-}
-
-MyServer::MyServer(MocapSubjectList *sList, QObject *parent)
+MyServer::MyServer(ServerConnection::ConnType t, int inPort, MocapSubjectList *sList, QObject *parent)
 : QObject(parent)
 , running(true)
+, port(inPort)
+, type(t)
 , count(0)
 , working(false)
 , subjectList(sList)
 {}
 
-void MyServer::listen(int port)
+void MyServer::listen()
 {
-    server = new QTcpServer(this);
-    connect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
-
-    if(!server->listen(QHostAddress::Any, port))
+    bool ok = true;
+    if(type == ServerConnection::CON_TCP)
     {
-        emit outMessage("Could not start server.");
+        server = new QTcpServer(this);
+        connect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
+        ok = server->listen(QHostAddress::Any, port);
+        if(ok) emit outMessage(QString("TCP server started, listening on port: %1").arg(port));
     }
     else
     {
-        emit outMessage(QString("Server Started.  Listening on port: %1").arg(port));
+        localServer = new QLocalServer(this);
+        connect(localServer, SIGNAL(newConnection()), this, SLOT(newConnection()));
+        ok = localServer->listen("VIVE");
+        if(ok) emit outMessage("Local server started");
     }
 }
 
@@ -65,18 +57,28 @@ void MyServer::newConnection()
     bool change = false;
     while(1)
     {
-        QTcpSocket *socket = server->nextPendingConnection();
-        if(socket == NULL) break;
+        ServerConnection *connection = NULL;
+        if(type == ServerConnection::CON_PIPE)
+        {
+            QLocalSocket *socket = localServer->nextPendingConnection();
+            if(socket == NULL) break;
+            change = true;
+            connection = new ServerConnection(type, this, socket );
 
-        change = true;
-
-        ServerConnection *con = new ServerConnection(socket, this);
+        }
+        else
+        {
+            QTcpSocket *socket = server->nextPendingConnection();
+            if(socket == NULL) break;
+            change = true;
+            connection = new ServerConnection(type, this, socket );
+        }
 
         listMutex.lock();
-        connections.append(con);
+        connections.append(connection);
         listMutex.unlock();
 
-        emit outMessage(QString("Connection from: ") + con->str());
+        emit outMessage(QString("Connection from: ") + connection->str());
     }
 
     if(change)
@@ -113,61 +115,46 @@ void MyServer::stop()
 */
 void MyServer::process()
 {
-    stopProfile("Other");
 
     working = true;
 
-    startProfile("checkAlive");
     int alive = checkAlive();
-    stopProfile("checkAlive");
 
     if(alive > 0)
     {
-        startProfile("Serve");
-
         count++;
         QString buffer;
         QTextStream stream(&buffer);
         // The following operation is threadsafe.
-        startProfile("Fetch");
-        subjectList->read(stream, true);
-        stopProfile("Fetch");
 
-        startProfile("Wait");
+        subjectList->read(stream, true);
+
         listMutex.lock();
-        stopProfile("Wait");
 
         // for each connection
         for(QList<ServerConnection *>::iterator i =  connections.begin(); i != connections.end(); i++)
         {
-            QTcpSocket *s = (*i)->socket;
-            if(s->state() != QAbstractSocket::ConnectedState) continue;
+            if(!(*i)->connected()) continue;
 
             QString d = QString("%1\nEND\r\n").arg(buffer);
 
-            startProfile("Write");
-            int written = s->write(d.toUtf8());
-            stopProfile("Write");
+            int written = (*i)->write(d.toUtf8());
 
             if(written == -1)
             {
-                emit outMessage(QString(" Error writing to %1").arg(s->peerAddress().toString()));
+                emit outMessage(QString(" Error writing to %1").arg((*i)->str()));
             }
             else
             {
-                s->flush();
+                (*i)->flush();
             }
         }
 
         listMutex.unlock();
 
-        stopProfile("Serve");
     }
 
     working = false;
-
-
-    startProfile("Other");
 
 
 }
@@ -189,8 +176,7 @@ int MyServer::checkAlive()
 
         for(QList<ServerConnection*>::iterator i = connections.begin(); i != connections.end(); i++)
         {
-            QTcpSocket *s = (*i)->socket;
-            if(s->state() == QAbstractSocket::UnconnectedState)
+            if(!(*i)->connected())
             {
                 emit outMessage(QString("Disconnected: %1").arg((*i)->str()));
                 done = false;
@@ -199,11 +185,11 @@ int MyServer::checkAlive()
                 connections.erase(i);
                 break;
             }
-
-			if(s->state() == QAbstractSocket::ConnectedState)
-				ret++;
-        }
-
+            else
+            {
+                ret++;
+            }
+       }
     }
     listMutex.unlock();
 

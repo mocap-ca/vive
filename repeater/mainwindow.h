@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <QTimer>
 #include "server.h"
 #include "testClient.h"
-#include "localServer.h"
 #include "mocapModel.h"
 
 // Stub any classes that are not required. They will be
@@ -76,7 +75,7 @@ private:
     void mouseMoveEvent(QMouseEvent*);
     Ui::MainWin *ui;
     MyServer    *server;
-    LocalServer *localServer;
+    MyServer    *localServer;
 	QTimer      *timer;
     QStandardItemModel *modelConnections;
 
