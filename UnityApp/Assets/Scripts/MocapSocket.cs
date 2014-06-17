@@ -257,7 +257,7 @@ public class MocapSocket : MonoBehaviour {
 	
 	void SetInitialState(GameObject o)
 	{
-		objectDict[o.name] = o;
+		objectDict[o.name.ToLower ()] = o;
 		rotationOffsets.Add (o, Quaternion.identity);
 		initialOrientation.Add (o, o.transform.localRotation);
 	}
@@ -489,11 +489,11 @@ public class MocapSocket : MonoBehaviour {
 		for(int i=0; i < subjects && line < lineItems.Length; i++)
 		{
 			string[] subjectSplit = lineItems[line++].Split ('\t');
-			string subjectName = subjectSplit[0];
+			string subjectName = subjectSplit[0].ToLower ();
 			// Strip prefix
 			if(prefix.Length > 0 && prefix.Length < subjectName.Length)
 			{
-				if(subjectName.Substring(0, prefix.Length) == prefix)
+				if(subjectName.Substring(0, prefix.Length) == prefix.ToLower ())
 				{
 					subjectName = subjectName.Substring (prefix.Length);
 				}
@@ -606,7 +606,7 @@ public class MocapSocket : MonoBehaviour {
 						if(item.name == "root")
 						{
 							// Rigid objects match on subject name, not segment
-							if ( !objectDict.ContainsKey( subject ) )
+							if ( !objectDict.ContainsKey( subject.ToLower () ) )
 							{
 								infoMessage += "- Rigid Missing\n";
 								continue;
@@ -620,11 +620,11 @@ public class MocapSocket : MonoBehaviour {
 						// Body Joint
 						if ( !objectDict.ContainsKey( item.name) )
 						{
-							infoMessage += "\n  body missing:" + item.name;
+							infoMessage += "\n  body missing:" + item.name.ToLower ();
 							continue;
 						}
-						infoMessage += "\n   body: " + item.name;
-						o = objectDict[item.name];
+						infoMessage += "\n   body: " + item.name.ToLower ();
+						o = objectDict[item.name.ToLower ()];
 					}
 
 					if( o == null) continue;

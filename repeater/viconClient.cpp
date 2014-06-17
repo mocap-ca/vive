@@ -111,7 +111,7 @@ void ViconConnector::run()
                 Output_GetMarkerName mn = mClient.GetMarkerName(subjectName, i);
                 Output_GetMarkerGlobalTranslation trans = mClient.GetMarkerGlobalTranslation(subjectName, mn.MarkerName);
                 std::string markername = mn.MarkerName;
-                double unityTrans[3] = { -trans.Translation[0] / 100. , -trans.Translation[2] / 100., -trans.Translation[1] / 100. };
+                double unityTrans[3] = { -trans.Translation[0] / 100. , -trans.Translation[2] / 100., trans.Translation[1] / 100. };
                 subject->setMarker(QString(markername.c_str()), unityTrans);
             }
             emit updateSubject(subject);
