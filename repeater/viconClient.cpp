@@ -31,6 +31,7 @@ ViconConnector::ViconConnector(QObject *parent)
     , host("")
     , port(0)
     , streamMode(SERVER_PUSH)
+    , yUp(false)
 {}
 
 void ViconConnector::run()
@@ -98,8 +99,11 @@ void ViconConnector::run()
 
                 // Convert to unity coordinate system
                 // TODO: convert to opengl instead
-                double unityTrans[3] = { -trans.Translation[0] / 100. , -trans.Translation[2] / 100., trans.Translation[1] / 100. };
-                double unityRot[4] = { localRot.Rotation[0], localRot.Rotation[2], -localRot.Rotation[1],  localRot.Rotation[3] };
+
+                double unityTrans[3];
+                double unityRot[4];
+                reorientPos(trans.Translation, unityTrans);
+                reorientRot(localRot.Rotation, unityRot);
 
                 std::string segname = sn.SegmentName;
                 subject->setSegment(QString(segname.c_str()) ,unityTrans, unityRot);
@@ -111,7 +115,8 @@ void ViconConnector::run()
                 Output_GetMarkerName mn = mClient.GetMarkerName(subjectName, i);
                 Output_GetMarkerGlobalTranslation trans = mClient.GetMarkerGlobalTranslation(subjectName, mn.MarkerName);
                 std::string markername = mn.MarkerName;
-                double unityTrans[3] = { -trans.Translation[0] / 100. , -trans.Translation[2] / 100., trans.Translation[1] / 100. };
+                double unityTrans[3];
+                reorientPos(trans.Translation, unityTrans);
                 subject->setMarker(QString(markername.c_str()), unityTrans);
             }
             emit updateSubject(subject);
@@ -128,6 +133,43 @@ void ViconConnector::run()
 }
 
 
+void ViconConnector::reorientPos(const double vicon[3],  double unityTrans[3])
+{
+    if(yUp)
+    {
+        // This works for blade
+        unityTrans[0] = -vicon[0] / 100.;
+        unityTrans[1] = -vicon[2] / 100.;
+        unityTrans[2] =  vicon[1] / 100.;
+    }
+    else
+    {
+        // This is for tracker
+        unityTrans[0] = -vicon[0] / 100.;
+        unityTrans[1] =  vicon[1] / 100.;
+        unityTrans[2] =  vicon[2] / 100.;
+    }
+}
+
+void ViconConnector::reorientRot(const double vicon[4],  double unityRot[4])
+{
+    if(yUp)
+    {
+        // This works for blade
+        unityRot[0] = vicon[0];
+        unityRot[1] = vicon[2];
+        unityRot[2] = -vicon[1];
+        unityRot[3] = vicon[3];
+    }
+    else
+    {
+        // This is for tracker
+        unityRot[0] = vicon[0];
+        unityRot[1] = -vicon[1];
+        unityRot[2] = -vicon[2];
+        unityRot[3] = vicon[3];
+    }
+}
 
 
 void ViconConnector::stop()
@@ -185,12 +227,14 @@ ViconClient::ViconClient(MocapSubjectList *sList,
                          QLineEdit *statusLine,
                          QLineEdit *inHostField,
                          QLineEdit *inPortField,
+                         QCheckBox *inYUp,
                          QObject *parent)
 : BaseClient(CL_Vicon, sList, button, statusLine, parent)
 , running(false)
 , frameError(false)
 , hostField(inHostField)
 , portField(inPortField)
+, checkBoxYUp(inYUp)
 {
     vicon = new ViconConnector(this);
     linkConnector(vicon);
@@ -201,6 +245,8 @@ ViconClient::ViconClient(MocapSubjectList *sList,
     hostField->setCompleter(completer);
     hostField->setText(wordList[0]);
     portField->setText("801");
+
+    QObject::connect(checkBoxYUp, SIGNAL(toggled(bool)), this, SLOT(changeYUp(bool)));
 
 }
 
@@ -223,6 +269,7 @@ void ViconClient::mocapStart()
     }
     vicon->host = hostField->text();
     vicon->port = portField->text().toInt();
+    vicon->yUp  = checkBoxYUp->isChecked();
 
     if(vicon->port == 0)
     {
@@ -239,3 +286,7 @@ void ViconClient::mocapWait()
     vicon->wait();
 }
 
+void ViconClient::changeYUp(bool val)
+{
+    vicon->yUp = val;
+}

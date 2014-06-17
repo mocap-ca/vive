@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.2.1
+** Created by: Qt User Interface Compiler version 5.3.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -13,6 +13,7 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QFormLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
@@ -53,6 +54,8 @@ public:
     QSpacerItem *horizontalSpacer_2;
     QPushButton *pushButtonConnectVicon;
     QLineEdit *lineEditViconStatus;
+    QLabel *label_6;
+    QCheckBox *checkBoxViconYUp;
     QWidget *NPTab;
     QWidget *formLayoutWidget_3;
     QFormLayout *formLayout_3;
@@ -115,7 +118,7 @@ public:
         ViconTab->setObjectName(QStringLiteral("ViconTab"));
         formLayoutWidget = new QWidget(ViconTab);
         formLayoutWidget->setObjectName(QStringLiteral("formLayoutWidget"));
-        formLayoutWidget->setGeometry(QRect(10, 10, 211, 119));
+        formLayoutWidget->setGeometry(QRect(10, 10, 211, 126));
         formLayout = new QFormLayout(formLayoutWidget);
         formLayout->setSpacing(6);
         formLayout->setContentsMargins(11, 11, 11, 11);
@@ -184,6 +187,17 @@ public:
         lineEditViconStatus->setMaximumSize(QSize(16777215, 16777215));
 
         formLayout->setWidget(3, QFormLayout::FieldRole, lineEditViconStatus);
+
+        label_6 = new QLabel(formLayoutWidget);
+        label_6->setObjectName(QStringLiteral("label_6"));
+
+        formLayout->setWidget(4, QFormLayout::LabelRole, label_6);
+
+        checkBoxViconYUp = new QCheckBox(formLayoutWidget);
+        checkBoxViconYUp->setObjectName(QStringLiteral("checkBoxViconYUp"));
+        checkBoxViconYUp->setChecked(true);
+
+        formLayout->setWidget(4, QFormLayout::FieldRole, checkBoxViconYUp);
 
         tabWidget->addTab(ViconTab, QString());
         NPTab = new QWidget();
@@ -386,7 +400,7 @@ public:
 
         retranslateUi(MainWin);
 
-        tabWidget->setCurrentIndex(1);
+        tabWidget->setCurrentIndex(0);
         tabWidget_2->setCurrentIndex(1);
 
 
@@ -400,6 +414,8 @@ public:
         label->setText(QApplication::translate("MainWin", "Port:", 0));
         label_4->setText(QApplication::translate("MainWin", "Fps:", 0));
         pushButtonConnectVicon->setText(QApplication::translate("MainWin", "Connect", 0));
+        label_6->setText(QApplication::translate("MainWin", "Y-up", 0));
+        checkBoxViconYUp->setText(QString());
         tabWidget->setTabText(tabWidget->indexOf(ViconTab), QApplication::translate("MainWin", "Vicon", 0));
         label_7->setText(QApplication::translate("MainWin", "Host:", 0));
         label_10->setText(QApplication::translate("MainWin", "Port:", 0));

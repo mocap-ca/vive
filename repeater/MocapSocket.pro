@@ -22,19 +22,32 @@ SOURCES += main.cpp\
     mocapSubject.cpp \
     testClient.cpp \
     profilesx.cpp \
-    localServer.cpp \
     baseclient.cpp \
-    mocapModel.cpp
+    mocapModel.cpp \
+    vivec3d.cpp \
+    ../fileTranslators/asfAmcFile.cpp \
+    ../fileTranslators/bvhFile.cpp \
+    ../fileTranslators/c3dFile.cpp \
+    ../fileTranslators/htrFile.cpp \
+    ../fileTranslators/trcFile.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
     mocapSubject.h \
     testClient.h \
     profile.h \
-    localServer.h \
     baseclient.h \
     mocapModel.h \
-    defines.h
+    defines.h \
+    vivec3d.h \
+    ../fileTranslators/asfAmcFile.h \
+    ../fileTranslators/bvhFile.h \
+    ../fileTranslators/c3dFile.h \
+    ../fileTranslators/htrFile.h \
+    ../fileTranslators/trcFile.h \
+    ../fileTranslators/fileTranslator.h \
+    ../fileTranslators/joint.h \
+    ../fileTranslators/vectorMath.h
 
 FORMS    += mainwindow.ui
 

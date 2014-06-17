@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "baseClient.h"
 #include "ViconStreamClient.h"
 #include <QLineEdit>
+#include <QCheckBox>
 
 // Inherits from qthread - cannot modify gui
 class ViconConnector : public BaseConnector
@@ -54,6 +55,10 @@ public:
     ViconDataStreamSDK::CPP::Client mClient;
     eStreamMode   streamMode;
 
+    bool  yUp;
+    void reorientPos(const double vicon[3],  double unityTrans[3]);
+    void reorientRot(const double vicon[4],  double unityRot[4]);
+
 };
 
 
@@ -68,6 +73,7 @@ public:
                  QLineEdit *statusLine,
                  QLineEdit *hostField,
                  QLineEdit *portField,
+                 QCheckBox *checkBoxYUp,
                  QObject *parent = NULL);
 
 
@@ -101,9 +107,15 @@ public:
     ViconConnector *vicon;
     QLineEdit *hostField;
     QLineEdit *portField;
+    QCheckBox *checkBoxYUp;
+
 
 private:
     bool          frameError;
+
+
+public slots:
+    void changeYUp(bool);
 
 };
 
