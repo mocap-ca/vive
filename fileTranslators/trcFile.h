@@ -1,6 +1,7 @@
 /*
-VIVE - Very Immersive Virtual Experience
-Copyright (C) 2014 Alastair Macleod, Emily Carr University
+Mocap File Translators
+Copyright (C) 2014 Alastair Macleod
+http://mocap.ca/
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,16 +18,38 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef DEFINES_H
-#define DEFINES_H
+#ifndef ___PEEL_TRCFILE_H_
+#define ___PEEL_TRCFILE_H_
 
-typedef enum eClientId
+
+#include <string>
+
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <string>
+#include <iostream>
+#include <locale>
+#include <math.h>
+
+#include "fileTranslator.h"
+
+using namespace std;
+
+
+class TrcFile : public FileTranslator
 {
-    CL_None = 0,
-    CL_Stub = 1,
-    CL_Vicon = 100,
-    CL_NaturalPoint
-} ClientId;
+public:
+	TrcFile();
+	~TrcFile();
 
+	bool m_debug;
 
-#endif // DEFINES_H
+	bool load(const char * file, bool debug);
+	vector<string> tokenize(const string& str,const string& delimiters);
+	virtual bool createMarker(const char *name) = 0;
+	virtual bool addKey(size_t i, float time, float x, float y, float z) = 0;
+	virtual void setRate(double) = 0;
+
+};
+#endif

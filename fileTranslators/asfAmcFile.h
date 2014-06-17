@@ -1,6 +1,7 @@
 /*
-VIVE - Very Immersive Virtual Experience
-Copyright (C) 2014 Alastair Macleod, Emily Carr University
+Mocap File Translators
+Copyright (C) 2014 Alastair Macleod
+http://mocap.ca/
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,16 +18,33 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef DEFINES_H
-#define DEFINES_H
+#ifndef PEEL_ASFAMCFILE_H
+#define PEEL_ASFAMCFILE_H
 
-typedef enum eClientId
+#include "fileTranslator.h"
+#include "joint.h"
+#include "vectorMath.h"
+
+using namespace std;
+
+class AsfAmcFile : public FileTranslator
 {
-    CL_None = 0,
-    CL_Stub = 1,
-    CL_Vicon = 100,
-    CL_NaturalPoint
-} ClientId;
+public:
+	AsfAmcFile(JointList &joints);
+
+	bool load(const char * asfFile, const char * amcFile, bool debug);
+
+	JointList&    m_joints;
 
 
-#endif // DEFINES_H
+	float  m_mass;
+	string m_name;
+	double m_lengthScale;
+	string m_angle;
+
+	vector<string> m_documentation;
+	string m_order;
+
+};
+
+#endif

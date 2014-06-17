@@ -1,6 +1,7 @@
 /*
-VIVE - Very Immersive Virtual Experience
-Copyright (C) 2014 Alastair Macleod, Emily Carr University
+Mocap File Translators
+Copyright (C) 2014 Alastair Macleod
+http://mocap.ca/
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,16 +18,38 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef DEFINES_H
-#define DEFINES_H
 
-typedef enum eClientId
+#ifndef ___PEEL_HTR_FILE___H___
+#define ___PEEL_HTR_FILE___H___
+
+#include "fileTranslator.h"
+#include <string>
+#include <sstream>
+#include <vector>
+#include "joint.h"
+
+#define LINEBUFLEN 10240
+
+class HtrFile : public FileTranslator
 {
-    CL_None = 0,
-    CL_Stub = 1,
-    CL_Vicon = 100,
-    CL_NaturalPoint
-} ClientId;
+public:
+	HtrFile(JointList &joints);
+	~HtrFile();
+
+	bool load(const char * file, bool debug);
+
+	bool       m_debug;
+	size_t     m_frames;
+	double     m_rate;
+	JointList &m_joints;
+
+private:
+
+	void tokenize(const char *string, std::vector<std::string> & list);
 
 
-#endif // DEFINES_H
+};
+
+
+
+#endif
