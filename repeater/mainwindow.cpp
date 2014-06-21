@@ -28,13 +28,14 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
 		ui(new Ui::MainWin )
 {
-
     bool ok = true;
+    int defaultPort = 4001;
+
+
+    // Set up main ui
 
     ui->setupUi(this);
-
     setWindowTitle(QString("VIVE Version ") + QString(VIVE_VERSION));
-
     ui->plainTextEditLog->setMaximumBlockCount(1000);
 
     QList<int> splitSizes;
@@ -42,20 +43,26 @@ MainWindow::MainWindow(QWidget *parent) :
     splitSizes << 2;
     ui->splitter->setSizes(splitSizes);
 
+    ui->lineEditListenPort->setText( QString("%1").arg(defaultPort));
+    ok =& connect(ui->pushButtonServerToggle, SIGNAL(pressed()), this, SLOT(toggleServer()));
 
+    ui->lineEditViveHost->setText(QString("127.0.0.1"));
+    ui->lineEditVivePort->setText(QString("4001"));
+
+    // Create the subject list and gui model
 	subjectList = new MocapSubjectList(this);
     subjectModel = new MocapModel(this, subjectList);
     ui->treeViewData->setModel(subjectModel);
     //for(int i=1; i < 16; i++)
     //    ui->treeViewData->setColumnWidth(i, 50);
 
-
+    // Create the connections model
     modelConnections = new QStandardItemModel(this);
     ui->listViewConnections->setModel(modelConnections);
 
 
     // Start tcp server
-    server = new MyServer(ServerConnection::CON_TCP, 4001, subjectList, this);
+    server = new MyServer(ServerConnection::CON_TCP, defaultPort, subjectList, this);
     ok &= (bool)QObject::connect(server, SIGNAL(connectionsChanged()),    this, SLOT(updateConnectionList()));
     ok &= (bool)QObject::connect(server, SIGNAL(outMessage(QString)),     this, SLOT(showMessage(QString)));
     server->listen();
@@ -65,6 +72,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ok &= (bool)QObject::connect(localServer, SIGNAL(connectionsChanged()), this, SLOT(updateConnectionList()));
     ok &= (bool)QObject::connect(localServer, SIGNAL(outMessage(QString)),  this, SLOT(showMessage(QString)));
     localServer->listen();
+
+    updateServerUI();
 
 #ifdef VICON_CLIENT
     // Vicon Client
@@ -94,11 +103,17 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 
     // Stub Client
-    testClient  = new TestClient(subjectList,
-                                 ui->pushButtonStub,
-                                 ui->lineEditStubStatus,
-                                 this);
+    testClient  = new TestClient(subjectList, ui->pushButtonStub, ui->lineEditStubStatus, this);
     clients.append(testClient);
+
+    // Vive Client
+    viveClient = new ViveClient(subjectList,
+                                ui->pushButtonViveConnect,
+                                ui->lineEditViveStatus,
+                                ui->lineEditViveHost,
+                                ui->lineEditVivePort,
+                                this);
+    clients.append(viveClient);
 
     // Window refresh timer
 	timer = new QTimer(this);
@@ -129,6 +144,44 @@ MainWindow::~MainWindow()
     }
 
     delete ui;
+}
+
+void MainWindow::toggleServer()
+{
+    if(server->isRunning())
+    {
+        server->stop();
+        showMessage("Stopped Server");
+    }
+    else
+    {
+        int port = ui->lineEditListenPort->text().toInt();
+        if(port == 0)
+        {
+                QMessageBox::critical(this, "Error", "Invalid Port");
+                return;
+        }
+        server->setPort(port);
+        if(server->listen())
+        {
+            showMessage("Started Server");
+        }
+    }
+    updateServerUI();
+}
+
+void MainWindow::updateServerUI()
+{
+    if(server->isRunning())
+    {
+        ui->pushButtonServerToggle->setText("Stop");
+        ui->lineEditListenPort->setEnabled(false);
+    }
+    else
+    {
+        ui->pushButtonServerToggle->setText("Start");
+        ui->lineEditListenPort->setEnabled(true);
+    }
 }
 
 

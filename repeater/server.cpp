@@ -22,9 +22,64 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <sstream>
 
 
+ServerConnection::ServerConnection( ConnType cType, QObject *parent, void *socket )
+    : QObject(parent)
+    , type(cType)
+{
+    if(type == CON_TCP)
+    {
+        tcpSocket = static_cast<QTcpSocket*>(socket);
+        name = tcpSocket->peerAddress().toString();
+    }
+    if(type == CON_PIPE)
+    {
+        localSocket = static_cast<QLocalSocket*>(socket);
+        name = localSocket->fullServerName();
+    }
+}
+
+
+bool ServerConnection::connected()
+{
+    switch(type)
+    {
+    case CON_TCP :  return tcpSocket->state()   == QAbstractSocket::ConnectedState;
+    case CON_PIPE : return localSocket->state() == QLocalSocket::ConnectedState;
+    }
+    return false;
+}
+
+QByteArray ServerConnection::read(qint64 maxlen)
+{
+    switch(type)
+    {
+    case CON_TCP:  return tcpSocket->read(maxlen);
+    case CON_PIPE: return localSocket->read(maxlen);
+    }
+    return QByteArray();
+}
+
+int ServerConnection::write(QByteArray &data)
+{
+    switch(type)
+    {
+    case CON_TCP :  return tcpSocket->write(data);
+    case CON_PIPE : return localSocket->write(data);
+    }
+    return -1;
+}
+
+void ServerConnection::flush()
+{
+    switch(type)
+    {
+    case CON_TCP :  tcpSocket->flush();
+    //case CON_PIPE : localSocket->flush();
+    }
+}
+
 MyServer::MyServer(ServerConnection::ConnType t, int inPort, MocapSubjectList *sList, QObject *parent)
 : QObject(parent)
-, running(true)
 , port(inPort)
 , type(t)
 , count(0)
@@ -32,23 +87,30 @@ MyServer::MyServer(ServerConnection::ConnType t, int inPort, MocapSubjectList *s
 , subjectList(sList)
 {}
 
-void MyServer::listen()
+bool MyServer::listen()
 {
     bool ok = true;
     if(type == ServerConnection::CON_TCP)
     {
-        server = new QTcpServer(this);
-        connect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
-        ok = server->listen(QHostAddress::Any, port);
-        if(ok) emit outMessage(QString("TCP server started, listening on port: %1").arg(port));
+        tcpServer = new QTcpServer(this);
+        connect(tcpServer, SIGNAL(newConnection()), this, SLOT(newConnection()));
+        ok = tcpServer->listen(QHostAddress::Any, port);
+        if(ok)
+            emit outMessage(QString("TCP server started, listening on port: %1").arg(port));
+        else
+            emit outMessage(QString("Unable to start TCP Server: %1").arg(tcpServer->errorString()));
     }
-    else
+    if(type == ServerConnection::CON_PIPE)
     {
         localServer = new QLocalServer(this);
         connect(localServer, SIGNAL(newConnection()), this, SLOT(newConnection()));
         ok = localServer->listen("VIVE");
-        if(ok) emit outMessage("Local server started");
+        if(ok)
+            emit outMessage("Local server started");
+        else
+            emit outMessage(QString("Unable to start Local Server: %1").arg(localServer->errorString()));
     }
+    return ok;
 }
 
 // There is a new connection, server sends newConnection signal to me.
@@ -64,11 +126,10 @@ void MyServer::newConnection()
             if(socket == NULL) break;
             change = true;
             connection = new ServerConnection(type, this, socket );
-
         }
-        else
+        if(type == ServerConnection::CON_TCP)
         {
-            QTcpSocket *socket = server->nextPendingConnection();
+            QTcpSocket *socket = tcpServer->nextPendingConnection();
             if(socket == NULL) break;
             change = true;
             connection = new ServerConnection(type, this, socket );
@@ -103,7 +164,21 @@ void MyServer::getConnectionList(QList<QString>&items)
 
 void MyServer::stop()
 {
-    running = false;
+    switch(type)
+    {
+    case ServerConnection::CON_PIPE : localServer->close(); break;
+    case ServerConnection::CON_TCP:   tcpServer->close();   break;
+    }
+}
+
+bool MyServer::isRunning()
+{
+    switch(type)
+    {
+    case ServerConnection::CON_PIPE : return localServer->isListening();
+    case ServerConnection::CON_TCP:   return tcpServer->isListening();
+    }
+    return false;
 }
 
 
@@ -134,11 +209,11 @@ void MyServer::process()
         // for each connection
         for(QList<ServerConnection *>::iterator i =  connections.begin(); i != connections.end(); i++)
         {
+            // Skip disconnected
             if(!(*i)->connected()) continue;
 
-            QString d = QString("%1\nEND\r\n").arg(buffer);
-
-            int written = (*i)->write(d.toUtf8());
+            // Write the data and a footer
+            int written = (*i)->write(QString("%1\nEND\r\n").arg(buffer).toUtf8());
 
             if(written == -1)
             {
@@ -148,15 +223,35 @@ void MyServer::process()
             {
                 (*i)->flush();
             }
+
+#if 0
+            // this code will be for reciving data from another repeater
+            QByteArray lastPacket;
+            QByteArray inData = (*i)->read(1024 * 12);
+            backBuffer.append(inData);
+
+            // Find last terminator
+            int term1 = backBuffer.lastIndexOf("\nEND\r\n");
+
+            if(term1 > 0)
+            {
+
+                // Find second last terminator
+                int term2 = backBuffer.lastIndexOf("\nEND\r\n", term1);
+                if(term2 == -1) term2 = 0;
+
+                if(term2 > 0)
+                {
+                    lastPacket = backBuffer.mid(term2, term1 - term2);
+                }
+            }
+#endif
         }
 
         listMutex.unlock();
-
     }
 
     working = false;
-
-
 }
 
 
@@ -164,11 +259,11 @@ void MyServer::process()
 // returns number of active connections.
 int MyServer::checkAlive()
 {
-    listMutex.lock();
-
-    bool done = false;
+    bool done     = false;
     bool modified = false;
-	int  ret = 0;
+    int  ret      = 0;
+
+    listMutex.lock();
 
     while(!done)
     {
@@ -179,7 +274,7 @@ int MyServer::checkAlive()
             if(!(*i)->connected())
             {
                 emit outMessage(QString("Disconnected: %1").arg((*i)->str()));
-                done = false;
+                done     = false;
                 modified = true;
                 delete *i;
                 connections.erase(i);
@@ -191,15 +286,12 @@ int MyServer::checkAlive()
             }
        }
     }
+
     listMutex.unlock();
 
-    if(modified) 
-		emit connectionsChanged();
+    if(modified) emit connectionsChanged();
 
 	return ret;
 }
 
-int MyServer::numberOfConnections()
-{
-    return connections.length();
-}
+

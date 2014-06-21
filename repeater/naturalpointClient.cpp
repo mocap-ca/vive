@@ -24,116 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <QMessageBox>
 #include <QCompleter>
 
-NaturalPointConnector::NaturalPointConnector(QObject *parent)
-: BaseConnector(parent)
-, running(false)
-, host("239.255.42.99")
-, port(1511)
-{}
 
-void NaturalPointConnector::run()
-{
-    emit connecting();
-    if(!connect())
-    {
-        emit disconnected();
-        return;
-    }
-    emit connected();
-    
-    SubjectData *subject = NULL;
-    running = true;
-    
-    while(running)
-    {
-        if( socket->hasPendingDatagrams() == false) {
-            this->msleep(10);
-            continue;
-        }
-        
-        char  szData[20000];
-        qint64 datagramSize = socket->readDatagram(szData, sizeof(szData));
-        sFrameOfMocapData *frameData = mParser.parse(szData, (int)datagramSize );
-        
-        if( frameData == NULL ) {
-            static bool errorNotice = false;
-            if( !errorNotice ) {
-                outMessage("Error getting NaturalPoint frame");
-                errorNotice = true;
-            }
-            continue;
-        }
-        
-        unsigned int subjectCount = frameData->nRigidBodies;
-        for(unsigned int iSubject=0; iSubject < subjectCount; iSubject++)
-        {
-            sRigidBodyData *rb = &frameData->RigidBodies[iSubject];
-            
-            // ASSUMPTION:  rb => frameData->MocapData[rb->ID-1].szName
-            int markerSetID = rb->ID-1;
-            assert(markerSetID>=0 && markerSetID<frameData->nMarkerSets);
-            sMarkerSetData *markerSet = &frameData->MocapData[rb->ID-1];
-            
-            // Find/Create the subject by name.
-            char* subjectName = markerSet->szName;
-            subject = new SubjectData(QString(subjectName), CL_NaturalPoint);
-            
-            // Load the subject's translation and rotation quaternion.
-            double t[3] = {rb->x, rb->y, rb->z};
-            double r[4] = {rb->qx, rb->qy, rb->qz, rb->qw};
-            subject->setSegment(QString("root"), t, r);
-            
-            for(int iMarker=0; iMarker < rb->nMarkers; iMarker++)
-            {
-                MarkerData *m = &rb->Markers[iMarker];
-                double markerPos[3] = {*m[0], *m[1], *m[2]};
-                if( rb->MarkerIDs ) {
-                    subject->setMarker(QString::number(rb->MarkerIDs[iMarker]), markerPos);
-                } else {
-                    subject->setMarker(QString::number(iMarker), markerPos);
-                }
-            }
 
-            emit updateSubject(subject);
-        }
-        
-        emit newFrame(frameData->iFrame);
-        count++;
-    }
-    
-    outMessage("Disconnecting from NaturalPoint");
-    socket->leaveMulticastGroup(connectGroupAddress);
-    socket->close();
-    
-    outMessage("NaturalPointConnector has finished");
-    emit disconnected();
-}
-
-bool NaturalPointConnector::connect()
-{
-    socket = new QUdpSocket();
-    if( socket->bind(QHostAddress::AnyIPv4, port, QUdpSocket::ShareAddress) == false ){
-        outMessage("Failed to bind NaturalPoint port");
-        return false;
-    }
-    
-    connectGroupAddress = QHostAddress(host);
-    if( socket->joinMulticastGroup(QHostAddress(host)) == false ) {
-        outMessage("Error joining multicast group:");
-        outMessage(socket->errorString());
-        delete socket;
-        return false;
-    }
-    
-    outMessage("Listening for NaturalPoint data over multicast.");
-    return true;
-}
-
-void NaturalPointConnector::stop()
-{
-    emit disconnecting();
-    running = false;
-}
 
 
 //--------------------------------
@@ -149,20 +41,22 @@ NaturalPointClient::NaturalPointClient(MocapSubjectList *sList,
     , hostField(inHostField)
     , portField(inPortField)
 {
-    naturalpoint = new NaturalPointConnector(this);
-    linkConnector(naturalpoint);
-
     QStringList wordList;
     wordList << "239.255.42.99";
     QCompleter *completer = new QCompleter(wordList, inHostField);
     hostField->setCompleter(completer);
     hostField->setText(wordList[0]);
     portField->setText("1511");
+
+    socket = new QUdpSocket();
+
+    connect(socket, SIGNAL(readyRead()),  this, SLOT(readPendingDatagrams()));
+
 }
 
 bool NaturalPointClient::isConnected()
 {
-    return naturalpoint->running;
+    return socket->state() == QAbstractSocket::ConnectedState;
 }
 
 //bool NaturalPointClient::mocapDisconnect()
@@ -186,32 +80,108 @@ bool NaturalPointClient::isConnected()
 
 void NaturalPointClient::mocapStart()
 {
-    if(naturalpoint->running)
-    {
-        emit outMessage("Skipping attempt to start already running natural point server... this is probably a bug");
-        return;
-    }
 
-    naturalpoint->host = hostField->text();
-    naturalpoint->port = portField->text().toInt();
-    if(naturalpoint->port == 0)
+    QString host = hostField->text();
+    int     port = portField->text().toInt();
+    if(port == 0)
     {
         QMessageBox::warning(NULL,"Error", "Invalid Port", QMessageBox::Ok);
         return;
     }
+
+    UIConnectingState();
+
+    if( socket->bind(QHostAddress::AnyIPv4, port, QUdpSocket::ShareAddress) == false ){
+        outMessage("Failed to bind NaturalPoint port");
+        UIDisconnectedState();
+        return;
+    }
+
+    connectGroupAddress = QHostAddress(host);
+    if( socket->joinMulticastGroup(QHostAddress(host)) == false ) {
+        outMessage("Error joining multicast group:");
+        outMessage(socket->errorString());
+        delete socket;
+        socket = NULL;
+        UIDisconnectedState();
+        return;
+    }
+
+    UIConnectedState();
+
+    outMessage("Listening for NaturalPoint data over multicast.");
+    return;
+
     
-    // start (connection is handled on other thread as it can be slow)
-    naturalpoint->start();
 }
 
 void NaturalPointClient::mocapStop()
 {
-    naturalpoint->stop();
+    UIDisconnectingState();
+    outMessage("Disconnecting from NaturalPoint");
+    socket->leaveMulticastGroup(connectGroupAddress);
+    socket->close();
+    UIDisconnectedState();
 }
 
 void NaturalPointClient::mocapWait()
 {
-    naturalpoint->wait();
+    // no thread, so nothing to wait on.
 }
+
+void NaturalPointClient::readPendingDatagrams()
+{
+
+    SubjectData *subject = NULL;
+    char  szData[20000];
+    qint64 datagramSize = socket->readDatagram(szData, sizeof(szData));
+    sFrameOfMocapData *frameData = mParser.parse(szData, (int)datagramSize );
+
+    if( frameData == NULL ) {
+        static bool errorNotice = false;
+        if( !errorNotice ) {
+            outMessage("Error getting NaturalPoint frame");
+            errorNotice = true;
+        }
+        return;
+    }
+
+    unsigned int subjectCount = frameData->nRigidBodies;
+    for(unsigned int iSubject=0; iSubject < subjectCount; iSubject++)
+    {
+        sRigidBodyData *rb = &frameData->RigidBodies[iSubject];
+
+        // ASSUMPTION:  rb => frameData->MocapData[rb->ID-1].szName
+        int markerSetID = rb->ID-1;
+        assert(markerSetID>=0 && markerSetID<frameData->nMarkerSets);
+        sMarkerSetData *markerSet = &frameData->MocapData[rb->ID-1];
+
+        // Find/Create the subject by name.
+        char* subjectName = markerSet->szName;
+        subject = new SubjectData(QString(subjectName), CL_NaturalPoint);
+
+        // Load the subject's translation and rotation quaternion.
+        double t[3] = {rb->x * 10, rb->y * 10 , -rb->z * 10 };
+        double r[4] = {-rb->qx, -rb->qy, rb->qz, rb->qw};
+        subject->setSegment(QString("root"), t, r);
+
+        for(int iMarker=0; iMarker < rb->nMarkers; iMarker++)
+        {
+            MarkerData *m = &rb->Markers[iMarker];
+            double markerPos[3] = {*m[0], *m[1], *m[2]};
+            if( rb->MarkerIDs ) {
+                subject->setMarker(QString::number(rb->MarkerIDs[iMarker]), markerPos);
+            } else {
+                subject->setMarker(QString::number(iMarker), markerPos);
+            }
+        }
+
+        emit update(subject);
+    }
+
+    emit newFrame(frameData->iFrame);
+    count++;
+}
+
 
 

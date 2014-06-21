@@ -34,7 +34,7 @@ class BaseConnector : public QThread
 public:
     BaseConnector(QObject *parent);
 
-    virtual bool connect() = 0;
+    //virtual bool connect() = 0;
     virtual void stop()    = 0;
 
 signals:

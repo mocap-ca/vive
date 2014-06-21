@@ -17,17 +17,14 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef DEFINES_H
-#define DEFINES_H
+#ifndef VIVEC3D_H
+#define VIVEC3D_H
 
-typedef enum eClientId
+
+class ViveC3D
 {
-    CL_None = 0,
-    CL_Stub = 1,
-    CL_Vicon = 100,
-    CL_NaturalPoint,
-    CL_Vive
-} ClientId;
+public:
+    ViveC3D();
+};
 
-
-#endif // DEFINES_H
+#endif // VIVEC3D_H

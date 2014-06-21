@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <QTimer>
 #include "server.h"
 #include "testClient.h"
+#include "viveClient.h"
 #include "mocapModel.h"
 
 // Stub any classes that are not required. They will be
@@ -64,7 +65,7 @@ public slots:
     void showMessage(QString);
 	void timerClick(void);
     void processFrame(ClientId, uint);
-
+    void toggleServer();
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -72,6 +73,7 @@ public:
 
 private:
 
+    void updateServerUI();
     void mouseMoveEvent(QMouseEvent*);
     Ui::MainWin *ui;
     MyServer    *server;
@@ -80,6 +82,7 @@ private:
     QStandardItemModel *modelConnections;
 
     TestClient  *testClient;
+    ViveClient  *viveClient;
 
     //! List of supported clients
     QList<BaseClient *> clients;

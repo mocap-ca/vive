@@ -42,7 +42,18 @@ public:
     QVBoxLayout *verticalLayout_4;
     QSplitter *splitter_2;
     QSplitter *splitter;
-    QTabWidget *tabWidget;
+    QTabWidget *Vive;
+    QWidget *tab;
+    QWidget *formLayoutWidget_4;
+    QFormLayout *formLayout_4;
+    QLabel *label_11;
+    QLabel *label_12;
+    QLineEdit *lineEditViveHost;
+    QLineEdit *lineEditVivePort;
+    QLineEdit *lineEditViveStatus;
+    QLabel *label_13;
+    QPushButton *pushButtonViveConnect;
+    QSpacerItem *horizontalSpacer;
     QWidget *ViconTab;
     QWidget *formLayoutWidget;
     QFormLayout *formLayout;
@@ -90,6 +101,9 @@ public:
     QLineEdit *lineEditServerFPS;
     QLabel *label_8;
     QLineEdit *lineEditLocalFPS;
+    QLineEdit *lineEditListenPort;
+    QLabel *label_14;
+    QPushButton *pushButtonServerToggle;
     QPlainTextEdit *plainTextEditLog;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
@@ -112,8 +126,59 @@ public:
         splitter = new QSplitter(splitter_2);
         splitter->setObjectName(QStringLiteral("splitter"));
         splitter->setOrientation(Qt::Horizontal);
-        tabWidget = new QTabWidget(splitter);
-        tabWidget->setObjectName(QStringLiteral("tabWidget"));
+        Vive = new QTabWidget(splitter);
+        Vive->setObjectName(QStringLiteral("Vive"));
+        Vive->setEnabled(true);
+        tab = new QWidget();
+        tab->setObjectName(QStringLiteral("tab"));
+        formLayoutWidget_4 = new QWidget(tab);
+        formLayoutWidget_4->setObjectName(QStringLiteral("formLayoutWidget_4"));
+        formLayoutWidget_4->setGeometry(QRect(10, 10, 211, 141));
+        formLayout_4 = new QFormLayout(formLayoutWidget_4);
+        formLayout_4->setSpacing(6);
+        formLayout_4->setContentsMargins(11, 11, 11, 11);
+        formLayout_4->setObjectName(QStringLiteral("formLayout_4"));
+        formLayout_4->setContentsMargins(0, 0, 0, 0);
+        label_11 = new QLabel(formLayoutWidget_4);
+        label_11->setObjectName(QStringLiteral("label_11"));
+
+        formLayout_4->setWidget(0, QFormLayout::LabelRole, label_11);
+
+        label_12 = new QLabel(formLayoutWidget_4);
+        label_12->setObjectName(QStringLiteral("label_12"));
+
+        formLayout_4->setWidget(1, QFormLayout::LabelRole, label_12);
+
+        lineEditViveHost = new QLineEdit(formLayoutWidget_4);
+        lineEditViveHost->setObjectName(QStringLiteral("lineEditViveHost"));
+
+        formLayout_4->setWidget(0, QFormLayout::FieldRole, lineEditViveHost);
+
+        lineEditVivePort = new QLineEdit(formLayoutWidget_4);
+        lineEditVivePort->setObjectName(QStringLiteral("lineEditVivePort"));
+
+        formLayout_4->setWidget(1, QFormLayout::FieldRole, lineEditVivePort);
+
+        lineEditViveStatus = new QLineEdit(formLayoutWidget_4);
+        lineEditViveStatus->setObjectName(QStringLiteral("lineEditViveStatus"));
+
+        formLayout_4->setWidget(2, QFormLayout::FieldRole, lineEditViveStatus);
+
+        label_13 = new QLabel(formLayoutWidget_4);
+        label_13->setObjectName(QStringLiteral("label_13"));
+
+        formLayout_4->setWidget(2, QFormLayout::LabelRole, label_13);
+
+        pushButtonViveConnect = new QPushButton(formLayoutWidget_4);
+        pushButtonViveConnect->setObjectName(QStringLiteral("pushButtonViveConnect"));
+
+        formLayout_4->setWidget(3, QFormLayout::FieldRole, pushButtonViveConnect);
+
+        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        formLayout_4->setItem(3, QFormLayout::LabelRole, horizontalSpacer);
+
+        Vive->addTab(tab, QString());
         ViconTab = new QWidget();
         ViconTab->setObjectName(QStringLiteral("ViconTab"));
         formLayoutWidget = new QWidget(ViconTab);
@@ -199,7 +264,7 @@ public:
 
         formLayout->setWidget(4, QFormLayout::FieldRole, checkBoxViconYUp);
 
-        tabWidget->addTab(ViconTab, QString());
+        Vive->addTab(ViconTab, QString());
         NPTab = new QWidget();
         NPTab->setObjectName(QStringLiteral("NPTab"));
         formLayoutWidget_3 = new QWidget(NPTab);
@@ -268,7 +333,7 @@ public:
 
         formLayout_3->setWidget(3, QFormLayout::FieldRole, lineEditNPStatus);
 
-        tabWidget->addTab(NPTab, QString());
+        Vive->addTab(NPTab, QString());
         StubTab = new QWidget();
         StubTab->setObjectName(QStringLiteral("StubTab"));
         pushButtonStub = new QPushButton(StubTab);
@@ -281,9 +346,10 @@ public:
         label_5->setObjectName(QStringLiteral("label_5"));
         label_5->setGeometry(QRect(30, 40, 53, 19));
         label_5->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
-        tabWidget->addTab(StubTab, QString());
+        Vive->addTab(StubTab, QString());
         TreeTab = new QWidget();
         TreeTab->setObjectName(QStringLiteral("TreeTab"));
+        TreeTab->setEnabled(false);
         verticalLayout_3 = new QVBoxLayout(TreeTab);
         verticalLayout_3->setSpacing(6);
         verticalLayout_3->setContentsMargins(11, 11, 11, 11);
@@ -293,7 +359,7 @@ public:
 
         verticalLayout_3->addWidget(treeViewData);
 
-        tabWidget->addTab(TreeTab, QString());
+        Vive->addTab(TreeTab, QString());
         RawTab = new QWidget();
         RawTab->setObjectName(QStringLiteral("RawTab"));
         verticalLayout_2 = new QVBoxLayout(RawTab);
@@ -305,8 +371,8 @@ public:
 
         verticalLayout_2->addWidget(textEditData);
 
-        tabWidget->addTab(RawTab, QString());
-        splitter->addWidget(tabWidget);
+        Vive->addTab(RawTab, QString());
+        splitter->addWidget(Vive);
         verticalLayoutWidget = new QWidget(splitter);
         verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));
         verticalLayout = new QVBoxLayout(verticalLayoutWidget);
@@ -361,6 +427,21 @@ public:
 
         formLayout_2->setWidget(1, QFormLayout::FieldRole, lineEditLocalFPS);
 
+        lineEditListenPort = new QLineEdit(formLayoutWidget_2);
+        lineEditListenPort->setObjectName(QStringLiteral("lineEditListenPort"));
+
+        formLayout_2->setWidget(2, QFormLayout::FieldRole, lineEditListenPort);
+
+        label_14 = new QLabel(formLayoutWidget_2);
+        label_14->setObjectName(QStringLiteral("label_14"));
+
+        formLayout_2->setWidget(2, QFormLayout::LabelRole, label_14);
+
+        pushButtonServerToggle = new QPushButton(formLayoutWidget_2);
+        pushButtonServerToggle->setObjectName(QStringLiteral("pushButtonServerToggle"));
+
+        formLayout_2->setWidget(3, QFormLayout::FieldRole, pushButtonServerToggle);
+
         tabWidget_2->addTab(tabStatus, QString());
 
         verticalLayout->addWidget(tabWidget_2);
@@ -384,7 +465,7 @@ public:
         statusBar = new QStatusBar(MainWin);
         statusBar->setObjectName(QStringLiteral("statusBar"));
         MainWin->setStatusBar(statusBar);
-        QWidget::setTabOrder(tabWidget, lineEditViconHost);
+        QWidget::setTabOrder(Vive, lineEditViconHost);
         QWidget::setTabOrder(lineEditViconHost, lineEditViconPort);
         QWidget::setTabOrder(lineEditViconPort, pushButtonConnectVicon);
         QWidget::setTabOrder(pushButtonConnectVicon, lineEditViconStatus);
@@ -400,7 +481,7 @@ public:
 
         retranslateUi(MainWin);
 
-        tabWidget->setCurrentIndex(0);
+        Vive->setCurrentIndex(0);
         tabWidget_2->setCurrentIndex(1);
 
 
@@ -410,26 +491,33 @@ public:
     void retranslateUi(QMainWindow *MainWin)
     {
         MainWin->setWindowTitle(QApplication::translate("MainWin", "MainWindow", 0));
+        label_11->setText(QApplication::translate("MainWin", "Host:", 0));
+        label_12->setText(QApplication::translate("MainWin", "Port:", 0));
+        label_13->setText(QApplication::translate("MainWin", "Fps:", 0));
+        pushButtonViveConnect->setText(QApplication::translate("MainWin", "Connect", 0));
+        Vive->setTabText(Vive->indexOf(tab), QApplication::translate("MainWin", "Vive", 0));
         label_2->setText(QApplication::translate("MainWin", "Host:", 0));
         label->setText(QApplication::translate("MainWin", "Port:", 0));
         label_4->setText(QApplication::translate("MainWin", "Fps:", 0));
         pushButtonConnectVicon->setText(QApplication::translate("MainWin", "Connect", 0));
         label_6->setText(QApplication::translate("MainWin", "Y-up", 0));
         checkBoxViconYUp->setText(QString());
-        tabWidget->setTabText(tabWidget->indexOf(ViconTab), QApplication::translate("MainWin", "Vicon", 0));
+        Vive->setTabText(Vive->indexOf(ViconTab), QApplication::translate("MainWin", "Vicon", 0));
         label_7->setText(QApplication::translate("MainWin", "Host:", 0));
         label_10->setText(QApplication::translate("MainWin", "Port:", 0));
         pushButtonNPConnect->setText(QApplication::translate("MainWin", "Connect", 0));
         label_9->setText(QApplication::translate("MainWin", "Fps:", 0));
-        tabWidget->setTabText(tabWidget->indexOf(NPTab), QApplication::translate("MainWin", "NaturalPoint", 0));
+        Vive->setTabText(Vive->indexOf(NPTab), QApplication::translate("MainWin", "NaturalPoint", 0));
         pushButtonStub->setText(QApplication::translate("MainWin", "Start", 0));
         label_5->setText(QApplication::translate("MainWin", "fps:", 0));
-        tabWidget->setTabText(tabWidget->indexOf(StubTab), QApplication::translate("MainWin", "Stub", 0));
-        tabWidget->setTabText(tabWidget->indexOf(TreeTab), QApplication::translate("MainWin", "Tree", 0));
-        tabWidget->setTabText(tabWidget->indexOf(RawTab), QApplication::translate("MainWin", "Raw", 0));
+        Vive->setTabText(Vive->indexOf(StubTab), QApplication::translate("MainWin", "Stub", 0));
+        Vive->setTabText(Vive->indexOf(TreeTab), QApplication::translate("MainWin", "Tree", 0));
+        Vive->setTabText(Vive->indexOf(RawTab), QApplication::translate("MainWin", "Raw", 0));
         tabWidget_2->setTabText(tabWidget_2->indexOf(tabConnections), QApplication::translate("MainWin", "Connections", 0));
         label_3->setText(QApplication::translate("MainWin", "TCP Server FPS", 0));
         label_8->setText(QApplication::translate("MainWin", "Local Server FPS", 0));
+        label_14->setText(QApplication::translate("MainWin", "ListenPort:", 0));
+        pushButtonServerToggle->setText(QApplication::translate("MainWin", "Start", 0));
         tabWidget_2->setTabText(tabWidget_2->indexOf(tabStatus), QApplication::translate("MainWin", "Status", 0));
     } // retranslateUi
 

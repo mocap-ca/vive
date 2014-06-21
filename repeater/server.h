@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <QTcpSocket>
 #include <QLocalServer>
 #include <QLocalSocket>
+#include <QUdpSocket>
 #include <QList>
 #include <QMutex>
 #include <QTimer>
@@ -40,21 +41,13 @@ class ServerConnection : public QObject
 public:
    typedef enum { CON_TCP, CON_PIPE } ConnType;
 
-    ServerConnection( ConnType cType, QObject *parent, void *socket )
-        : QObject(parent)
-        , type(cType)
-    {
-        if(type == CON_TCP)
-        {
-            tcpSocket = static_cast<QTcpSocket*>(socket);
-            name = tcpSocket->peerAddress().toString();
-        }
-        if(type == CON_PIPE)
-        {
-            localSocket = static_cast<QLocalSocket*>(socket);
-            name = localSocket->fullServerName();
-        }
-    }
+    ServerConnection( ConnType cType, QObject *parent, void *socket );
+
+    bool       connected();
+    QByteArray read(qint64 maxlen);
+    int        write(QByteArray &data);
+    void       flush();
+    QString    str() { return name; }
 
     union
     {
@@ -62,37 +55,6 @@ public:
         QLocalSocket* localSocket;
     };
 
-    bool  connected()
-    {
-        switch(type)
-        {
-        case CON_TCP : return tcpSocket->state() == QAbstractSocket::ConnectedState;
-        case CON_PIPE : return localSocket->state() == QLocalSocket::ConnectedState;
-        }
-        return false;
-    }
-
-    int write(QByteArray &data)
-    {
-        switch(type)
-        {
-        case CON_TCP : return tcpSocket->write(data);
-        case CON_PIPE : return localSocket->write(data);
-        }
-        return -1;
-    }
-
-    void flush()
-    {
-        switch(type)
-        {
-        case CON_TCP :  tcpSocket->flush();
-        case CON_PIPE : localSocket->flush();
-        }
-    }
-
-
-    QString str() { return name; }
     QString name;
     ConnType type;
 
@@ -109,34 +71,43 @@ signals:
     void connectionsChanged(void);
     void outMessage(QString);
 
+
 public slots:
     void newConnection();
-    void listen();
+
     void process();
     void stop();
+    bool isRunning();
 
 private:
     //virtual void run();
     union
     {
-        QTcpServer *server;
+        QTcpServer   *tcpServer;
         QLocalServer *localServer;
     };
+
     int  checkAlive();  // returns number of active connections
-    bool running;
-    int  port;
+
+    int     port;
+    QString udpHost;
+
 
 public:
     ServerConnection::ConnType type;
-    size_t count;
-    void setInterval(int i);
-    QList<ServerConnection*> connections;
-    QMutex listMutex;
-    void getConnectionList(QList<QString>&);
-	int working;
-	MocapSubjectList *subjectList;
-    int numberOfConnections();
+    size_t                     count;
+    QList<ServerConnection*>   connections;
+    QMutex                     listMutex;
+    int                        working;
+    MocapSubjectList*          subjectList;
+    QByteArray                 backBuffer;
 
+
+    bool listen();
+    void setPort(int p)        { port = p; }
+    int  numberOfConnections() { return connections.length(); }
+    void setInterval(int i);
+    void getConnectionList(QList<QString>&);
 
 };
 

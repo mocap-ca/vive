@@ -71,7 +71,6 @@ public:
 
     TestConnector *connector;
 
-
 };
 
 

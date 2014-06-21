@@ -30,38 +30,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "NatNetTypes.h"
 #include "CMNatNetPacketParser.h"
 
-class NaturalPointConnector : public BaseConnector
-{
-    Q_OBJECT
-    
-public:
-    NaturalPointConnector(QObject *parent);
-    
-    //! Implements QThread (parent of baseclient)
-    virtual void run();
-    bool connect();
-    void stop();
-
-    
-    QHostAddress connectGroupAddress;
-    QUdpSocket *socket;
-    
-    CMNatNetPacketParser mParser;
-    
-    MocapSubjectList *subjects;
-    bool    running;
-    QString host;
-    int     port;
-    size_t  count;
-
-signals:
-    void connecting();
-    void connected();
-    void disconnecting();
-    void disconnected();
-    void newFrame(uint);
-    void outMessage(QString);
-};
 
 class NaturalPointClient : public BaseClient
 {
@@ -102,11 +70,17 @@ public:
     //! @returns true if the service is connected
     virtual bool isConnected();
 
-    NaturalPointConnector *naturalpoint;
     QLineEdit *hostField;
     QLineEdit *portField;
-    
-    
+
+    QHostAddress connectGroupAddress;
+    QUdpSocket *socket;
+
+    CMNatNetPacketParser mParser;
+
+public slots:
+    void readPendingDatagrams();
+
 private:
     bool          frameError;
 };

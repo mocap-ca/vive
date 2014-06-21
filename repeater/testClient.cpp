@@ -62,7 +62,7 @@ void TestConnector::run()
 
         count++;
 
-        QThread::usleep(1000 / 60);
+        QThread::msleep(1000 / 60);
     }
     emit disconnecting();
     QThread::sleep(2);

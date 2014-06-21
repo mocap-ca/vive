@@ -618,7 +618,7 @@ public class MocapSocket : MonoBehaviour {
 					else
 					{
 						// Body Joint
-						if ( !objectDict.ContainsKey( item.name) )
+						if ( !objectDict.ContainsKey( item.name.ToLower () ) )
 						{
 							infoMessage += "\n  body missing:" + item.name.ToLower ();
 							continue;

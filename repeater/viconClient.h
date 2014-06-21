@@ -42,10 +42,11 @@ public:
     };
 
     ViconConnector(QObject *parent);
+
     virtual void run();
+    virtual void stop();
 
     bool connect();
-    void stop();
 
     bool    running;
     QString host;
@@ -93,10 +94,6 @@ public:
 
     //! see BaseClient::mocapWait();
     virtual void mocapWait();
-
-    //! see BaseClient::ClientId()
-    /*! @returns "Vicon" */
-    virtual QString ClientId() { return "Vicon"; }
 
     //! @returns true if the service is running
     virtual bool isRunning() { return running; }

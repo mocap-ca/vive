@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     ../fileTranslators/bvhFile.cpp \
     ../fileTranslators/c3dFile.cpp \
     ../fileTranslators/htrFile.cpp \
-    ../fileTranslators/trcFile.cpp
+    ../fileTranslators/trcFile.cpp \
+    viveClient.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
@@ -47,7 +48,8 @@ HEADERS  += mainwindow.h \
     ../fileTranslators/trcFile.h \
     ../fileTranslators/fileTranslator.h \
     ../fileTranslators/joint.h \
-    ../fileTranslators/vectorMath.h
+    ../fileTranslators/vectorMath.h \
+    viveClient.h
 
 FORMS    += mainwindow.ui
 
