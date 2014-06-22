@@ -41,7 +41,7 @@ int         MocapModel::columnCount(const QModelIndex &parent)const
 
 QVariant    MocapModel::data(const QModelIndex &index, int role)const
 {
-    return NULL;
+    return QVariant(0);
 };
 
 void MocapModel::update()

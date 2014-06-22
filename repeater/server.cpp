@@ -73,8 +73,9 @@ void ServerConnection::flush()
 {
     switch(type)
     {
-    case CON_TCP :  tcpSocket->flush();
-    //case CON_PIPE : localSocket->flush();
+        case CON_TCP :  tcpSocket->flush(); break;
+        //case CON_PIPE : localSocket->flush();
+        default: break;
     }
 }
 
@@ -213,7 +214,8 @@ void MyServer::process()
             if(!(*i)->connected()) continue;
 
             // Write the data and a footer
-            int written = (*i)->write(QString("%1\nEND\r\n").arg(buffer).toUtf8());
+            QByteArray byteString(QString("%1\nEND\r\n").arg(buffer).toUtf8());
+            int written = (*i)->write(byteString);
 
             if(written == -1)
             {

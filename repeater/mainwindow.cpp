@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->splitter->setSizes(splitSizes);
 
     ui->lineEditListenPort->setText( QString("%1").arg(defaultPort));
-    ok =& connect(ui->pushButtonServerToggle, SIGNAL(pressed()), this, SLOT(toggleServer()));
+    ok &= (connect(ui->pushButtonServerToggle, SIGNAL(pressed()), this, SLOT(toggleServer())) != NULL);
 
     ui->lineEditViveHost->setText(QString("127.0.0.1"));
     ui->lineEditVivePort->setText(QString("4001"));
@@ -86,7 +86,7 @@ MainWindow::MainWindow(QWidget *parent) :
                                                this);
     clients.append(viconClient);
 #else
-    ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->ViconTab));
+//    ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->ViconTab));
 #endif
 
 #ifdef NATURALPOINT_CLIENT

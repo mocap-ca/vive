@@ -161,7 +161,7 @@ void NaturalPointClient::readPendingDatagrams()
         subject = new SubjectData(QString(subjectName), CL_NaturalPoint);
 
         // Load the subject's translation and rotation quaternion.
-        double t[3] = {rb->x * 10, rb->y * 10 , -rb->z * 10 };
+        double t[3] = {rb->x, rb->y, -rb->z };
         double r[4] = {-rb->qx, -rb->qy, rb->qz, rb->qw};
         subject->setSegment(QString("root"), t, r);
 

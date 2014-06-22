@@ -6,3 +6,4 @@ repeater/MocapSocket.build
 build-*/
 *.pro.user
 repeater/Release
+moc_*.cpp

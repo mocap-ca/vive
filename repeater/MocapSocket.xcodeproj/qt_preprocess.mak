@@ -32,125 +32,237 @@ mocables: compiler_moc_header_make_all compiler_moc_source_make_all
 check: first
 
 compilers: ./moc_mainwindow.cpp ./moc_server.cpp ./moc_mocapSubject.cpp\
-	 ./moc_testClient.cpp ./moc_localServer.cpp ./moc_baseclient.cpp\
-	 ./moc_naturalpointClient.cpp ./ui_mainwindow.h
+	 ./moc_testClient.cpp ./moc_baseclient.cpp ./moc_mocapModel.cpp\
+	 ./moc_viveClient.cpp ./moc_naturalpointClient.cpp ./ui_mainwindow.h
 compiler_objective_c_make_all:
 compiler_objective_c_clean:
 compiler_rcc_make_all:
 compiler_rcc_clean:
-compiler_moc_header_make_all: moc_mainwindow.cpp moc_server.cpp moc_mocapSubject.cpp moc_testClient.cpp moc_localServer.cpp moc_baseclient.cpp moc_naturalpointClient.cpp
+compiler_moc_header_make_all: moc_mainwindow.cpp moc_server.cpp moc_mocapSubject.cpp moc_testClient.cpp moc_baseclient.cpp moc_mocapModel.cpp moc_viveClient.cpp moc_naturalpointClient.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_mainwindow.cpp moc_server.cpp moc_mocapSubject.cpp moc_testClient.cpp moc_localServer.cpp moc_baseclient.cpp moc_naturalpointClient.cpp
+	-$(DEL_FILE) moc_mainwindow.cpp moc_server.cpp moc_mocapSubject.cpp moc_testClient.cpp moc_baseclient.cpp moc_mocapModel.cpp moc_viveClient.cpp moc_naturalpointClient.cpp
 moc_mainwindow.cpp: ../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QMainWindow \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qmainwindow.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItemModel \
+		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/qstandarditemmodel.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QTimer \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qtimer.h \
 		server.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QThread \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qthread.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QDebug \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qdebug.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QTcpServer \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/qtcpserver.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QTcpSocket \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/qtcpsocket.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QLocalServer \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/qlocalserver.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QLocalSocket \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/qlocalsocket.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QUdpSocket \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/qudpsocket.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QList \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qlist.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QMutex \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qmutex.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QElapsedTimer \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qelapsedtimer.h \
 		mocapSubject.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QTextStream \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qtextstream.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QObject \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qobject.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItem \
+		defines.h \
 		testClient.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QPushButton \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qpushbutton.h \
 		baseclient.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QLineEdit \
-		localServer.h \
-		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QLocalServer \
-		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QLocalSocket \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qlineedit.h \
+		viveClient.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h \
+		mocapModel.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QAbstractItemModel \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qabstractitemmodel.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QModelIndex \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QVariant \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qvariant.h \
 		viconClient.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QCheckBox \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qcheckbox.h \
 		naturalpointClient.h \
-		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QUdpSocket \
 		NatNetTypes.h \
 		CMNatNetPacketParser.h \
 		mainwindow.h
 	/Users/otri/Qt/5.2.1/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 $(INCPATH) mainwindow.h -o moc_mainwindow.cpp
 
 moc_server.cpp: ../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QThread \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qthread.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QDebug \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qdebug.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QTcpServer \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/qtcpserver.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QTcpSocket \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/qtcpsocket.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QLocalServer \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/qlocalserver.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QLocalSocket \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/qlocalsocket.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QUdpSocket \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/qudpsocket.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QList \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qlist.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QMutex \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qmutex.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QTimer \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qtimer.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QElapsedTimer \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qelapsedtimer.h \
 		mocapSubject.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QTextStream \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qtextstream.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QObject \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qobject.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItemModel \
+		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/qstandarditemmodel.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItem \
+		defines.h \
 		server.h
 	/Users/otri/Qt/5.2.1/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 $(INCPATH) server.h -o moc_server.cpp
 
 moc_mocapSubject.cpp: ../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QTextStream \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qtextstream.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QObject \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qobject.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QList \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qlist.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QMutex \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qmutex.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItemModel \
+		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/qstandarditemmodel.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItem \
+		defines.h \
 		mocapSubject.h
 	/Users/otri/Qt/5.2.1/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 $(INCPATH) mocapSubject.h -o moc_mocapSubject.cpp
 
 moc_testClient.cpp: ../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QObject \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qobject.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QList \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qlist.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QPushButton \
-		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QTimer \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qpushbutton.h \
 		baseclient.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QThread \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qthread.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QLineEdit \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qlineedit.h \
 		mocapSubject.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QTextStream \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qtextstream.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QMutex \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qmutex.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItemModel \
+		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/qstandarditemmodel.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItem \
+		defines.h \
 		testClient.h
 	/Users/otri/Qt/5.2.1/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 $(INCPATH) testClient.h -o moc_testClient.cpp
 
-moc_localServer.cpp: ../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QObject \
-		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QLocalServer \
-		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QLocalSocket \
-		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QTimer \
-		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
-		mocapSubject.h \
-		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QTextStream \
-		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QList \
-		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QMutex \
-		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItemModel \
-		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItem \
-		localServer.h
-	/Users/otri/Qt/5.2.1/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 $(INCPATH) localServer.h -o moc_localServer.cpp
-
 moc_baseclient.cpp: ../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QObject \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qobject.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QThread \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qthread.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QPushButton \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qpushbutton.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QLineEdit \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qlineedit.h \
 		mocapSubject.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QTextStream \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qtextstream.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QList \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qlist.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QMutex \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qmutex.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItemModel \
+		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/qstandarditemmodel.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItem \
+		defines.h \
 		baseclient.h
 	/Users/otri/Qt/5.2.1/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 $(INCPATH) baseclient.h -o moc_baseclient.cpp
 
-moc_naturalpointClient.cpp: ../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QObject \
-		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QList \
-		baseclient.h \
-		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QThread \
-		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QPushButton \
-		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QLineEdit \
+moc_mocapModel.cpp: ../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItem \
+		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/qstandarditemmodel.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QAbstractItemModel \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qabstractitemmodel.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QObject \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qobject.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QModelIndex \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QVariant \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qvariant.h \
 		mocapSubject.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QTextStream \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qtextstream.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QList \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qlist.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QMutex \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qmutex.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItemModel \
+		defines.h \
+		mocapModel.h
+	/Users/otri/Qt/5.2.1/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 $(INCPATH) mocapModel.h -o moc_mocapModel.cpp
+
+moc_viveClient.cpp: ../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QObject \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qobject.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QTcpSocket \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/qtcpsocket.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h \
+		baseclient.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QThread \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qthread.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QPushButton \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qpushbutton.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QLineEdit \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qlineedit.h \
+		mocapSubject.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QTextStream \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qtextstream.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QList \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qlist.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QMutex \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qmutex.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItemModel \
+		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/qstandarditemmodel.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItem \
+		defines.h \
+		viveClient.h
+	/Users/otri/Qt/5.2.1/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 $(INCPATH) viveClient.h -o moc_viveClient.cpp
+
+moc_naturalpointClient.cpp: ../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QObject \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qobject.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QList \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qlist.h \
+		baseclient.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QThread \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qthread.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QPushButton \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qpushbutton.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QLineEdit \
+		../../../../Qt/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qlineedit.h \
+		mocapSubject.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QTextStream \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qtextstream.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QMutex \
+		../../../../Qt/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qmutex.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItemModel \
+		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/qstandarditemmodel.h \
+		../../../../Qt/5.2.1/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItem \
+		defines.h \
 		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/QUdpSocket \
+		../../../../Qt/5.2.1/clang_64/lib/QtNetwork.framework/Versions/5/Headers/qudpsocket.h \
 		NatNetTypes.h \
 		CMNatNetPacketParser.h \
 		naturalpointClient.h
