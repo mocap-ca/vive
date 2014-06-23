@@ -70,6 +70,8 @@ public:
     //! @returns true if the service is connected
     virtual bool isConnected();
 
+    void error(QAbstractSocket::SocketError);
+
     QLineEdit *hostField;
     QLineEdit *portField;
 

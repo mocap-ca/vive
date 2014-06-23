@@ -51,7 +51,13 @@ NaturalPointClient::NaturalPointClient(MocapSubjectList *sList,
     socket = new QUdpSocket();
 
     connect(socket, SIGNAL(readyRead()),  this, SLOT(readPendingDatagrams()));
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error()));
 
+}
+
+void NaturalPointClient::error(QAbstractSocket::SocketError e)
+{
+    outMessage(QString("Naturalpoint socket error: %1").arg(socket->errorString()));
 }
 
 bool NaturalPointClient::isConnected()
