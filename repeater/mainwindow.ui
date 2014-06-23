@@ -24,7 +24,7 @@
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <widget class="QTabWidget" name="Vive">
+       <widget class="QTabWidget" name="TabWidgetVive">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -581,7 +581,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
-  <tabstop>Vive</tabstop>
+  <tabstop>TabWidgetVive</tabstop>
   <tabstop>lineEditViconHost</tabstop>
   <tabstop>lineEditViconPort</tabstop>
   <tabstop>pushButtonConnectVicon</tabstop>

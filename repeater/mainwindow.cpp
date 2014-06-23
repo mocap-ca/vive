@@ -17,8 +17,9 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "mainwindow.h"
+
 
 #include <QMessageBox>
 #include <QCompleter>
@@ -26,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-		ui(new Ui::MainWin )
+        ui(new Ui::MainWin )
 {
     bool ok = true;
     int defaultPort = 4001;
@@ -86,7 +87,7 @@ MainWindow::MainWindow(QWidget *parent) :
                                                this);
     clients.append(viconClient);
 #else
-//    ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->ViconTab));
+    ui->TabWidgetVive->removeTab(ui->TabWidgetVive->indexOf(ui->ViconTab));
 #endif
 
 #ifdef NATURALPOINT_CLIENT
@@ -99,7 +100,7 @@ MainWindow::MainWindow(QWidget *parent) :
                                                                     this);
     clients.append(naturalPointClient);
 #else
-    ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->NPTab));
+    ui->TabWidgetVive->removeTab(ui->TabWidgetVive->indexOf(ui->NPTab));
 #endif
 
     // Stub Client

@@ -6,8 +6,8 @@
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef UI_MAINWINDOW_H
-#define UI_MAINWINDOW_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
@@ -42,7 +42,7 @@ public:
     QVBoxLayout *verticalLayout_4;
     QSplitter *splitter_2;
     QSplitter *splitter;
-    QTabWidget *Vive;
+    QTabWidget *TabWidgetVive;
     QWidget *tab;
     QWidget *formLayoutWidget_4;
     QFormLayout *formLayout_4;
@@ -126,9 +126,9 @@ public:
         splitter = new QSplitter(splitter_2);
         splitter->setObjectName(QStringLiteral("splitter"));
         splitter->setOrientation(Qt::Horizontal);
-        Vive = new QTabWidget(splitter);
-        Vive->setObjectName(QStringLiteral("Vive"));
-        Vive->setEnabled(true);
+        TabWidgetVive = new QTabWidget(splitter);
+        TabWidgetVive->setObjectName(QStringLiteral("TabWidgetVive"));
+        TabWidgetVive->setEnabled(true);
         tab = new QWidget();
         tab->setObjectName(QStringLiteral("tab"));
         formLayoutWidget_4 = new QWidget(tab);
@@ -178,7 +178,7 @@ public:
 
         formLayout_4->setItem(3, QFormLayout::LabelRole, horizontalSpacer);
 
-        Vive->addTab(tab, QString());
+        TabWidgetVive->addTab(tab, QString());
         ViconTab = new QWidget();
         ViconTab->setObjectName(QStringLiteral("ViconTab"));
         formLayoutWidget = new QWidget(ViconTab);
@@ -264,7 +264,7 @@ public:
 
         formLayout->setWidget(4, QFormLayout::FieldRole, checkBoxViconYUp);
 
-        Vive->addTab(ViconTab, QString());
+        TabWidgetVive->addTab(ViconTab, QString());
         NPTab = new QWidget();
         NPTab->setObjectName(QStringLiteral("NPTab"));
         formLayoutWidget_3 = new QWidget(NPTab);
@@ -333,7 +333,7 @@ public:
 
         formLayout_3->setWidget(3, QFormLayout::FieldRole, lineEditNPStatus);
 
-        Vive->addTab(NPTab, QString());
+        TabWidgetVive->addTab(NPTab, QString());
         StubTab = new QWidget();
         StubTab->setObjectName(QStringLiteral("StubTab"));
         pushButtonStub = new QPushButton(StubTab);
@@ -346,7 +346,7 @@ public:
         label_5->setObjectName(QStringLiteral("label_5"));
         label_5->setGeometry(QRect(30, 40, 53, 19));
         label_5->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
-        Vive->addTab(StubTab, QString());
+        TabWidgetVive->addTab(StubTab, QString());
         TreeTab = new QWidget();
         TreeTab->setObjectName(QStringLiteral("TreeTab"));
         TreeTab->setEnabled(false);
@@ -359,7 +359,7 @@ public:
 
         verticalLayout_3->addWidget(treeViewData);
 
-        Vive->addTab(TreeTab, QString());
+        TabWidgetVive->addTab(TreeTab, QString());
         RawTab = new QWidget();
         RawTab->setObjectName(QStringLiteral("RawTab"));
         verticalLayout_2 = new QVBoxLayout(RawTab);
@@ -371,8 +371,8 @@ public:
 
         verticalLayout_2->addWidget(textEditData);
 
-        Vive->addTab(RawTab, QString());
-        splitter->addWidget(Vive);
+        TabWidgetVive->addTab(RawTab, QString());
+        splitter->addWidget(TabWidgetVive);
         verticalLayoutWidget = new QWidget(splitter);
         verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));
         verticalLayout = new QVBoxLayout(verticalLayoutWidget);
@@ -465,7 +465,7 @@ public:
         statusBar = new QStatusBar(MainWin);
         statusBar->setObjectName(QStringLiteral("statusBar"));
         MainWin->setStatusBar(statusBar);
-        QWidget::setTabOrder(Vive, lineEditViconHost);
+        QWidget::setTabOrder(TabWidgetVive, lineEditViconHost);
         QWidget::setTabOrder(lineEditViconHost, lineEditViconPort);
         QWidget::setTabOrder(lineEditViconPort, pushButtonConnectVicon);
         QWidget::setTabOrder(pushButtonConnectVicon, lineEditViconStatus);
@@ -481,7 +481,7 @@ public:
 
         retranslateUi(MainWin);
 
-        Vive->setCurrentIndex(0);
+        TabWidgetVive->setCurrentIndex(0);
         tabWidget_2->setCurrentIndex(1);
 
 
@@ -495,29 +495,29 @@ public:
         label_12->setText(QApplication::translate("MainWin", "Port:", 0));
         label_13->setText(QApplication::translate("MainWin", "Fps:", 0));
         pushButtonViveConnect->setText(QApplication::translate("MainWin", "Connect", 0));
-        Vive->setTabText(Vive->indexOf(tab), QApplication::translate("MainWin", "Vive", 0));
+        TabWidgetVive->setTabText(TabWidgetVive->indexOf(tab), QApplication::translate("MainWin", "Vive", 0));
         label_2->setText(QApplication::translate("MainWin", "Host:", 0));
         label->setText(QApplication::translate("MainWin", "Port:", 0));
         label_4->setText(QApplication::translate("MainWin", "Fps:", 0));
         pushButtonConnectVicon->setText(QApplication::translate("MainWin", "Connect", 0));
         label_6->setText(QApplication::translate("MainWin", "Y-up", 0));
         checkBoxViconYUp->setText(QString());
-        Vive->setTabText(Vive->indexOf(ViconTab), QApplication::translate("MainWin", "Vicon", 0));
+        TabWidgetVive->setTabText(TabWidgetVive->indexOf(ViconTab), QApplication::translate("MainWin", "Vicon", 0));
         label_7->setText(QApplication::translate("MainWin", "Host:", 0));
         label_10->setText(QApplication::translate("MainWin", "Port:", 0));
         pushButtonNPConnect->setText(QApplication::translate("MainWin", "Connect", 0));
         label_9->setText(QApplication::translate("MainWin", "Fps:", 0));
-        Vive->setTabText(Vive->indexOf(NPTab), QApplication::translate("MainWin", "NaturalPoint", 0));
+        TabWidgetVive->setTabText(TabWidgetVive->indexOf(NPTab), QApplication::translate("MainWin", "NaturalPoint", 0));
         pushButtonStub->setText(QApplication::translate("MainWin", "Start", 0));
         label_5->setText(QApplication::translate("MainWin", "fps:", 0));
-        Vive->setTabText(Vive->indexOf(StubTab), QApplication::translate("MainWin", "Stub", 0));
-        Vive->setTabText(Vive->indexOf(TreeTab), QApplication::translate("MainWin", "Tree", 0));
-        Vive->setTabText(Vive->indexOf(RawTab), QApplication::translate("MainWin", "Raw", 0));
+        TabWidgetVive->setTabText(TabWidgetVive->indexOf(StubTab), QApplication::translate("MainWin", "Stub", 0));
+        TabWidgetVive->setTabText(TabWidgetVive->indexOf(TreeTab), QApplication::translate("MainWin", "Tree", 0));
+        TabWidgetVive->setTabText(TabWidgetVive->indexOf(RawTab), QApplication::translate("MainWin", "Raw", 0));
         tabWidget_2->setTabText(tabWidget_2->indexOf(tabConnections), QApplication::translate("MainWin", "Connections", 0));
         label_3->setText(QApplication::translate("MainWin", "TCP Server FPS", 0));
         label_8->setText(QApplication::translate("MainWin", "Local Server FPS", 0));
         label_14->setText(QApplication::translate("MainWin", "ListenPort:", 0));
-        pushButtonServerToggle->setText(QApplication::translate("MainWin", "Start", 0));
+        pushButtonServerToggle->setText(QApplication::translate("MainWin", "Stop", 0));
         tabWidget_2->setTabText(tabWidget_2->indexOf(tabStatus), QApplication::translate("MainWin", "Status", 0));
     } // retranslateUi
 
@@ -529,4 +529,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // UI_MAINWINDOW_H
+#endif // MAINWINDOW_H
