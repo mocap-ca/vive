@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define NATURALPOINTCLIENT_H
 
 #include <QObject>
-#include <QList>
+#include <QTimer>
 #include "baseClient.h"
 #include <QUdpSocket>
 #include "mocapSubject.h"
@@ -70,7 +70,10 @@ public:
     //! @returns true if the service is connected
     virtual bool isConnected();
 
-    void error(QAbstractSocket::SocketError);
+
+    void incrementPacketCounter();
+
+
 
     QLineEdit *hostField;
     QLineEdit *portField;
@@ -80,8 +83,22 @@ public:
 
     CMNatNetPacketParser mParser;
 
+    QTimer *timer;
+    int    packetCounter;
+    int    reconnects;
+
 public slots:
     void readPendingDatagrams();
+
+    // Socket error
+    void error(QAbstractSocket::SocketError);
+
+    // socket state change
+    void stateChanged(QAbstractSocket::SocketState);
+
+    void channelFinished();
+
+    void packetTick();
 
 private:
     bool          frameError;

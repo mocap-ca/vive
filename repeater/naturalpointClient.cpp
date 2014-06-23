@@ -40,6 +40,9 @@ NaturalPointClient::NaturalPointClient(MocapSubjectList *sList,
     , running(false)
     , hostField(inHostField)
     , portField(inPortField)
+    , timer( new QTimer(this) )
+    , packetCounter(0)
+    , reconnects(0)
 {
     QStringList wordList;
     wordList << "239.255.42.99";
@@ -50,9 +53,59 @@ NaturalPointClient::NaturalPointClient(MocapSubjectList *sList,
 
     socket = new QUdpSocket();
 
-    connect(socket, SIGNAL(readyRead()),  this, SLOT(readPendingDatagrams()));
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error()));
+    timer->setInterval(300);
+    timer->setSingleShot(false);
 
+    bool ok = true;
+
+    ok &= (bool)connect(socket, SIGNAL(readyRead()),  this, SLOT(readPendingDatagrams()));
+    ok &= (bool)connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error(QAbstractSocket::SocketError)));
+    ok &= (bool)connect(socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(stateChanged(QAbstractSocket::SocketState)));
+    ok &= (bool)connect(socket, SIGNAL(readChannelFinished()), this, SLOT(channelFinished()));
+    ok &= (bool)connect(timer,  SIGNAL(timeout()), this, SLOT(packetTick()));
+    if(!ok) outMessage(QString("Naturalpoint socket did not start correctly."));
+
+
+}
+
+void NaturalPointClient::packetTick()
+{
+    if(packetCounter == 0)
+    {
+        if(reconnects < 5)
+        {
+            outMessage("Restarting Naturalpoint client due to inactivity");
+            mocapStop();
+            mocapStart();
+            packetCounter = 0;
+            reconnects++;
+        }
+        else
+        {
+            outMessage("Failed to restart Naturalpoint client");
+        }
+    }
+    else
+    {
+        reconnects = 0;
+        packetCounter = 0;
+    }
+}
+
+void NaturalPointClient::incrementPacketCounter()
+{
+    packetCounter++;
+}
+
+
+void NaturalPointClient::channelFinished()
+{
+    outMessage(QString("Channel Finished"));
+}
+
+void NaturalPointClient::stateChanged(QAbstractSocket::SocketState s)
+{
+    outMessage(QString("Naturalpoint socket state change: %1").arg(s));
 }
 
 void NaturalPointClient::error(QAbstractSocket::SocketError e)
@@ -62,7 +115,8 @@ void NaturalPointClient::error(QAbstractSocket::SocketError e)
 
 bool NaturalPointClient::isConnected()
 {
-    return socket->state() == QAbstractSocket::ConnectedState;
+    QAbstractSocket::SocketState s = socket->state();
+    return s == QAbstractSocket::BoundState;
 }
 
 //bool NaturalPointClient::mocapDisconnect()
@@ -113,6 +167,8 @@ void NaturalPointClient::mocapStart()
         return;
     }
 
+    timer->start();
+
     UIConnectedState();
 
     outMessage("Listening for NaturalPoint data over multicast.");
@@ -123,6 +179,7 @@ void NaturalPointClient::mocapStart()
 
 void NaturalPointClient::mocapStop()
 {
+    timer->stop();
     UIDisconnectingState();
     outMessage("Disconnecting from NaturalPoint");
     socket->leaveMulticastGroup(connectGroupAddress);
@@ -140,7 +197,28 @@ void NaturalPointClient::readPendingDatagrams()
 
     SubjectData *subject = NULL;
     char  szData[20000];
-    qint64 datagramSize = socket->readDatagram(szData, sizeof(szData));
+
+    //QByteArray inData = socket->readAll();
+    //if(inData.size()==0) return;
+
+    qint64 datagramSize = -1 ;
+
+    while(1)
+    {
+        qint64 nextSize = socket->pendingDatagramSize();
+        if(nextSize == -1)  break;
+        datagramSize = socket->readDatagram(szData, sizeof(szData));
+    }
+
+
+    incrementPacketCounter();
+
+
+    if(datagramSize == -1) return;
+
+
+
+
     sFrameOfMocapData *frameData = mParser.parse(szData, (int)datagramSize );
 
     if( frameData == NULL ) {
@@ -167,7 +245,7 @@ void NaturalPointClient::readPendingDatagrams()
         subject = new SubjectData(QString(subjectName), CL_NaturalPoint);
 
         // Load the subject's translation and rotation quaternion.
-        double t[3] = {rb->x, rb->y, -rb->z };
+        double t[3] = { rb->x ,  rb->y,  -rb->z };
         double r[4] = {-rb->qx, -rb->qy, rb->qz, rb->qw};
         subject->setSegment(QString("root"), t, r);
 
