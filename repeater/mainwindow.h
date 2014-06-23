@@ -47,8 +47,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 //     - clients message SubjectData out, rather than touching MocapSubjectList directly
 //     - fixed fps counters
 //     - TODO: write model for tree view of data (not really a priority right now)
+// 0.6 -
 
-#define VIVE_VERSION "0.5"
+#define VIVE_VERSION "0.6"
 
 
 namespace Ui {
