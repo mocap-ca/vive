@@ -43,7 +43,7 @@ void TestConnector::run()
     emit connected();
     while(running)
     {
-        SubjectData *subject = new SubjectData(QString("TEST"), CL_Stub);
+        SubjectData *subject1 = new SubjectData(QString("TEST1"), CL_Stub);
 
         val += 0.1f;
         if(val >= 10.0f) val = 0.0f;
@@ -51,13 +51,18 @@ void TestConnector::run()
         double tr[3] = { mousex, val, mousey };
         double ro[4] = { 0, 0, 0, 0 };
         //tr[1] = (double)qrand() / (double)RAND_MAX;
-        subject->setSegment("root", tr, ro);
+        subject1->setSegment("root", tr, ro);
 
         tr[0] = 10.0f;
         tr[2] = 10.0f;
-        subject->setMarker("marker1", tr);
+        subject1->setMarker("marker1", tr);
 
-        emit updateSubject(subject);
+        emit updateSubject(subject1);
+
+        SubjectData *subject2 = new SubjectData(QString("Oculus"), CL_Stub);
+        subject2->setSegment("Oculus", tr, ro);
+        emit updateSubject(subject2);
+
         emit newFrame(count);
 
         count++;
@@ -79,11 +84,10 @@ void TestConnector::stop()
     running = false;
 }
 
-TestClient::TestClient(MocapSubjectList *sList,
-                       QPushButton *button,
+TestClient::TestClient(QPushButton *button,
                        QLineEdit *statusLine,
                        QObject *parent)
-    : BaseClient(CL_Stub, sList, button, statusLine, parent)
+    : BaseClient(CL_Stub, button, statusLine, parent)
 , connector(NULL)
 {
     connector = new TestConnector(this);
@@ -110,6 +114,7 @@ void TestClient::mocapStop()
 
 void TestClient::mocapWait()
 {
+    connector->wait();
     return;
 }
 

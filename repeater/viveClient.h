@@ -12,8 +12,7 @@ class ViveClient : public BaseClient
 {
     Q_OBJECT
 public:
-    ViveClient(MocapSubjectList *subjectList,
-               QPushButton* button,
+    ViveClient( QPushButton* button,
                QLineEdit*   statusLine,
                QLineEdit*   hostField,
                QLineEdit*   portField,

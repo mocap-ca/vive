@@ -109,12 +109,13 @@ public:
     //! Serializes the data as a text stream
     void read(QTextStream &stream, bool localOnly);
 
-    //! Updates an existing subject
-    void update(SubjectData *);
-
 	QMutex subjectMutex;
 
 	QList<MocapSubject*> items;
+
+ public slots:
+    //! Updates an existing subject
+    void update(SubjectData *);
 };
 
 

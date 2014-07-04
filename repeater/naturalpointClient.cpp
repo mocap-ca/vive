@@ -30,13 +30,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 //--------------------------------
 
-NaturalPointClient::NaturalPointClient(MocapSubjectList *sList,
-                                       QPushButton *button,
+NaturalPointClient::NaturalPointClient(QPushButton *button,
                                        QLineEdit *statusLine,
                                        QLineEdit *inHostField,
                                        QLineEdit *inPortField,
                                        QObject *parent)
-    : BaseClient(CL_NaturalPoint, sList, button, statusLine, parent)
+    : BaseClient(CL_NaturalPoint, button, statusLine, parent)
     , running(false)
     , hostField(inHostField)
     , portField(inPortField)
@@ -260,7 +259,7 @@ void NaturalPointClient::readPendingDatagrams()
             }
         }
 
-        emit update(subject);
+        emit updateSubject(subject);
     }
 
     emit newFrame(frameData->iFrame);

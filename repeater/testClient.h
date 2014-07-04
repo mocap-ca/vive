@@ -56,8 +56,7 @@ public slots:
     void mocapWait();
 
 public:
-    TestClient( MocapSubjectList *subjectList,
-                QPushButton *button,
+    TestClient( QPushButton *button,
                 QLineEdit *statusLine,
                 QObject *parent = NULL);
 

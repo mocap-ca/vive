@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>776</width>
+    <width>819</width>
     <height>611</height>
    </rect>
   </property>
@@ -24,14 +24,14 @@
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <widget class="QTabWidget" name="TabWidgetVive">
+       <widget class="QTabWidget" name="tabWidgetClients">
         <property name="enabled">
          <bool>true</bool>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>6</number>
         </property>
-        <widget class="QWidget" name="tab">
+        <widget class="QWidget" name="tabVive">
          <attribute name="title">
           <string>Vive</string>
          </attribute>
@@ -39,7 +39,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>10</y>
+            <y>30</y>
             <width>211</width>
             <height>141</height>
            </rect>
@@ -97,8 +97,27 @@
            </item>
           </layout>
          </widget>
+         <widget class="QLabel" name="label_21">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>311</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Exchange data with a remote vive system:</string>
+          </property>
+         </widget>
         </widget>
-        <widget class="QWidget" name="ViconTab">
+        <widget class="QWidget" name="tabVicon">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <attribute name="title">
           <string>Vicon</string>
          </attribute>
@@ -106,7 +125,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>10</y>
+            <y>30</y>
             <width>211</width>
             <height>126</height>
            </rect>
@@ -256,18 +275,31 @@
            </item>
           </layout>
          </widget>
+         <widget class="QLabel" name="label_16">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>281</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Read data from a Vicon realtime (Blade/Tracker) stream:</string>
+          </property>
+         </widget>
         </widget>
-        <widget class="QWidget" name="NPTab">
+        <widget class="QWidget" name="tabNP">
          <attribute name="title">
           <string>NaturalPoint</string>
          </attribute>
          <widget class="QWidget" name="formLayoutWidget_3">
           <property name="geometry">
            <rect>
-            <x>30</x>
-            <y>10</y>
+            <x>10</x>
+            <y>30</y>
             <width>241</width>
-            <height>225</height>
+            <height>181</height>
            </rect>
           </property>
           <layout class="QFormLayout" name="formLayout_3">
@@ -398,8 +430,21 @@
            </item>
           </layout>
          </widget>
+         <widget class="QLabel" name="label_17">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>251</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Read data from a Naturalpoint (Motive) system:</string>
+          </property>
+         </widget>
         </widget>
-        <widget class="QWidget" name="StubTab">
+        <widget class="QWidget" name="tabStub">
          <attribute name="title">
           <string>Stub</string>
          </attribute>
@@ -407,7 +452,7 @@
           <property name="geometry">
            <rect>
             <x>90</x>
-            <y>10</y>
+            <y>30</y>
             <width>75</width>
             <height>23</height>
            </rect>
@@ -420,7 +465,7 @@
           <property name="geometry">
            <rect>
             <x>90</x>
-            <y>40</y>
+            <y>60</y>
             <width>111</width>
             <height>20</height>
            </rect>
@@ -430,7 +475,7 @@
           <property name="geometry">
            <rect>
             <x>30</x>
-            <y>40</y>
+            <y>60</y>
             <width>53</width>
             <height>19</height>
            </rect>
@@ -442,10 +487,23 @@
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
          </widget>
+         <widget class="QLabel" name="label_18">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>281</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Test data generator:</string>
+          </property>
+         </widget>
         </widget>
-        <widget class="QWidget" name="TreeTab">
+        <widget class="QWidget" name="tabTree">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <attribute name="title">
           <string>Tree</string>
@@ -456,13 +514,130 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="RawTab">
+        <widget class="QWidget" name="tabRaw">
          <attribute name="title">
           <string>Raw</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,0,0">
+            <item>
+             <widget class="QLabel" name="label_19">
+              <property name="text">
+               <string>Sample output data (updated once a second)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_5">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBoxRawEnable">
+              <property name="text">
+               <string>Enable</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
            <widget class="QTextEdit" name="textEditData"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tabFile">
+         <attribute name="title">
+          <string>File</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QLabel" name="label_20">
+            <property name="text">
+             <string>Read or write the data stream to a file (for playback later)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLineEdit" name="lineEditFilePath"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonFileChoose">
+              <property name="text">
+               <string>Choose</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QPushButton" name="pushButtonFileRead">
+              <property name="text">
+               <string>Read</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonFileWrite">
+              <property name="text">
+               <string>Write</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QLabel" name="label_15">
+              <property name="text">
+               <string>Status:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lineEditFileStatus"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
@@ -564,7 +739,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>776</width>
+     <width>819</width>
      <height>21</height>
     </rect>
    </property>
@@ -581,7 +756,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
-  <tabstop>TabWidgetVive</tabstop>
+  <tabstop>tabWidgetClients</tabstop>
   <tabstop>lineEditViconHost</tabstop>
   <tabstop>lineEditViconPort</tabstop>
   <tabstop>pushButtonConnectVicon</tabstop>

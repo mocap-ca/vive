@@ -4,13 +4,12 @@
 #include <QMessageBox>
 
 
-ViveClient::ViveClient(MocapSubjectList *sList,
-                       QPushButton* button,
+ViveClient::ViveClient(QPushButton* button,
                        QLineEdit*   statusLine,
                        QLineEdit*   inHostField,
                        QLineEdit*   inPortField,
                        QObject*     parent) :
-    BaseClient(CL_Vive, sList, button, statusLine, parent)
+    BaseClient(CL_Vive, button, statusLine, parent)
   , hostField(inHostField)
   , portField(inPortField)
   , socket( new QTcpSocket(this) )

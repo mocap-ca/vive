@@ -36,8 +36,7 @@ class NaturalPointClient : public BaseClient
     Q_OBJECT
 
 public:
-    NaturalPointClient( MocapSubjectList *subjectList,
-                       QPushButton *button,
+    NaturalPointClient(QPushButton *button,
                        QLineEdit *statusLine,
                        QLineEdit *hostField,
                        QLineEdit *portField,

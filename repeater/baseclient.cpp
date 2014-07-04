@@ -10,12 +10,10 @@ BaseConnector::BaseConnector(QObject *parent)
 
 
 BaseClient::BaseClient(ClientId clientId,
-        MocapSubjectList *subjectList,
         QPushButton *pushButton,
         QLineEdit *lineEditStatus,
         QObject *parent)
 : QObject(parent)
-, subjects(subjectList)
 , button(pushButton)
 , statusLine(lineEditStatus)
 , count(0)
@@ -100,11 +98,11 @@ bool BaseClient::linkConnector(BaseConnector *c)
     ok &= (bool)connect(c, SIGNAL(outMessage(QString)),         this, SLOT(outMessage(QString)));
     ok &= (bool)connect(c, SIGNAL(newFrame(uint)),              this, SLOT(newFrame(uint)));
     ok &= (bool)connect(c, SIGNAL(newFrame(uint)),              this, SLOT(addCount()));
-    ok &= (bool)connect(c, SIGNAL(updateSubject(SubjectData*)), this, SLOT(update(SubjectData*)));
+    ok &= (bool)connect(c, SIGNAL(updateSubject(SubjectData*)), this, SLOT(emitUpdateSubject(SubjectData*)));
     return ok;
 }
 
-void BaseClient::update(SubjectData *s)
+void BaseClient::emitUpdateSubject(SubjectData *d)
 {
-    subjects->update(s);
+     emit updateSubject(d);
 }

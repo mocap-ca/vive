@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 CONFIG   += qt
-#CONFIG   += vicon
+CONFIG   += vicon
 CONFIG   += naturalpoint
 QT       += core gui network
 
@@ -30,7 +30,9 @@ SOURCES += main.cpp\
     ../fileTranslators/c3dFile.cpp \
     ../fileTranslators/htrFile.cpp \
     ../fileTranslators/trcFile.cpp \
-    viveClient.cpp
+    viveClient.cpp \
+    fileClient.cpp \
+    filewriter.cpp
 
 HEADERS  += mainwindow.h \
     server.h \
@@ -49,7 +51,9 @@ HEADERS  += mainwindow.h \
     ../fileTranslators/fileTranslator.h \
     ../fileTranslators/joint.h \
     ../fileTranslators/vectorMath.h \
-    viveClient.h
+    viveClient.h \
+    fileClient.h \
+    filewriter.h
 
 FORMS    += mainwindow.ui
 

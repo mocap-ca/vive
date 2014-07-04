@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <QStandardItemModel>
 #include <QTimer>
 #include "server.h"
-#include "testClient.h"
-#include "viveClient.h"
+#include "filewriter.h"
+
 #include "mocapModel.h"
 
 // Stub any classes that are not required. They will be
@@ -46,10 +46,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 // 0.5 - Pulled SubjectData out of MocapSubject
 //     - clients message SubjectData out, rather than touching MocapSubjectList directly
 //     - fixed fps counters
-//     - TODO: write model for tree view of data (not really a priority right now)
-// 0.6 -
+// 0.7 - Added ability to read and write the data stream
+// 0.7a- Fixed bug in file reader
 
-#define VIVE_VERSION "0.6"
+// TODO: write model for tree view of data (not really a priority right now)
+
+
+#define VIVE_VERSION "0.7a"
 
 
 namespace Ui {
@@ -67,6 +70,7 @@ public slots:
 	void timerClick(void);
     void processFrame(ClientId, uint);
     void toggleServer();
+    void chooseFile();
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -82,9 +86,6 @@ private:
 	QTimer      *timer;
     QStandardItemModel *modelConnections;
 
-    TestClient  *testClient;
-    ViveClient  *viveClient;
-
     //! List of supported clients
     QList<BaseClient *> clients;
 
@@ -96,6 +97,9 @@ private:
 
     //! Holds the QStandardItems to represent *subjectList
     MocapModel *subjectModel;
+
+    FileWriter *writer;
+
 };
 
 #endif // MAINWINDOW_H

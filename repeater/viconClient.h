@@ -69,8 +69,7 @@ class ViconClient : public BaseClient
 	Q_OBJECT
 
 public:
-    ViconClient( MocapSubjectList *subjectList,
-                 QPushButton *button,
+    ViconClient( QPushButton *button,
                  QLineEdit *statusLine,
                  QLineEdit *hostField,
                  QLineEdit *portField,

@@ -54,15 +54,9 @@ class BaseClient : public QObject
 public:
 
     explicit BaseClient(ClientId id,
-                        MocapSubjectList *subjectList,
                         QPushButton*,
                         QLineEdit*,
                         QObject *parent);
-
-    //! Reference to the global subject list for all data
-    /*! This clients should append any incoming data to this structure
-     *  then emit a newFrame signal to tell the server to pass on the data */
-    MocapSubjectList *subjects;
 
     //! Push button that shows connection/disconnection for this client
     QPushButton *button;
@@ -123,11 +117,11 @@ public slots:
     //! Called once a second by the main thread
     void tick();
 
-    //! Update a mocap subject in the model
-    void update(SubjectData*);
-
     //! Adds one to the fps counter
     void addCount();
+
+    //! pass on the subect
+    void emitUpdateSubject(SubjectData *d);
 
 
 signals:
@@ -137,7 +131,7 @@ signals:
     void stateDisconnected();
     void outMessage_(QString);
     void updateFrame(ClientId, uint);
-
+    void updateSubject(SubjectData*);  //!< Update a mocap subject in the model
 };
 
 #endif // BASECLIENT_H

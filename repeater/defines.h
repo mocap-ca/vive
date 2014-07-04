@@ -26,7 +26,8 @@ typedef enum eClientId
     CL_Stub = 1,
     CL_Vicon = 100,
     CL_NaturalPoint,
-    CL_Vive
+    CL_Vive,
+    CL_File
 } ClientId;
 
 

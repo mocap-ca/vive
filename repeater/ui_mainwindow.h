@@ -6,8 +6,8 @@
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef UI_MAINWINDOW_H
+#define UI_MAINWINDOW_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
@@ -15,6 +15,7 @@
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QFormLayout>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
@@ -42,8 +43,8 @@ public:
     QVBoxLayout *verticalLayout_4;
     QSplitter *splitter_2;
     QSplitter *splitter;
-    QTabWidget *TabWidgetVive;
-    QWidget *tab;
+    QTabWidget *tabWidgetClients;
+    QWidget *tabVive;
     QWidget *formLayoutWidget_4;
     QFormLayout *formLayout_4;
     QLabel *label_11;
@@ -54,7 +55,8 @@ public:
     QLabel *label_13;
     QPushButton *pushButtonViveConnect;
     QSpacerItem *horizontalSpacer;
-    QWidget *ViconTab;
+    QLabel *label_21;
+    QWidget *tabVicon;
     QWidget *formLayoutWidget;
     QFormLayout *formLayout;
     QLabel *label_2;
@@ -67,7 +69,8 @@ public:
     QLineEdit *lineEditViconStatus;
     QLabel *label_6;
     QCheckBox *checkBoxViconYUp;
-    QWidget *NPTab;
+    QLabel *label_16;
+    QWidget *tabNP;
     QWidget *formLayoutWidget_3;
     QFormLayout *formLayout_3;
     QLabel *label_7;
@@ -78,16 +81,36 @@ public:
     QPushButton *pushButtonNPConnect;
     QLabel *label_9;
     QLineEdit *lineEditNPStatus;
-    QWidget *StubTab;
+    QLabel *label_17;
+    QWidget *tabStub;
     QPushButton *pushButtonStub;
     QLineEdit *lineEditStubStatus;
     QLabel *label_5;
-    QWidget *TreeTab;
+    QLabel *label_18;
+    QWidget *tabTree;
     QVBoxLayout *verticalLayout_3;
     QTreeView *treeViewData;
-    QWidget *RawTab;
+    QWidget *tabRaw;
     QVBoxLayout *verticalLayout_2;
+    QHBoxLayout *horizontalLayout_4;
+    QLabel *label_19;
+    QSpacerItem *horizontalSpacer_5;
+    QCheckBox *checkBoxRawEnable;
     QTextEdit *textEditData;
+    QWidget *tabFile;
+    QVBoxLayout *verticalLayout_6;
+    QLabel *label_20;
+    QHBoxLayout *horizontalLayout;
+    QLineEdit *lineEditFilePath;
+    QPushButton *pushButtonFileChoose;
+    QHBoxLayout *horizontalLayout_2;
+    QPushButton *pushButtonFileRead;
+    QPushButton *pushButtonFileWrite;
+    QSpacerItem *horizontalSpacer_4;
+    QHBoxLayout *horizontalLayout_3;
+    QLabel *label_15;
+    QLineEdit *lineEditFileStatus;
+    QSpacerItem *verticalSpacer;
     QWidget *verticalLayoutWidget;
     QVBoxLayout *verticalLayout;
     QTabWidget *tabWidget_2;
@@ -113,7 +136,7 @@ public:
     {
         if (MainWin->objectName().isEmpty())
             MainWin->setObjectName(QStringLiteral("MainWin"));
-        MainWin->resize(776, 611);
+        MainWin->resize(819, 611);
         centralWidget = new QWidget(MainWin);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         verticalLayout_4 = new QVBoxLayout(centralWidget);
@@ -126,14 +149,14 @@ public:
         splitter = new QSplitter(splitter_2);
         splitter->setObjectName(QStringLiteral("splitter"));
         splitter->setOrientation(Qt::Horizontal);
-        TabWidgetVive = new QTabWidget(splitter);
-        TabWidgetVive->setObjectName(QStringLiteral("TabWidgetVive"));
-        TabWidgetVive->setEnabled(true);
-        tab = new QWidget();
-        tab->setObjectName(QStringLiteral("tab"));
-        formLayoutWidget_4 = new QWidget(tab);
+        tabWidgetClients = new QTabWidget(splitter);
+        tabWidgetClients->setObjectName(QStringLiteral("tabWidgetClients"));
+        tabWidgetClients->setEnabled(true);
+        tabVive = new QWidget();
+        tabVive->setObjectName(QStringLiteral("tabVive"));
+        formLayoutWidget_4 = new QWidget(tabVive);
         formLayoutWidget_4->setObjectName(QStringLiteral("formLayoutWidget_4"));
-        formLayoutWidget_4->setGeometry(QRect(10, 10, 211, 141));
+        formLayoutWidget_4->setGeometry(QRect(10, 30, 211, 141));
         formLayout_4 = new QFormLayout(formLayoutWidget_4);
         formLayout_4->setSpacing(6);
         formLayout_4->setContentsMargins(11, 11, 11, 11);
@@ -178,12 +201,20 @@ public:
 
         formLayout_4->setItem(3, QFormLayout::LabelRole, horizontalSpacer);
 
-        TabWidgetVive->addTab(tab, QString());
-        ViconTab = new QWidget();
-        ViconTab->setObjectName(QStringLiteral("ViconTab"));
-        formLayoutWidget = new QWidget(ViconTab);
+        label_21 = new QLabel(tabVive);
+        label_21->setObjectName(QStringLiteral("label_21"));
+        label_21->setGeometry(QRect(10, 10, 311, 16));
+        tabWidgetClients->addTab(tabVive, QString());
+        tabVicon = new QWidget();
+        tabVicon->setObjectName(QStringLiteral("tabVicon"));
+        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(tabVicon->sizePolicy().hasHeightForWidth());
+        tabVicon->setSizePolicy(sizePolicy);
+        formLayoutWidget = new QWidget(tabVicon);
         formLayoutWidget->setObjectName(QStringLiteral("formLayoutWidget"));
-        formLayoutWidget->setGeometry(QRect(10, 10, 211, 126));
+        formLayoutWidget->setGeometry(QRect(10, 30, 211, 126));
         formLayout = new QFormLayout(formLayoutWidget);
         formLayout->setSpacing(6);
         formLayout->setContentsMargins(11, 11, 11, 11);
@@ -192,22 +223,22 @@ public:
         formLayout->setContentsMargins(0, 0, 0, 0);
         label_2 = new QLabel(formLayoutWidget);
         label_2->setObjectName(QStringLiteral("label_2"));
-        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(label_2->sizePolicy().hasHeightForWidth());
-        label_2->setSizePolicy(sizePolicy);
+        QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(label_2->sizePolicy().hasHeightForWidth());
+        label_2->setSizePolicy(sizePolicy1);
         label_2->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         formLayout->setWidget(0, QFormLayout::LabelRole, label_2);
 
         lineEditViconHost = new QLineEdit(formLayoutWidget);
         lineEditViconHost->setObjectName(QStringLiteral("lineEditViconHost"));
-        QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(lineEditViconHost->sizePolicy().hasHeightForWidth());
-        lineEditViconHost->setSizePolicy(sizePolicy1);
+        QSizePolicy sizePolicy2(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(lineEditViconHost->sizePolicy().hasHeightForWidth());
+        lineEditViconHost->setSizePolicy(sizePolicy2);
         lineEditViconHost->setMinimumSize(QSize(50, 0));
         lineEditViconHost->setMaximumSize(QSize(16777215, 16777215));
 
@@ -215,8 +246,8 @@ public:
 
         label = new QLabel(formLayoutWidget);
         label->setObjectName(QStringLiteral("label"));
-        sizePolicy.setHeightForWidth(label->sizePolicy().hasHeightForWidth());
-        label->setSizePolicy(sizePolicy);
+        sizePolicy1.setHeightForWidth(label->sizePolicy().hasHeightForWidth());
+        label->setSizePolicy(sizePolicy1);
         label->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         formLayout->setWidget(1, QFormLayout::LabelRole, label);
@@ -229,8 +260,8 @@ public:
 
         label_4 = new QLabel(formLayoutWidget);
         label_4->setObjectName(QStringLiteral("label_4"));
-        sizePolicy.setHeightForWidth(label_4->sizePolicy().hasHeightForWidth());
-        label_4->setSizePolicy(sizePolicy);
+        sizePolicy1.setHeightForWidth(label_4->sizePolicy().hasHeightForWidth());
+        label_4->setSizePolicy(sizePolicy1);
         label_4->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         formLayout->setWidget(3, QFormLayout::LabelRole, label_4);
@@ -246,8 +277,8 @@ public:
 
         lineEditViconStatus = new QLineEdit(formLayoutWidget);
         lineEditViconStatus->setObjectName(QStringLiteral("lineEditViconStatus"));
-        sizePolicy1.setHeightForWidth(lineEditViconStatus->sizePolicy().hasHeightForWidth());
-        lineEditViconStatus->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lineEditViconStatus->sizePolicy().hasHeightForWidth());
+        lineEditViconStatus->setSizePolicy(sizePolicy2);
         lineEditViconStatus->setMinimumSize(QSize(50, 0));
         lineEditViconStatus->setMaximumSize(QSize(16777215, 16777215));
 
@@ -264,12 +295,15 @@ public:
 
         formLayout->setWidget(4, QFormLayout::FieldRole, checkBoxViconYUp);
 
-        TabWidgetVive->addTab(ViconTab, QString());
-        NPTab = new QWidget();
-        NPTab->setObjectName(QStringLiteral("NPTab"));
-        formLayoutWidget_3 = new QWidget(NPTab);
+        label_16 = new QLabel(tabVicon);
+        label_16->setObjectName(QStringLiteral("label_16"));
+        label_16->setGeometry(QRect(10, 10, 281, 16));
+        tabWidgetClients->addTab(tabVicon, QString());
+        tabNP = new QWidget();
+        tabNP->setObjectName(QStringLiteral("tabNP"));
+        formLayoutWidget_3 = new QWidget(tabNP);
         formLayoutWidget_3->setObjectName(QStringLiteral("formLayoutWidget_3"));
-        formLayoutWidget_3->setGeometry(QRect(30, 10, 241, 225));
+        formLayoutWidget_3->setGeometry(QRect(10, 30, 241, 181));
         formLayout_3 = new QFormLayout(formLayoutWidget_3);
         formLayout_3->setSpacing(6);
         formLayout_3->setContentsMargins(11, 11, 11, 11);
@@ -278,16 +312,16 @@ public:
         formLayout_3->setContentsMargins(0, 0, 0, 0);
         label_7 = new QLabel(formLayoutWidget_3);
         label_7->setObjectName(QStringLiteral("label_7"));
-        sizePolicy.setHeightForWidth(label_7->sizePolicy().hasHeightForWidth());
-        label_7->setSizePolicy(sizePolicy);
+        sizePolicy1.setHeightForWidth(label_7->sizePolicy().hasHeightForWidth());
+        label_7->setSizePolicy(sizePolicy1);
         label_7->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         formLayout_3->setWidget(0, QFormLayout::LabelRole, label_7);
 
         lineEditNPHost = new QLineEdit(formLayoutWidget_3);
         lineEditNPHost->setObjectName(QStringLiteral("lineEditNPHost"));
-        sizePolicy1.setHeightForWidth(lineEditNPHost->sizePolicy().hasHeightForWidth());
-        lineEditNPHost->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lineEditNPHost->sizePolicy().hasHeightForWidth());
+        lineEditNPHost->setSizePolicy(sizePolicy2);
         lineEditNPHost->setMinimumSize(QSize(50, 0));
         lineEditNPHost->setMaximumSize(QSize(16777215, 16777215));
 
@@ -295,8 +329,8 @@ public:
 
         label_10 = new QLabel(formLayoutWidget_3);
         label_10->setObjectName(QStringLiteral("label_10"));
-        sizePolicy.setHeightForWidth(label_10->sizePolicy().hasHeightForWidth());
-        label_10->setSizePolicy(sizePolicy);
+        sizePolicy1.setHeightForWidth(label_10->sizePolicy().hasHeightForWidth());
+        label_10->setSizePolicy(sizePolicy1);
         label_10->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         formLayout_3->setWidget(1, QFormLayout::LabelRole, label_10);
@@ -318,61 +352,156 @@ public:
 
         label_9 = new QLabel(formLayoutWidget_3);
         label_9->setObjectName(QStringLiteral("label_9"));
-        sizePolicy.setHeightForWidth(label_9->sizePolicy().hasHeightForWidth());
-        label_9->setSizePolicy(sizePolicy);
+        sizePolicy1.setHeightForWidth(label_9->sizePolicy().hasHeightForWidth());
+        label_9->setSizePolicy(sizePolicy1);
         label_9->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         formLayout_3->setWidget(3, QFormLayout::LabelRole, label_9);
 
         lineEditNPStatus = new QLineEdit(formLayoutWidget_3);
         lineEditNPStatus->setObjectName(QStringLiteral("lineEditNPStatus"));
-        sizePolicy1.setHeightForWidth(lineEditNPStatus->sizePolicy().hasHeightForWidth());
-        lineEditNPStatus->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lineEditNPStatus->sizePolicy().hasHeightForWidth());
+        lineEditNPStatus->setSizePolicy(sizePolicy2);
         lineEditNPStatus->setMinimumSize(QSize(50, 0));
         lineEditNPStatus->setMaximumSize(QSize(16777215, 16777215));
 
         formLayout_3->setWidget(3, QFormLayout::FieldRole, lineEditNPStatus);
 
-        TabWidgetVive->addTab(NPTab, QString());
-        StubTab = new QWidget();
-        StubTab->setObjectName(QStringLiteral("StubTab"));
-        pushButtonStub = new QPushButton(StubTab);
+        label_17 = new QLabel(tabNP);
+        label_17->setObjectName(QStringLiteral("label_17"));
+        label_17->setGeometry(QRect(10, 10, 251, 16));
+        tabWidgetClients->addTab(tabNP, QString());
+        tabStub = new QWidget();
+        tabStub->setObjectName(QStringLiteral("tabStub"));
+        pushButtonStub = new QPushButton(tabStub);
         pushButtonStub->setObjectName(QStringLiteral("pushButtonStub"));
-        pushButtonStub->setGeometry(QRect(90, 10, 75, 23));
-        lineEditStubStatus = new QLineEdit(StubTab);
+        pushButtonStub->setGeometry(QRect(90, 30, 75, 23));
+        lineEditStubStatus = new QLineEdit(tabStub);
         lineEditStubStatus->setObjectName(QStringLiteral("lineEditStubStatus"));
-        lineEditStubStatus->setGeometry(QRect(90, 40, 111, 20));
-        label_5 = new QLabel(StubTab);
+        lineEditStubStatus->setGeometry(QRect(90, 60, 111, 20));
+        label_5 = new QLabel(tabStub);
         label_5->setObjectName(QStringLiteral("label_5"));
-        label_5->setGeometry(QRect(30, 40, 53, 19));
+        label_5->setGeometry(QRect(30, 60, 53, 19));
         label_5->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
-        TabWidgetVive->addTab(StubTab, QString());
-        TreeTab = new QWidget();
-        TreeTab->setObjectName(QStringLiteral("TreeTab"));
-        TreeTab->setEnabled(false);
-        verticalLayout_3 = new QVBoxLayout(TreeTab);
+        label_18 = new QLabel(tabStub);
+        label_18->setObjectName(QStringLiteral("label_18"));
+        label_18->setGeometry(QRect(10, 10, 281, 16));
+        tabWidgetClients->addTab(tabStub, QString());
+        tabTree = new QWidget();
+        tabTree->setObjectName(QStringLiteral("tabTree"));
+        tabTree->setEnabled(true);
+        verticalLayout_3 = new QVBoxLayout(tabTree);
         verticalLayout_3->setSpacing(6);
         verticalLayout_3->setContentsMargins(11, 11, 11, 11);
         verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
-        treeViewData = new QTreeView(TreeTab);
+        treeViewData = new QTreeView(tabTree);
         treeViewData->setObjectName(QStringLiteral("treeViewData"));
 
         verticalLayout_3->addWidget(treeViewData);
 
-        TabWidgetVive->addTab(TreeTab, QString());
-        RawTab = new QWidget();
-        RawTab->setObjectName(QStringLiteral("RawTab"));
-        verticalLayout_2 = new QVBoxLayout(RawTab);
+        tabWidgetClients->addTab(tabTree, QString());
+        tabRaw = new QWidget();
+        tabRaw->setObjectName(QStringLiteral("tabRaw"));
+        verticalLayout_2 = new QVBoxLayout(tabRaw);
         verticalLayout_2->setSpacing(6);
         verticalLayout_2->setContentsMargins(11, 11, 11, 11);
         verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
-        textEditData = new QTextEdit(RawTab);
+        horizontalLayout_4 = new QHBoxLayout();
+        horizontalLayout_4->setSpacing(6);
+        horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
+        label_19 = new QLabel(tabRaw);
+        label_19->setObjectName(QStringLiteral("label_19"));
+
+        horizontalLayout_4->addWidget(label_19);
+
+        horizontalSpacer_5 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_4->addItem(horizontalSpacer_5);
+
+        checkBoxRawEnable = new QCheckBox(tabRaw);
+        checkBoxRawEnable->setObjectName(QStringLiteral("checkBoxRawEnable"));
+
+        horizontalLayout_4->addWidget(checkBoxRawEnable);
+
+        horizontalLayout_4->setStretch(0, 1);
+
+        verticalLayout_2->addLayout(horizontalLayout_4);
+
+        textEditData = new QTextEdit(tabRaw);
         textEditData->setObjectName(QStringLiteral("textEditData"));
 
         verticalLayout_2->addWidget(textEditData);
 
-        TabWidgetVive->addTab(RawTab, QString());
-        splitter->addWidget(TabWidgetVive);
+        tabWidgetClients->addTab(tabRaw, QString());
+        tabFile = new QWidget();
+        tabFile->setObjectName(QStringLiteral("tabFile"));
+        verticalLayout_6 = new QVBoxLayout(tabFile);
+        verticalLayout_6->setSpacing(6);
+        verticalLayout_6->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_6->setObjectName(QStringLiteral("verticalLayout_6"));
+        label_20 = new QLabel(tabFile);
+        label_20->setObjectName(QStringLiteral("label_20"));
+
+        verticalLayout_6->addWidget(label_20);
+
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setSpacing(6);
+        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+        lineEditFilePath = new QLineEdit(tabFile);
+        lineEditFilePath->setObjectName(QStringLiteral("lineEditFilePath"));
+
+        horizontalLayout->addWidget(lineEditFilePath);
+
+        pushButtonFileChoose = new QPushButton(tabFile);
+        pushButtonFileChoose->setObjectName(QStringLiteral("pushButtonFileChoose"));
+
+        horizontalLayout->addWidget(pushButtonFileChoose);
+
+
+        verticalLayout_6->addLayout(horizontalLayout);
+
+        horizontalLayout_2 = new QHBoxLayout();
+        horizontalLayout_2->setSpacing(6);
+        horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
+        pushButtonFileRead = new QPushButton(tabFile);
+        pushButtonFileRead->setObjectName(QStringLiteral("pushButtonFileRead"));
+
+        horizontalLayout_2->addWidget(pushButtonFileRead);
+
+        pushButtonFileWrite = new QPushButton(tabFile);
+        pushButtonFileWrite->setObjectName(QStringLiteral("pushButtonFileWrite"));
+
+        horizontalLayout_2->addWidget(pushButtonFileWrite);
+
+        horizontalSpacer_4 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_2->addItem(horizontalSpacer_4);
+
+
+        verticalLayout_6->addLayout(horizontalLayout_2);
+
+        horizontalLayout_3 = new QHBoxLayout();
+        horizontalLayout_3->setSpacing(6);
+        horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
+        label_15 = new QLabel(tabFile);
+        label_15->setObjectName(QStringLiteral("label_15"));
+
+        horizontalLayout_3->addWidget(label_15);
+
+        lineEditFileStatus = new QLineEdit(tabFile);
+        lineEditFileStatus->setObjectName(QStringLiteral("lineEditFileStatus"));
+
+        horizontalLayout_3->addWidget(lineEditFileStatus);
+
+
+        verticalLayout_6->addLayout(horizontalLayout_3);
+
+        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_6->addItem(verticalSpacer);
+
+        tabWidgetClients->addTab(tabFile, QString());
+        splitter->addWidget(tabWidgetClients);
         verticalLayoutWidget = new QWidget(splitter);
         verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));
         verticalLayout = new QVBoxLayout(verticalLayoutWidget);
@@ -457,7 +586,7 @@ public:
         MainWin->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWin);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 776, 21));
+        menuBar->setGeometry(QRect(0, 0, 819, 21));
         MainWin->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWin);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -465,7 +594,7 @@ public:
         statusBar = new QStatusBar(MainWin);
         statusBar->setObjectName(QStringLiteral("statusBar"));
         MainWin->setStatusBar(statusBar);
-        QWidget::setTabOrder(TabWidgetVive, lineEditViconHost);
+        QWidget::setTabOrder(tabWidgetClients, lineEditViconHost);
         QWidget::setTabOrder(lineEditViconHost, lineEditViconPort);
         QWidget::setTabOrder(lineEditViconPort, pushButtonConnectVicon);
         QWidget::setTabOrder(pushButtonConnectVicon, lineEditViconStatus);
@@ -481,7 +610,7 @@ public:
 
         retranslateUi(MainWin);
 
-        TabWidgetVive->setCurrentIndex(0);
+        tabWidgetClients->setCurrentIndex(6);
         tabWidget_2->setCurrentIndex(1);
 
 
@@ -495,24 +624,36 @@ public:
         label_12->setText(QApplication::translate("MainWin", "Port:", 0));
         label_13->setText(QApplication::translate("MainWin", "Fps:", 0));
         pushButtonViveConnect->setText(QApplication::translate("MainWin", "Connect", 0));
-        TabWidgetVive->setTabText(TabWidgetVive->indexOf(tab), QApplication::translate("MainWin", "Vive", 0));
+        label_21->setText(QApplication::translate("MainWin", "Exchange data with a remote vive system:", 0));
+        tabWidgetClients->setTabText(tabWidgetClients->indexOf(tabVive), QApplication::translate("MainWin", "Vive", 0));
         label_2->setText(QApplication::translate("MainWin", "Host:", 0));
         label->setText(QApplication::translate("MainWin", "Port:", 0));
         label_4->setText(QApplication::translate("MainWin", "Fps:", 0));
         pushButtonConnectVicon->setText(QApplication::translate("MainWin", "Connect", 0));
         label_6->setText(QApplication::translate("MainWin", "Y-up", 0));
         checkBoxViconYUp->setText(QString());
-        TabWidgetVive->setTabText(TabWidgetVive->indexOf(ViconTab), QApplication::translate("MainWin", "Vicon", 0));
+        label_16->setText(QApplication::translate("MainWin", "Read data from a Vicon realtime (Blade/Tracker) stream:", 0));
+        tabWidgetClients->setTabText(tabWidgetClients->indexOf(tabVicon), QApplication::translate("MainWin", "Vicon", 0));
         label_7->setText(QApplication::translate("MainWin", "Host:", 0));
         label_10->setText(QApplication::translate("MainWin", "Port:", 0));
         pushButtonNPConnect->setText(QApplication::translate("MainWin", "Connect", 0));
         label_9->setText(QApplication::translate("MainWin", "Fps:", 0));
-        TabWidgetVive->setTabText(TabWidgetVive->indexOf(NPTab), QApplication::translate("MainWin", "NaturalPoint", 0));
+        label_17->setText(QApplication::translate("MainWin", "Read data from a Naturalpoint (Motive) system:", 0));
+        tabWidgetClients->setTabText(tabWidgetClients->indexOf(tabNP), QApplication::translate("MainWin", "NaturalPoint", 0));
         pushButtonStub->setText(QApplication::translate("MainWin", "Start", 0));
         label_5->setText(QApplication::translate("MainWin", "fps:", 0));
-        TabWidgetVive->setTabText(TabWidgetVive->indexOf(StubTab), QApplication::translate("MainWin", "Stub", 0));
-        TabWidgetVive->setTabText(TabWidgetVive->indexOf(TreeTab), QApplication::translate("MainWin", "Tree", 0));
-        TabWidgetVive->setTabText(TabWidgetVive->indexOf(RawTab), QApplication::translate("MainWin", "Raw", 0));
+        label_18->setText(QApplication::translate("MainWin", "Test data generator:", 0));
+        tabWidgetClients->setTabText(tabWidgetClients->indexOf(tabStub), QApplication::translate("MainWin", "Stub", 0));
+        tabWidgetClients->setTabText(tabWidgetClients->indexOf(tabTree), QApplication::translate("MainWin", "Tree", 0));
+        label_19->setText(QApplication::translate("MainWin", "Sample output data (updated once a second)", 0));
+        checkBoxRawEnable->setText(QApplication::translate("MainWin", "Enable", 0));
+        tabWidgetClients->setTabText(tabWidgetClients->indexOf(tabRaw), QApplication::translate("MainWin", "Raw", 0));
+        label_20->setText(QApplication::translate("MainWin", "Read or write the data stream to a file (for playback later)", 0));
+        pushButtonFileChoose->setText(QApplication::translate("MainWin", "Choose", 0));
+        pushButtonFileRead->setText(QApplication::translate("MainWin", "Read", 0));
+        pushButtonFileWrite->setText(QApplication::translate("MainWin", "Write", 0));
+        label_15->setText(QApplication::translate("MainWin", "Status:", 0));
+        tabWidgetClients->setTabText(tabWidgetClients->indexOf(tabFile), QApplication::translate("MainWin", "File", 0));
         tabWidget_2->setTabText(tabWidget_2->indexOf(tabConnections), QApplication::translate("MainWin", "Connections", 0));
         label_3->setText(QApplication::translate("MainWin", "TCP Server FPS", 0));
         label_8->setText(QApplication::translate("MainWin", "Local Server FPS", 0));
@@ -529,4 +670,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // MAINWINDOW_H
+#endif // UI_MAINWINDOW_H

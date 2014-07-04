@@ -222,14 +222,13 @@ bool ViconConnector::connect()
 }
 
 
-ViconClient::ViconClient(MocapSubjectList *sList,
-                         QPushButton *button,
+ViconClient::ViconClient(QPushButton *button,
                          QLineEdit *statusLine,
                          QLineEdit *inHostField,
                          QLineEdit *inPortField,
                          QCheckBox *inYUp,
                          QObject *parent)
-: BaseClient(CL_Vicon, sList, button, statusLine, parent)
+: BaseClient(CL_Vicon, button, statusLine, parent)
 , running(false)
 , frameError(false)
 , hostField(inHostField)
