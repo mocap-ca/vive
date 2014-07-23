@@ -1,0 +1,21 @@
+{
+    "FileVersion" : 3,
+ 
+    "FriendlyName" : "VIVE Plugin for UE4",
+    "Version" : 1,
+    "VersionName": "1.0",
+    "EngineVersion" : 1579795,
+    "Description" : "Connect to VIVE Repeater and read marker / segment transforms",
+    "Category" : "Mocap.VIVE",
+    "CreatedBy" : "Athomas Goldberg",
+    "CreatedByURL" : "http://lifelikeandbelievable.com",
+	"CanContainContent" : true,
+ 
+    "Modules" :
+    [
+        {
+            "Name" : "VIVEPlugin",
+            "Type" : "Runtime"
+        }
+    ]
+}
