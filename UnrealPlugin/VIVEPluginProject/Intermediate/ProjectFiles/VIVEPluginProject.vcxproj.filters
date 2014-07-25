@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<None Include="..\..\VIVEPluginProject.uproject" />
+		<Filter Include="Source">
+			<UniqueIdentifier>{E49C0C81-5E27-48DA-977E-70F5F82307B4}</UniqueIdentifier>
+		</Filter>
+		<None Include="..\..\Source\VIVEPluginProject.Target.cs">
+			<Filter>Source</Filter>
+		</None >
+		<None Include="..\..\Source\VIVEPluginProjectEditor.Target.cs">
+			<Filter>Source</Filter>
+		</None >
+		<Filter Include="Config">
+			<UniqueIdentifier>{965ABA5B-8F1A-4F8D-B361-5A87CA9C1344}</UniqueIdentifier>
+		</Filter>
+		<None Include="..\..\Config\DefaultEngine.ini">
+			<Filter>Config</Filter>
+		</None >
+		<None Include="..\..\Config\DefaultGame.ini">
+			<Filter>Config</Filter>
+		</None >
+		<Filter Include="Plugins">
+			<UniqueIdentifier>{C4587455-D1B6-4633-8F97-EE7B52147EDA}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Plugins\VIVEPlugin">
+			<UniqueIdentifier>{A60F20D6-0FA4-488D-931D-420A392C84DE}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Plugins\VIVEPlugin\Source">
+			<UniqueIdentifier>{BE64CEA0-C2A5-48A1-98A1-D43CD42FE1CD}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Plugins\VIVEPlugin\Source\VIVEPlugin">
+			<UniqueIdentifier>{DAB466FE-5FFB-4C56-BF64-2272ECF509AB}</UniqueIdentifier>
+		</Filter>
+		<None Include="..\..\Plugins\VIVEPlugin\Source\VIVEPlugin\VIVEPlugin.Build.cs">
+			<Filter>Plugins\VIVEPlugin\Source\VIVEPlugin</Filter>
+		</None >
+		<Filter Include="Plugins\VIVEPlugin\Source\VIVEPlugin\Private">
+			<UniqueIdentifier>{43C1CDD5-D84E-41AA-8B40-084686338735}</UniqueIdentifier>
+		</Filter>
+		<ClCompile Include="..\..\Plugins\VIVEPlugin\Source\VIVEPlugin\Private\MocapSocket.cpp">
+			<Filter>Plugins\VIVEPlugin\Source\VIVEPlugin\Private</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Plugins\VIVEPlugin\Source\VIVEPlugin\Private\MocapSocket.h">
+			<Filter>Plugins\VIVEPlugin\Source\VIVEPlugin\Private</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Plugins\VIVEPlugin\Source\VIVEPlugin\Private\VIVEConnection.cpp">
+			<Filter>Plugins\VIVEPlugin\Source\VIVEPlugin\Private</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Plugins\VIVEPlugin\Source\VIVEPlugin\Private\VIVEConnection.h">
+			<Filter>Plugins\VIVEPlugin\Source\VIVEPlugin\Private</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Plugins\VIVEPlugin\Source\VIVEPlugin\Private\VIVEPlugin.cpp">
+			<Filter>Plugins\VIVEPlugin\Source\VIVEPlugin\Private</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Plugins\VIVEPlugin\Source\VIVEPlugin\Private\VIVEPlugin.h">
+			<Filter>Plugins\VIVEPlugin\Source\VIVEPlugin\Private</Filter>
+		</ClInclude >
+		<ClInclude Include="..\..\Plugins\VIVEPlugin\Source\VIVEPlugin\Private\VIVEPluginPrivatePCH.h">
+			<Filter>Plugins\VIVEPlugin\Source\VIVEPlugin\Private</Filter>
+		</ClInclude >
+		<None Include="..\..\Plugins\VIVEPlugin\VIVEPlugin.uplugin">
+			<Filter>Plugins\VIVEPlugin</Filter>
+		</None >
+		<Filter Include="Plugins\VIVEPlugin\Resources">
+			<UniqueIdentifier>{7A462845-7F8E-4C4C-A2F4-D6E6085E53D3}</UniqueIdentifier>
+		</Filter>
+		<None Include="..\..\Plugins\VIVEPlugin\Resources\Icon128.png">
+			<Filter>Plugins\VIVEPlugin\Resources</Filter>
+		</None >
+		<None Include="..\..\Plugins\VIVEPlugin\Resources\Thumbs.db">
+			<Filter>Plugins\VIVEPlugin\Resources</Filter>
+		</None >
+		<Filter Include="Source\VIVEPluginProject">
+			<UniqueIdentifier>{80DC7637-D55F-4C82-B15C-864835EA3F6C}</UniqueIdentifier>
+		</Filter>
+		<None Include="..\..\Source\VIVEPluginProject\VIVEPluginProject.Build.cs">
+			<Filter>Source\VIVEPluginProject</Filter>
+		</None >
+		<ClCompile Include="..\..\Source\VIVEPluginProject\VIVEPluginProject.cpp">
+			<Filter>Source\VIVEPluginProject</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\VIVEPluginProject\VIVEPluginProject.h">
+			<Filter>Source\VIVEPluginProject</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\VIVEPluginProject\VIVEPluginProjectGameMode.cpp">
+			<Filter>Source\VIVEPluginProject</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\VIVEPluginProject\VIVEPluginProjectGameMode.h">
+			<Filter>Source\VIVEPluginProject</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\VIVEPluginProject\VIVEPluginProjectPlayerController.cpp">
+			<Filter>Source\VIVEPluginProject</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\VIVEPluginProject\VIVEPluginProjectPlayerController.h">
+			<Filter>Source\VIVEPluginProject</Filter>
+		</ClInclude >
+		<Filter Include="Source\VIVEPluginProject\Resources">
+			<UniqueIdentifier>{FA116DC0-C46D-449B-B93D-0F6D6DD1CAC4}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source\VIVEPluginProject\Resources\Windows">
+			<UniqueIdentifier>{7D5AB422-7C4C-4746-A153-780E0DAA6A43}</UniqueIdentifier>
+		</Filter>
+		<None Include="..\..\Source\VIVEPluginProject\Resources\Windows\VIVEPluginProject.ico">
+			<Filter>Source\VIVEPluginProject\Resources\Windows</Filter>
+		</None >
+		<ResourceCompile Include="..\..\Source\VIVEPluginProject\Resources\Windows\VIVEPluginProject.rc">
+			<Filter>Source\VIVEPluginProject\Resources\Windows</Filter>
+		</ResourceCompile >
+	</ItemGroup>
+</Project>

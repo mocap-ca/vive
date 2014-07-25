@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugGame_RocketGame|x64">
+      <Configuration>DebugGame_RocketGame</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugGame_RocketGame|Win32">
+      <Configuration>DebugGame_RocketGame</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugGame_Editor|x64">
+      <Configuration>DebugGame_Editor</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugGame_Editor|Win32">
+      <Configuration>DebugGame_Editor</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Development_RocketGame|x64">
+      <Configuration>Development_RocketGame</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Development_RocketGame|Win32">
+      <Configuration>Development_RocketGame</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Development_Editor|x64">
+      <Configuration>Development_Editor</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Development_Editor|Win32">
+      <Configuration>Development_Editor</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping_RocketGame|x64">
+      <Configuration>Shipping_RocketGame</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Shipping_RocketGame|Win32">
+      <Configuration>Shipping_RocketGame</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\VIVEPluginProject.uproject" />
+    <None Include="..\..\Source\VIVEPluginProject.Target.cs" />
+    <None Include="..\..\Source\VIVEPluginProjectEditor.Target.cs" />
+    <None Include="..\..\Config\DefaultEngine.ini" />
+    <None Include="..\..\Config\DefaultGame.ini" />
+    <None Include="..\..\Plugins\VIVEPlugin\Source\VIVEPlugin\VIVEPlugin.Build.cs" />
+    <ClCompile Include="..\..\Plugins\VIVEPlugin\Source\VIVEPlugin\Private\MocapSocket.cpp" />
+    <ClInclude Include="..\..\Plugins\VIVEPlugin\Source\VIVEPlugin\Private\MocapSocket.h" />
+    <ClCompile Include="..\..\Plugins\VIVEPlugin\Source\VIVEPlugin\Private\VIVEConnection.cpp" />
+    <ClInclude Include="..\..\Plugins\VIVEPlugin\Source\VIVEPlugin\Private\VIVEConnection.h" />
+    <ClCompile Include="..\..\Plugins\VIVEPlugin\Source\VIVEPlugin\Private\VIVEPlugin.cpp" />
+    <ClInclude Include="..\..\Plugins\VIVEPlugin\Source\VIVEPlugin\Private\VIVEPlugin.h" />
+    <ClInclude Include="..\..\Plugins\VIVEPlugin\Source\VIVEPlugin\Private\VIVEPluginPrivatePCH.h" />
+    <None Include="..\..\Plugins\VIVEPlugin\VIVEPlugin.uplugin" />
+    <None Include="..\..\Plugins\VIVEPlugin\Resources\Icon128.png" />
+    <None Include="..\..\Plugins\VIVEPlugin\Resources\Thumbs.db" />
+    <None Include="..\..\Source\VIVEPluginProject\VIVEPluginProject.Build.cs" />
+    <ClCompile Include="..\..\Source\VIVEPluginProject\VIVEPluginProject.cpp" />
+    <ClInclude Include="..\..\Source\VIVEPluginProject\VIVEPluginProject.h" />
+    <ClCompile Include="..\..\Source\VIVEPluginProject\VIVEPluginProjectGameMode.cpp" />
+    <ClInclude Include="..\..\Source\VIVEPluginProject\VIVEPluginProjectGameMode.h" />
+    <ClCompile Include="..\..\Source\VIVEPluginProject\VIVEPluginProjectPlayerController.cpp" />
+    <ClInclude Include="..\..\Source\VIVEPluginProject\VIVEPluginProjectPlayerController.h" />
+    <None Include="..\..\Source\VIVEPluginProject\Resources\Windows\VIVEPluginProject.ico" />
+    <ResourceCompile Include="..\..\Source\VIVEPluginProject\Resources\Windows\VIVEPluginProject.rc" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{E5E38693-6728-4934-B7E2-F2CD6561F16D}</ProjectGuid>
+    <Keyword>MakeFileProj</Keyword>
+    <RootNamespace>VIVEPluginProject</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugGame_RocketGame|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugGame_Editor|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development_RocketGame|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development_Editor|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_RocketGame|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <PropertyGroup Label="UserMacros" />
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugGame_RocketGame|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugGame_RocketGame|x64'">
+    <IncludePath />
+    <ReferencePath />
+    <LibraryPath />
+    <LibraryWPath />
+    <SourcePath />
+    <ExcludePath />
+    <OutDir>$(ProjectDir)..\Build\Unused\</OutDir>
+    <IntDir>$(ProjectDir)..\Build\Unused\</IntDir>
+    <NMakeBuildCommandLine>"C:\Program Files\Unreal Engine\4.2\Engine\Build\BatchFiles\Build.bat" VIVEPluginProject Win64 DebugGame "$(SolutionDir)$(SolutionName).uproject" -rocket</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>"C:\Program Files\Unreal Engine\4.2\Engine\Build\BatchFiles\Rebuild.bat" VIVEPluginProject Win64 DebugGame "$(SolutionDir)$(SolutionName).uproject" -rocket</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>"C:\Program Files\Unreal Engine\4.2\Engine\Build\BatchFiles\Clean.bat" VIVEPluginProject Win64 DebugGame "$(SolutionDir)$(SolutionName).uproject" -rocket</NMakeCleanCommandLine>
+    <NMakeOutput>..\..\Binaries\Win64\VIVEPluginProject-Win64-DebugGame.exe</NMakeOutput>
+  </PropertyGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugGame_Editor|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugGame_Editor|x64'">
+    <IncludePath />
+    <ReferencePath />
+    <LibraryPath />
+    <LibraryWPath />
+    <SourcePath />
+    <ExcludePath />
+    <OutDir>$(ProjectDir)..\Build\Unused\</OutDir>
+    <IntDir>$(ProjectDir)..\Build\Unused\</IntDir>
+    <NMakeBuildCommandLine>"C:\Program Files\Unreal Engine\4.2\Engine\Build\BatchFiles\Build.bat" VIVEPluginProjectEditor Win64 DebugGame "$(SolutionDir)$(SolutionName).uproject" -rocket</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>"C:\Program Files\Unreal Engine\4.2\Engine\Build\BatchFiles\Rebuild.bat" VIVEPluginProjectEditor Win64 DebugGame "$(SolutionDir)$(SolutionName).uproject" -rocket</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>"C:\Program Files\Unreal Engine\4.2\Engine\Build\BatchFiles\Clean.bat" VIVEPluginProjectEditor Win64 DebugGame "$(SolutionDir)$(SolutionName).uproject" -rocket</NMakeCleanCommandLine>
+    <NMakeOutput>C:\Program Files\Unreal Engine\4.2\Engine\Binaries\Win64\UE4Editor.exe</NMakeOutput>
+  </PropertyGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Development_RocketGame|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development_RocketGame|x64'">
+    <IncludePath />
+    <ReferencePath />
+    <LibraryPath />
+    <LibraryWPath />
+    <SourcePath />
+    <ExcludePath />
+    <OutDir>$(ProjectDir)..\Build\Unused\</OutDir>
+    <IntDir>$(ProjectDir)..\Build\Unused\</IntDir>
+    <NMakeBuildCommandLine>"C:\Program Files\Unreal Engine\4.2\Engine\Build\BatchFiles\Build.bat" VIVEPluginProject Win64 Development "$(SolutionDir)$(SolutionName).uproject" -rocket</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>"C:\Program Files\Unreal Engine\4.2\Engine\Build\BatchFiles\Rebuild.bat" VIVEPluginProject Win64 Development "$(SolutionDir)$(SolutionName).uproject" -rocket</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>"C:\Program Files\Unreal Engine\4.2\Engine\Build\BatchFiles\Clean.bat" VIVEPluginProject Win64 Development "$(SolutionDir)$(SolutionName).uproject" -rocket</NMakeCleanCommandLine>
+    <NMakeOutput>..\..\Binaries\Win64\VIVEPluginProject.exe</NMakeOutput>
+  </PropertyGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Development_Editor|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development_Editor|x64'">
+    <IncludePath />
+    <ReferencePath />
+    <LibraryPath />
+    <LibraryWPath />
+    <SourcePath />
+    <ExcludePath />
+    <OutDir>$(ProjectDir)..\Build\Unused\</OutDir>
+    <IntDir>$(ProjectDir)..\Build\Unused\</IntDir>
+    <NMakeBuildCommandLine>"C:\Program Files\Unreal Engine\4.2\Engine\Build\BatchFiles\Build.bat" VIVEPluginProjectEditor Win64 Development "$(SolutionDir)$(SolutionName).uproject" -rocket</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>"C:\Program Files\Unreal Engine\4.2\Engine\Build\BatchFiles\Rebuild.bat" VIVEPluginProjectEditor Win64 Development "$(SolutionDir)$(SolutionName).uproject" -rocket</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>"C:\Program Files\Unreal Engine\4.2\Engine\Build\BatchFiles\Clean.bat" VIVEPluginProjectEditor Win64 Development "$(SolutionDir)$(SolutionName).uproject" -rocket</NMakeCleanCommandLine>
+    <NMakeOutput>C:\Program Files\Unreal Engine\4.2\Engine\Binaries\Win64\UE4Editor.exe</NMakeOutput>
+  </PropertyGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_RocketGame|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping_RocketGame|Win32'">
+    <IncludePath />
+    <ReferencePath />
+    <LibraryPath />
+    <LibraryWPath />
+    <SourcePath />
+    <ExcludePath />
+    <OutDir>$(ProjectDir)..\Build\Unused\</OutDir>
+    <IntDir>$(ProjectDir)..\Build\Unused\</IntDir>
+    <NMakeBuildCommandLine>"C:\Program Files\Unreal Engine\4.2\Engine\Build\BatchFiles\Build.bat" VIVEPluginProject Win32 Shipping "$(SolutionDir)$(SolutionName).uproject" -rocket</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>"C:\Program Files\Unreal Engine\4.2\Engine\Build\BatchFiles\Rebuild.bat" VIVEPluginProject Win32 Shipping "$(SolutionDir)$(SolutionName).uproject" -rocket</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>"C:\Program Files\Unreal Engine\4.2\Engine\Build\BatchFiles\Clean.bat" VIVEPluginProject Win32 Shipping "$(SolutionDir)$(SolutionName).uproject" -rocket</NMakeCleanCommandLine>
+    <NMakeOutput>..\..\Binaries\Win32\VIVEPluginProject-Win32-Shipping.exe</NMakeOutput>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions);UE_GAME=1;IS_PROGRAM=0;UE_ROCKET=1;UNICODE;_UNICODE;__UNREAL__;IS_MONOLITHIC=1;WITH_ENGINE=1;WITH_UNREAL_DEVELOPER_TOOLS=1;WITH_COREUOBJECT=1;USE_STATS_WITHOUT_ENGINE=0;WITH_PLUGIN_SUPPORT=0;USE_LOGGING_IN_SHIPPING=0;UE_BUILD_MINIMAL=1;WITH_EDITOR=1;WITH_EDITORONLY_DATA=0;WITH_SERVER_CODE=1;UBT_COMPILED_PLATFORM=Win64;WIN32=1;_WIN32_WINNT=0x0600;WINVER=0x0600;PLATFORM_WINDOWS=1;NDEBUG=1;UE_BUILD_DEVELOPMENT=1;UE_ENGINE_DIRECTORY=../../../../../../../Program Files/Unreal Engine/4.2/Engine/;ORIGINAL_FILE_NAME="VIVEPluginProject.exe";VIVEPLUGINPROJECT_API=;UE_ENABLE_ICU=1;WITH_STEAMWORKS=0;WITH_DIRECTXMATH=0;CORE_API=;COREUOBJECT_API=;WITH_PHYSX=1;WITH_APEX=1;WITH_RECAST=1;WITH_SPEEDTREE=0;ENGINE_API=;SLATE_API=;INPUTCORE_API=;SLATECORE_API=;MESSAGING_API=;RENDERCORE_API=;RHI_API=;SHADERCORE_API=;ASSETREGISTRY_API=;ENGINEMESSAGES_API=;ENGINESETTINGS_API=;SYNTHBENCHMARK_API=;RENDERER_API=;UE_EDITOR=1;VIVEPLUGIN_API=;USE_NETWORK_PROFILER=1;WITH_SIMPLYGON=0;UNREALED_API=;BSPMODE_API=;DOCUMENTATION_API=;PROJECTS_API=;SANDBOXFILE_API=;EDITORSTYLE_API=;SOURCECONTROL_API=;UNREALEDMESSAGES_API=;BLUEPRINTGRAPH_API=;XAUDIO2_API=;USERFEEDBACK_API=;COLLECTIONMANAGER_API=;NETWORKING_API=;SOCKETS_PACKAGE=1;SOCKETS_API=</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>$(NMakeIncludeSearchPath);C:\Program Files\Unreal Engine\4.2\Engine\Source;..\..\Source;..\Build\Win64\VIVEPluginProject\Inc\VIVEPluginProject;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public\Internationalization;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public\Async;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public\Concurrency;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public\Containers;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public\Delegates;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public\GenericPlatform;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public\HAL;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public\Math;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public\Misc;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public\Modules;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public\Modules\Boilerplate;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public\ProfilingDebugging;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public\Serialization;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public\Serialization\Json;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public\Stats;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public\Templates;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public\UObject;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Core\Public\Windows;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\CoreUObject\Classes;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\CoreUObject;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\CoreUObject\Public;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\CoreUObject\Public\Blueprint;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\CoreUObject\Public\Misc;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\CoreUObject\Public\Serialization;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\CoreUObject\Public\Templates;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\CoreUObject\Public\UObject;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Engine\Classes;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\Engine;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Engine\Public;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Engine\Public\AI;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Engine\Public\Landscape;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Engine\Public\Net;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Engine\Public\Slate;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Engine\Public\Tests;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\Slate;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Framework;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Widgets;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Framework\Application;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Framework\Commands;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Framework\Docking;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Framework\Layout;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Framework\MultiBox;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Framework\Notifications;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Framework\Styling;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Framework\Text;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Framework\Views;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Widgets\Colors;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Widgets\Docking;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Widgets\Images;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Widgets\Input;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Widgets\Layout;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Widgets\Navigation;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Widgets\Notifications;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Widgets\Testing;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Widgets\Text;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Widgets\Tutorials;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Slate\Public\Widgets\Views;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\InputCore\Classes;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\InputCore;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\InputCore\Public;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\SlateCore;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\SlateCore\Public;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\SlateCore\Public\Animation;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\SlateCore\Public\Application;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\SlateCore\Public\Brushes;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\SlateCore\Public\Fonts;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\SlateCore\Public\Input;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\SlateCore\Public\Layout;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\SlateCore\Public\Logging;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\SlateCore\Public\Rendering;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\SlateCore\Public\Sound;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\SlateCore\Public\Styling;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\SlateCore\Public\Textures;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\SlateCore\Public\Types;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\SlateCore\Public\Widgets;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\Messaging;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Messaging\Public;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Messaging\Public\Common;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Messaging\Public\Interfaces;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\RenderCore;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\RenderCore\Public;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\RHI;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\RHI\Public;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\ShaderCore;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\ShaderCore\Public;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\AssetRegistry;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\AssetRegistry\Public;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\EngineMessages\Classes;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\EngineMessages;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\EngineMessages\Public;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\EngineSettings\Classes;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\EngineSettings;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\EngineSettings\Public;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\SynthBenchmark;C:\Program Files\Unreal Engine\4.2\Engine\Source\Developer\SynthBenchmark\Public;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\Renderer;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Renderer\Public;..\..\Plugins\VIVEPlugin\Source;..\..\Plugins\VIVEPlugin\Source\VIVEPlugin\Private;C:\Program Files\Unreal Engine\4.2\Engine\Source\VIVEPlugin\Public;..\..\Plugins\VIVEPlugin\Intermediate\Build\Win64\Inc\VIVEPlugin;C:\Program Files\Unreal Engine\4.2\Engine\Source\Programs\UnrealLightmass\Public;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\UnrealEd\Classes;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\UnrealEd;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\UnrealEd\Public;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\UnrealEd\Public\Commandlets;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\UnrealEd\Public\Dialogs;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\UnrealEd\Public\DragAndDrop;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\UnrealEd\Public\Features;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\UnrealEd\Public\Kismet2;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\UnrealEd\Public\Layers;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\UnrealEd\Public\Toolkits;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\BspMode;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\BspMode\Public;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\Documentation;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\Documentation\Public;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\Projects;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Projects\Public;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Projects\Public\Interfaces;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\SandboxFile;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\SandboxFile\Public;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\EditorStyle;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\EditorStyle\Public;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\EditorStyle\Public\Classes;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\EditorStyle\Public\Interfaces;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\SourceControl;C:\Program Files\Unreal Engine\4.2\Engine\Source\Developer\SourceControl\Public;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\UnrealEdMessages\Classes;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\UnrealEdMessages;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\UnrealEdMessages\Public;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\BlueprintGraph\Classes;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\BlueprintGraph;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\BlueprintGraph\Public;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\XAudio2;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Windows\XAudio2\Public;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\UserFeedback;C:\Program Files\Unreal Engine\4.2\Engine\Source\Editor\UserFeedback\Public;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\CollectionManager;C:\Program Files\Unreal Engine\4.2\Engine\Source\Developer\CollectionManager\Public;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\Networking;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Networking\Public;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Networking\Public\Common;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Networking\Public\Interfaces;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Networking\Public\Interfaces\IPv4;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Networking\Public\Interfaces\Steam;C:\Program Files\Unreal Engine\4.2\Engine\Intermediate\Build\Win64\Inc\Sockets;C:\Program Files\Unreal Engine\4.2\Engine\Source\Runtime\Sockets\Public;..\Build\Win64\Inc\VIVEPluginProject;C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\INCLUDE;C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\ATLMFC\INCLUDE;C:\Program Files (x86)\Windows Kits\8.1\include\shared;C:\Program Files (x86)\Windows Kits\8.1\include\um;C:\Program Files (x86)\Windows Kits\8.1\include\winrt;;</NMakeIncludeSearchPath>
+    <NMakeForcedIncludes>$(NMakeForcedIncludes)</NMakeForcedIncludes>
+    <NMakeAssemblySearchPath>$(NMakeAssemblySearchPath)</NMakeAssemblySearchPath>
+    <NMakeForcedUsingAssemblies>$(NMakeForcedUsingAssemblies)</NMakeForcedUsingAssemblies>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
