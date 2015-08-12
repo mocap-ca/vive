@@ -28,18 +28,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "mocapSubject.h"
 
 #include "NatNetTypes.h"
-#include "CMNatNetPacketParser.h"
+#include "NatNetClient.h"
 
+#include <QComboBox>
 
 class NaturalPointClient : public BaseClient
 {
     Q_OBJECT
 
 public:
-    NaturalPointClient(QPushButton *button,
+    NaturalPointClient( MocapSubjectList *subjectList,
+                       QPushButton *button,
                        QLineEdit *statusLine,
-                       QLineEdit *hostField,
-                       QLineEdit *portField,
+                       QComboBox *localHostCombo,
+                       QLineEdit *serverHostField,
+                       QLineEdit *commandPort,
+                       QLineEdit *dataPort,
                        QObject *parent = NULL);
 
     bool mocapConnect();
@@ -70,37 +74,25 @@ public:
     virtual bool isConnected();
 
 
-    void incrementPacketCounter();
-
-
-
-    QLineEdit *hostField;
-    QLineEdit *portField;
+    QComboBox *localAddrCombo;
+    QLineEdit *remoteAddrField;
+    QLineEdit *commandPortField;
+    QLineEdit *dataPortField;
 
     QHostAddress connectGroupAddress;
-    QUdpSocket *socket;
 
-    CMNatNetPacketParser mParser;
+    NatNetClient *client;
+    bool mConnected;
 
-    QTimer *timer;
-    int    packetCounter;
-    int    reconnects;
+    void dataCallback( sFrameOfMocapData* );
+    void messageCallback( int, char * );
 
-public slots:
-    void readPendingDatagrams();
-
-    // Socket error
-    void error(QAbstractSocket::SocketError);
-
-    // socket state change
-    void stateChanged(QAbstractSocket::SocketState);
-
-    void channelFinished();
-
-    void packetTick();
 
 private:
     bool          frameError;
 };
+
+void dataCallback(sFrameOfMocapData *, void *  );
+
 
 #endif // NATURALPOINTCLIENT_H

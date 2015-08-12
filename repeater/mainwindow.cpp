@@ -95,20 +95,24 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(viconClient, SIGNAL(updateSubject(SubjectData*)), subjectList, SLOT(update(SubjectData*)));
     clients.append(viconClient);
 #else
-    ui->TabWidgetVive->removeTab(ui->TabWidgetVive->indexOf(ui->ViconTab));
+    ui->tabWidgetClients->removeTab(ui->tabWidgetClients->indexOf(ui->tabVicon));
 #endif
 
 #ifdef NATURALPOINT_CLIENT
     // NaturalPoint Client
-    NaturalPointClient *naturalPointClient = new NaturalPointClient(ui->pushButtonNPConnect,
+    // NaturalPoint Client
+    NaturalPointClient *naturalPointClient = new NaturalPointClient(subjectList,
+                                                                    ui->pushButtonNPConnect,
                                                                     ui->lineEditNPStatus,
-                                                                    ui->lineEditNPHost,
-                                                                    ui->lineEditNPPort,
+                                                                    ui->comboBoxNPLocalAddr,
+                                                                    ui->lineEditNPRemoteAddr,
+                                                                    ui->lineEditNPCommandPort,
+                                                                    ui->lineEditNPDataPort,
                                                                     this);
     connect(naturalPointClient, SIGNAL(updateSubject(SubjectData*)), subjectList, SLOT(update(SubjectData*)));
     clients.append(naturalPointClient);
 #else
-    ui->TabWidgetVive->removeTab(ui->TabWidgetVive->indexOf(ui->NPTab));
+    ui->tabWidgetClients->removeTab(ui->tabWidgetClients->indexOf(ui->NPTab));
 #endif
 
 

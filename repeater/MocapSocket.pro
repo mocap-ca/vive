@@ -14,6 +14,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = MocapSocket
 TEMPLATE = app
 
+win32:LIBS += -lsetupapi -lWs2_32
+
 QMAKE_LFLAGS += -INCREMENTAL:NO
 
 SOURCES += main.cpp\
@@ -59,17 +61,29 @@ FORMS    += mainwindow.ui
 
 CONFIG(vicon) {
     DEFINES += VICON_CLIENT
-    INCLUDEPATH += C:/cpp/api/viconDataStream/Win64/CPP/
-    DEPENDPATH  += C:/cpp/api/viconDataStream/Win64/CPP/
-    LIBS += C:/cpp/api/viconDataStream/Win64/CPP/ViconDataStreamSDK_CPP.lib
+win32:contains(QMAKE_HOST.arch, x86_64) {
+    VICONDIR = C:/cpp/api/viconDataStream/Win64
+} else {
+    VICONDIR = C:/cpp/api/viconDataStream/Win32
+}
+    INCLUDEPATH += $${VICONDIR}/CPP/
+    DEPENDPATH  += $${VICONDIR}/CPP/
+    LIBS += $${VICONDIR}/CPP/ViconDataStreamSDK_CPP.lib
+
     SOURCES += viconClient.cpp
     HEADERS += viconClient.h
-#win32: INCLUDEPATH += C:\cpp\api\viconDataStream\Win32\CPP
-#win64: INCLUDEPATH += C:\cpp\api\viconDataStream\Win64\CPP
 }
 
 CONFIG(naturalpoint) {
+    NATNETDIR = C:\cpp\git\vive\repeater\NatNetSDK2.5
     DEFINES += NATURALPOINT_CLIENT
-    SOURCES += naturalpointClient.cpp CMNatNetPacketParser.cpp
-    HEADERS += naturalpointClient.h NatNetTypes.h CMNatNetPacketParser.h
+    SOURCES += naturalpointClient.cpp
+    HEADERS += naturalpointClient.h NatNetTypes.h
+win32:contains(QMAKE_HOST.arch, x86_64) {
+    LIBS += -L$${NATNETDIR}/lib/x64 -lNatNetLibStatic
+} else {
+    LIBS += -L$${NATNETDIR}/lib -lNatNetLibStatic
+}
+    INCLUDEPATH += $${NATNETDIR}/include
+
 }

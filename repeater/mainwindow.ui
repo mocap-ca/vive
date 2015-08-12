@@ -29,7 +29,7 @@
          <bool>true</bool>
         </property>
         <property name="currentIndex">
-         <number>6</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="tabVive">
          <attribute name="title">
@@ -306,7 +306,7 @@
            <property name="fieldGrowthPolicy">
             <enum>QFormLayout::FieldsStayAtSizeHint</enum>
            </property>
-           <item row="0" column="0">
+           <item row="1" column="0">
             <widget class="QLabel" name="label_7">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -315,15 +315,15 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Host:</string>
+              <string>Remote Addrress</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="lineEditNPHost">
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="lineEditNPRemoteAddr">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -344,7 +344,7 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
+           <item row="2" column="0">
             <widget class="QLabel" name="label_10">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -353,15 +353,15 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Port:</string>
+              <string>Data Port</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="lineEditNPPort">
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="lineEditNPDataPort">
              <property name="minimumSize">
               <size>
                <width>50</width>
@@ -370,7 +370,7 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
+           <item row="4" column="0">
             <spacer name="horizontalSpacer_3">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -383,14 +383,14 @@
              </property>
             </spacer>
            </item>
-           <item row="2" column="1">
+           <item row="4" column="1">
             <widget class="QPushButton" name="pushButtonNPConnect">
              <property name="text">
               <string>Connect</string>
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
+           <item row="5" column="0">
             <widget class="QLabel" name="label_9">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -406,7 +406,7 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
+           <item row="5" column="1">
             <widget class="QLineEdit" name="lineEditNPStatus">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -425,6 +425,26 @@
                <width>16777215</width>
                <height>16777215</height>
               </size>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QComboBox" name="comboBoxNPLocalAddr"/>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_22">
+             <property name="text">
+              <string>Local Address</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="lineEditNPCommandPort"/>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_23">
+             <property name="text">
+              <string>Command Port</string>
              </property>
             </widget>
            </item>
