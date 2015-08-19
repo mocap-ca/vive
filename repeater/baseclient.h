@@ -29,6 +29,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 class BaseConnector : public QThread
 {
+    //! Connector thread to get data from a device
+    /*  Subclasses of this thread will wrap blocking calls to devices and pass the
+     *  data up to the main thread using signals.  See BaseClient::linkConnector()
+     *  for how this links to a client object.
+     */
+
     Q_OBJECT
 
 public:
@@ -38,18 +44,25 @@ public:
     virtual void stop()    = 0;
 
 signals:
-    void connecting();
-    void connected();
-    void disconnecting();
-    void disconnected();
-    void newFrame(uint);
-    void outMessage(QString);
-    void updateSubject(SubjectData *);
+    void conConnecting();
+    void conConnected();
+    void conDisconnecting();
+    void conDisconnected();
+    void conNewFrame();
+    void conOutMessage(QString);
+    void conUpdateSubject(SubjectData *);
 
 };
 
 class BaseClient : public QObject
 {
+    //! A representation of a client, including gui.
+    /*! If the api for the client is blocking, use a connector
+     *  class to handle the connection.  Signals between a
+     *  connector and client class are hooked up using
+     *  BaseClient::linkConnector()
+     */
+
     Q_OBJECT
 public:
 
@@ -84,7 +97,7 @@ public slots:
     void outMessage(QString);
 
     //! signal that a new frame is available and should be pushed out
-    void newFrame(uint i);
+    void emitNewFrame();
 
     //! Subclass should prepare then start the thread/timer
     virtual void mocapStart() = 0;
@@ -114,7 +127,7 @@ public slots:
     //! Called when the button is clicked
     void handleButtonClick();
 
-    //! Called once a second by the main thread
+    //! Called once a second by the main thread to update the statusLine field.
     void tick();
 
     //! Adds one to the fps counter
@@ -130,7 +143,7 @@ signals:
     void stateDisconnecting();
     void stateDisconnected();
     void outMessage_(QString);
-    void updateFrame(ClientId, uint);
+    void updateFrame();
     void updateSubject(SubjectData*);  //!< Update a mocap subject in the model
 };
 

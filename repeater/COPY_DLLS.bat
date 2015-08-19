@@ -1,5 +1,5 @@
-@SET BUILDDIR1=..\build-MocapSocket-Desktop_Qt_5_3_0_MSVC2013_64bit-Release\release\
-@SET BUILDDIR2=..\build-MocapSocket-Desktop_Qt_5_3_0_MSVC2013_64bit-Debug\debug\
+@SET BUILDDIR1=..\releasebuild\release\
+@SET BUILDDIR2=..\debugbuild\debug\
 
 @SET VICONDIR=C:\cpp\api\viconDataStream\Win64\CPP
 

@@ -36,13 +36,13 @@ ViconConnector::ViconConnector(QObject *parent)
 
 void ViconConnector::run()
 {
-    emit connecting();
+    emit conConnecting();
     if(!connect())
     {
-        emit disconnected();
+        emit conDisconnected();
         return;
     }
-    emit connected();
+    emit conConnected();
 
     SubjectData *subject;
 
@@ -57,7 +57,7 @@ void ViconConnector::run()
         if(rf.Result != Result::Success)
         {
             // Only show this error once, otherwise it will fill up the log
-            if(!frameError) outMessage("Error getting frame");
+            if(!frameError) conOutMessage("Error getting frame");
             frameError =true;
             continue;
         }
@@ -119,17 +119,16 @@ void ViconConnector::run()
                 reorientPos(trans.Translation, unityTrans);
                 subject->setMarker(QString(markername.c_str()), unityTrans);
             }
-            emit updateSubject(subject);
+            conUpdateSubject(subject);
         }
 
-        emit newFrame(frameNumber);
-        count++;
+        conNewFrame();
     }
 
-    emit outMessage("Disconnecting from Vicon");
+    emit conOutMessage("Disconnecting from Vicon");
     mClient.Disconnect();
 
-    emit disconnected();
+    emit conDisconnected();
 }
 
 
@@ -174,7 +173,7 @@ void ViconConnector::reorientRot(const double vicon[4],  double unityRot[4])
 
 void ViconConnector::stop()
 {
-    emit disconnecting();
+    emit conDisconnecting();
     running = false;
 }
 
@@ -184,17 +183,17 @@ bool ViconConnector::connect()
     QString connectionString;
     QTextStream stream(&connectionString);
     stream << host << ":" << port;
-    emit outMessage(QString("Connecting to: %1").arg(connectionString));
+    emit conOutMessage(QString("Connecting to: %1").arg(connectionString));
 
     Output_Connect output = mClient.Connect( connectionString.toUtf8().data() );
     if(output.Result != Result::Success)
     {
         switch(output.Result)
         {
-            case Result::InvalidHostName :        emit outMessage("Error: Invalid host name"); break;
-            case Result::ClientAlreadyConnected : emit outMessage("Error: Client Already Connected"); break;
-            case Result::ClientConnectionFailed : emit outMessage("Error: Connection Failed"); break;
-            default: emit outMessage("Error: Could not connect");
+            case Result::InvalidHostName :        emit conOutMessage("Error: Invalid host name"); break;
+            case Result::ClientAlreadyConnected : emit conOutMessage("Error: Client Already Connected"); break;
+            case Result::ClientConnectionFailed : emit conOutMessage("Error: Connection Failed"); break;
+            default: emit conOutMessage("Error: Could not connect");
         }
         return false;
     }
@@ -213,10 +212,10 @@ bool ViconConnector::connect()
     Output_SetAxisMapping axisResult = mClient.SetAxisMapping(Direction::Forward, Direction::Up, Direction::Right);
     if(axisResult.Result != Result::Success)
     {
-        emit outMessage("Could not set Axis");
+        emit conOutMessage("Could not set Axis");
     }
 
-    emit outMessage("Connected to vicon server.");
+    emit conOutMessage("Connected to vicon server.");
 
     return true;
 }

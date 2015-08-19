@@ -38,9 +38,9 @@ TestConnector::TestConnector(QObject *parent)
 void TestConnector::run()
 {
     running = true;
-    emit connecting();
+    emit conConnecting();
     QThread::sleep(2);
-    emit connected();
+    emit conConnected();
     while(running)
     {
         SubjectData *subject1 = new SubjectData(QString("TEST1"), CL_Stub);
@@ -57,21 +57,19 @@ void TestConnector::run()
         tr[2] = 10.0f;
         subject1->setMarker("marker1", tr);
 
-        emit updateSubject(subject1);
+        emit conUpdateSubject(subject1);
 
         SubjectData *subject2 = new SubjectData(QString("Oculus"), CL_Stub);
         subject2->setSegment("Oculus", tr, ro);
-        emit updateSubject(subject2);
+        emit conUpdateSubject(subject2);
 
-        emit newFrame(count);
-
-        count++;
+        emit conNewFrame();
 
         QThread::msleep(1000 / 60);
     }
-    emit disconnecting();
+    emit conDisconnecting();
     QThread::sleep(2);
-    emit disconnected();
+    emit conDisconnected();
 }
 
 bool TestConnector::connect()

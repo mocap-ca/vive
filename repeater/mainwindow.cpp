@@ -217,7 +217,7 @@ void MainWindow::updateServerUI()
 }
 
 // Called whenever a client has changed the SubjectList
-void MainWindow::processFrame(ClientId, uint)
+void MainWindow::processFrame()
 {
     server->process();
     localServer->process();

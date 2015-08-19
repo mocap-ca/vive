@@ -1,41 +1,52 @@
-@SET BUILDVER=08
+@SET BUILDVER=09
 
-@SET BUILD=..\release\release\MocapSocket.exe
+@SET BUILD=..\releasebuild\release\MocapSocket.exe
 @SET OUTDIR=Deployment
-@SET QTDIR=C:\cpp\api\Qt5.3.1\5.3\msvc2010_opengl\bin
-@SET VICONDIR=C:\cpp\api\viconDataStream\Win32\CPP
+@SET QTDIR=C:\cpp\api\Qt5\5.5\msvc2013_64\bin
+@SET VICONDIR=C:\cpp\api\viconDataStream\Win64\CPP
+@SET NPDIR=C:\cpp\api\natnet\lib\x64
 
-@MKDIR %OUTDIR% 
+
+MKDIR %OUTDIR% 
 
 @IF NOT EXIST %OUTDIR%\platforms MKDIR %OUTDIR%\platforms
 
-@IF EXIST %BUILD% ( COPY %BUILD% %OUTDIR%\ViveRepeater_%BUILDVER%.exe ) ELSE ( @ECHO Could not find build: %CD%/%BUILD% )
+@IF NOT EXIST %BUILD% ( 
+   @ECHO Build not found %BUILD%
+   @EXIT /B
+   )
+   
+@IF NOT EXIST %QTDIR% ( 
+   @ECHO QT directory not found: %QTDIR%
+   @EXIT /B
+   )
 
-@IF EXIST %QTDIR% GOTO QtExists
-@ECHO Could not find QT: %QTDIR%
-EXIT /B
-:QtExists
+@IF NOT EXIST %VICONDIR% ( 
+   @ECHO VICON directory not found: %VICONDIR%
+   @EXIT /B
+   )
+   
+@IF NOT EXIST %NPDIR% ( 
+   @ECHO Naturalpoint directory not found: %NPDIR%
+   @EXIT /B
+   )
+  
 
-COPY %QTDIR%\icudt52.dll %OUTDIR%
-COPY %QTDIR%\icuin52.dll %OUTDIR%
-COPY %QTDIR%\icuuc52.dll %OUTDIR%
+COPY %BUILD% %OUTDIR%\ViveRepeater_%BUILDVER%.exe 
+
+COPY %QTDIR%\icudt54.dll %OUTDIR%
+COPY %QTDIR%\icuin54.dll %OUTDIR%
+COPY %QTDIR%\icuuc54.dll %OUTDIR%
 COPY %QTDIR%\Qt5Network.dll %OUTDIR%
 COPY %QTDIR%\Qt5Gui.dll %OUTDIR%
 COPY %QTDIR%\Qt5Core.dll %OUTDIR%
 COPY %QTDIR%\Qt5Widgets.dll %OUTDIR%
-COPY %QTDIR%\libGLESv2.dll %OUTDIR%
-COPY %QTDIR%\libEGL.dll %OUTDIR%
+REM COPY %QTDIR%\libGLESv2.dll %OUTDIR%
+REM COPY %QTDIR%\libEGL.dll %OUTDIR%
 COPY %QTDIR%\..\plugins\platforms\qwindows.dll %OUTDIR%\platforms\qwindows.dll
 
-@REM 	IF NOT DEFINED VICON GOTO SkipVicon
-
-@IF EXIST %VICONDIR% GOTO ViconExists
-@ECHO Could not find Vicon: %VICONDIR%
-:ViconExists
-
 COPY %VICONDIR%\*.dll %OUTDIR%
-
-:SkipVicon
+COPY %NPDIR%\*.dll %OUTDIR%
 
 @ECHO Creating Zip
 

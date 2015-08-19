@@ -25,7 +25,7 @@ BaseClient::BaseClient(ClientId clientId,
     QObject::connect(this,   SIGNAL(stateDisconnecting()),       this,   SLOT(UIDisconnectingState()));
     QObject::connect(this,   SIGNAL(stateDisconnected()),        this,   SLOT(UIDisconnectedState()));
     QObject::connect(this,   SIGNAL(outMessage_(QString)),       parent, SLOT(showMessage(QString)));
-    QObject::connect(this,   SIGNAL(updateFrame(ClientId,uint)), parent, SLOT(processFrame(ClientId, uint)));
+    QObject::connect(this,   SIGNAL(updateFrame()),              parent, SLOT(processFrame()));
 }
 
 void BaseClient::tick()
@@ -51,9 +51,9 @@ void BaseClient::outMessage(QString msg)
     emit outMessage_(QString("%1 - %2").arg(this->ClientStr()).arg(msg));
 }
 
-void BaseClient::newFrame(uint i)
+void BaseClient::emitNewFrame()
 {
-    emit updateFrame(this->id, i);
+    emit updateFrame();
 }
 
 void BaseClient::handleButtonClick()
@@ -91,14 +91,14 @@ void BaseClient::UIDisconnectedState()
 bool BaseClient::linkConnector(BaseConnector *c)
 {
     bool ok = true;
-    ok &= (bool)connect(c, SIGNAL(connecting()),                this, SLOT(UIConnectingState()));
-    ok &= (bool)connect(c, SIGNAL(connected()),                 this, SLOT(UIConnectedState()));
-    ok &= (bool)connect(c, SIGNAL(disconnecting()),             this, SLOT(UIDisconnectingState()));
-    ok &= (bool)connect(c, SIGNAL(disconnected()),              this, SLOT(UIDisconnectedState()));
-    ok &= (bool)connect(c, SIGNAL(outMessage(QString)),         this, SLOT(outMessage(QString)));
-    ok &= (bool)connect(c, SIGNAL(newFrame(uint)),              this, SLOT(newFrame(uint)));
-    ok &= (bool)connect(c, SIGNAL(newFrame(uint)),              this, SLOT(addCount()));
-    ok &= (bool)connect(c, SIGNAL(updateSubject(SubjectData*)), this, SLOT(emitUpdateSubject(SubjectData*)));
+    ok &= (bool)connect(c, SIGNAL(conConnecting()),                this, SLOT(UIConnectingState()));
+    ok &= (bool)connect(c, SIGNAL(conConnected()),                 this, SLOT(UIConnectedState()));
+    ok &= (bool)connect(c, SIGNAL(conDisconnecting()),             this, SLOT(UIDisconnectingState()));
+    ok &= (bool)connect(c, SIGNAL(conDisconnected()),              this, SLOT(UIDisconnectedState()));
+    ok &= (bool)connect(c, SIGNAL(conOutMessage(QString)),         this, SLOT(outMessage(QString)));
+    ok &= (bool)connect(c, SIGNAL(conNewFrame()),                  this, SLOT(emitNewFrame()));
+    ok &= (bool)connect(c, SIGNAL(conNewFrame()),                  this, SLOT(addCount()));
+    ok &= (bool)connect(c, SIGNAL(conUpdateSubject(SubjectData*)), this, SLOT(emitUpdateSubject(SubjectData*)));
     return ok;
 }
 

@@ -69,7 +69,7 @@ public slots:
     void updateConnectionList(void);
     void showMessage(QString);
 	void timerClick(void);
-    void processFrame(ClientId, uint);
+    void processFrame();
     void toggleServer();
     void chooseFile();
 

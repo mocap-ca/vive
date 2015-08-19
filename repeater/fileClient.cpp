@@ -92,7 +92,7 @@ void FileClient::tick()
 
     }
 
-    emit updateFrame(CL_File, count++);
+    emit updateFrame();
 
 }
 

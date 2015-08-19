@@ -66,6 +66,9 @@ public:
 // Inherits from qobject - runs under main thread.
 class ViconClient : public BaseClient
 {
+    //! Holds an instance of a ViconConnector and vicon gui
+    /* Implementation of a Vicon interface.  The 'vicon' member
+     * runs in its own thread and blocks for incoming data.*/
 	Q_OBJECT
 
 public:

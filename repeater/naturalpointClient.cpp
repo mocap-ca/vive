@@ -196,11 +196,10 @@ void NaturalPointClient::dataCallback( sFrameOfMocapData *frameData )
             }
         }
 
-        emit updateSubject(subject);
+        emitUpdateSubject(subject);
     }
 
-    emit newFrame(frameData->iFrame);
-    count++;
+    emitNewFrame();
 }
 
 
