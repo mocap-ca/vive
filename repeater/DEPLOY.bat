@@ -3,15 +3,15 @@
 @SET BUILD=..\releasebuild\release\MocapSocket.exe
 @SET OUTDIR=Deployment
 @SET QTDIR=C:\cpp\api\Qt5\5.5\msvc2013_64\bin
-@SET VICONDIR=C:\cpp\api\viconDataStream\Win64\CPP
-@SET NPDIR=C:\cpp\api\natnet\lib\x64
+@SET VICONDIR=C:\cpp\api\viconDataStream1.5\Win64\CPP
+@SET NPDIR=C:\cpp\api\natnet2.7\lib\x64
 
 
 @IF NOT EXIST %OUTDIR% MKDIR %OUTDIR% 
 
-del %OUTDIR%\*.*
+del /Q %OUTDIR%\*.*
 
-@IF NOT EXIST %OUTDIR%\platforms MKDIR %OUTDIR%\platforms
+@IF NOT EXIST %OUTDIR%\platforms ( MKDIR %OUTDIR%\platforms )
 
 @IF NOT EXIST %BUILD% ( 
    @ECHO Build not found %BUILD%
@@ -49,6 +49,10 @@ COPY %QTDIR%\..\plugins\platforms\qwindows.dll %OUTDIR%\platforms\qwindows.dll
 
 COPY %VICONDIR%\*.dll %OUTDIR%
 COPY %NPDIR%\*.dll %OUTDIR%
+
+IF NOT EXIST %OUTDIR%\testData ( MKDIR %OUTDIR%\testData )
+
+XCOPY /S testData %OUTDIR%\testData
 
 @ECHO Creating Zip
 
