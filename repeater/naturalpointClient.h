@@ -37,7 +37,9 @@ class NaturalPointClient : public BaseClient
     Q_OBJECT
 
 public:
+
     NaturalPointClient( MocapSubjectList *subjectList,
+                       QComboBox *networkCombo,
                        QPushButton *button,
                        QLineEdit *statusLine,
                        QComboBox *localHostCombo,
@@ -74,6 +76,7 @@ public:
     virtual bool isConnected();
 
 
+    QComboBox *networkCombo;
     QComboBox *localAddrCombo;
     QLineEdit *remoteAddrField;
     QLineEdit *commandPortField;
@@ -81,8 +84,7 @@ public:
 
     QHostAddress connectGroupAddress;
 
-    NatNetClient *client;
-    bool mConnected;
+    NatNetClient *client; // !=NULL if connected
 
     void dataCallback( sFrameOfMocapData* );
     void messageCallback( int, char * );

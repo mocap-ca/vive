@@ -102,6 +102,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // NaturalPoint Client
     // NaturalPoint Client
     NaturalPointClient *naturalPointClient = new NaturalPointClient(subjectList,
+                                                                    ui->comboBoxNPNetwork,
                                                                     ui->pushButtonNPConnect,
                                                                     ui->lineEditNPStatus,
                                                                     ui->comboBoxNPLocalAddr,
@@ -111,6 +112,7 @@ MainWindow::MainWindow(QWidget *parent) :
                                                                     this);
     connect(naturalPointClient, SIGNAL(updateSubject(SubjectData*)), subjectList, SLOT(update(SubjectData*)));
     clients.append(naturalPointClient);
+
 #else
     ui->tabWidgetClients->removeTab(ui->tabWidgetClients->indexOf(ui->NPTab));
 #endif

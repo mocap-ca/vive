@@ -31,20 +31,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 //--------------------------------
 
 NaturalPointClient::NaturalPointClient(MocapSubjectList *sList,
+                                       QComboBox   *_networkCombo,
                                        QPushButton *button,
-                                       QLineEdit *statusLine,
-                                       QComboBox *_localAddrCombo,
-                                       QLineEdit *_remoteAddrField,
-                                       QLineEdit *_commandPortField,
-                                       QLineEdit *_dataPortField,
+                                       QLineEdit   *statusLine,
+                                       QComboBox   *_localAddrCombo,
+                                       QLineEdit   *_remoteAddrField,
+                                       QLineEdit   *_commandPortField,
+                                       QLineEdit   *_dataPortField,
                                        QObject *parent)
     : BaseClient(CL_NaturalPoint, button, statusLine, parent)
     , running(false)
+    , networkCombo(_networkCombo)
     , localAddrCombo( _localAddrCombo )
     , remoteAddrField( _remoteAddrField )
     , commandPortField( _commandPortField )
     , dataPortField( _dataPortField  )
-    , mConnected(false)
+    , client(NULL)
 {
     QStringList wordList;
     //wordList << "239.255.42.99";
@@ -69,7 +71,8 @@ NaturalPointClient::NaturalPointClient(MocapSubjectList *sList,
     dataPortField->setText("1511");
     commandPortField->setText("1510");
 
-    client = new NatNetClient();
+    networkCombo->addItem("Multicast");
+    networkCombo->addItem("Unicast");
 
 }
 
@@ -77,7 +80,7 @@ NaturalPointClient::NaturalPointClient(MocapSubjectList *sList,
 
 bool NaturalPointClient::isConnected()
 {
-    return mConnected;
+    return client != NULL;
 }
 
 
@@ -88,6 +91,10 @@ void NaturalPointClient::mocapStart()
     QString   remoteHost  = remoteAddrField->text();
     int       commandPort = commandPortField->text().toInt();
     int       dataPort    = dataPortField->text().toInt();
+
+
+
+    mocapStop();
 
     if(commandPort == 0)
     {
@@ -103,6 +110,16 @@ void NaturalPointClient::mocapStart()
 
     UIConnectingState();
 
+    // 0 = multicast, 1 = unicast (see nat net docs)
+    int type = networkCombo->currentIndex();
+    QString stype;
+    if(type == 0) stype = "Multicast";
+    if(type == 1) stype = "Unicast";
+
+    outMessage(QString("Connecting to NaturalPoint: %1 (%2)").arg(remoteHost).arg(stype));
+
+    client = new NatNetClient(type);
+
     QByteArray slocal = localHost.toUtf8();
     QByteArray sremote = remoteHost.toUtf8();
 
@@ -113,9 +130,7 @@ void NaturalPointClient::mocapStart()
 
     int ret = client->Initialize(local , remote, commandPort, dataPort);
 
-    mConnected = (ret == 0);
-
-    if(mConnected)
+    if(ret == 0)
     {
         client->SetDataCallback( &::dataCallback, (void*)this );
         UIConnectedState();
@@ -125,6 +140,8 @@ void NaturalPointClient::mocapStart()
     {
         UIDisconnectedState();
         outMessage("Could not connect");
+        delete client;
+        client = NULL;
     }
 
     return;
@@ -132,10 +149,14 @@ void NaturalPointClient::mocapStart()
 
 void NaturalPointClient::mocapStop()
 {
-    UIDisconnectingState();
-    outMessage("Disconnecting from NaturalPoint");
-    client->Uninitialize();
-    mConnected = false;
+    if( client != NULL )
+    {
+        UIDisconnectingState();
+        outMessage("Disconnecting from NaturalPoint");
+        client->Uninitialize();
+        delete client;
+        client = NULL;
+    }
     UIDisconnectedState();
 }
 

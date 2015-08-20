@@ -1,4 +1,4 @@
-@SET BUILDVER=09
+@SET BUILDVER=10
 
 @SET BUILD=..\releasebuild\release\MocapSocket.exe
 @SET OUTDIR=Deployment
@@ -7,7 +7,9 @@
 @SET NPDIR=C:\cpp\api\natnet\lib\x64
 
 
-MKDIR %OUTDIR% 
+@IF NOT EXIST %OUTDIR% MKDIR %OUTDIR% 
+
+del %OUTDIR%\*.*
 
 @IF NOT EXIST %OUTDIR%\platforms MKDIR %OUTDIR%\platforms
 

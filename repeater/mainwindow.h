@@ -49,11 +49,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 // 0.7 - Added ability to read and write the data stream
 // 0.7a- Fixed bug in file reader
 // 0.8 - Using NatNetSdk for Motive feed
+// 0.9 - Fixed ClientId signals/slots bug
+// 0.10 - Naturalpoint multicast/unicast option
 
 // TODO: write model for tree view of data (not really a priority right now)
 
 
-#define VIVE_VERSION "0.8"
+#define VIVE_VERSION "0.10"
 
 
 namespace Ui {
