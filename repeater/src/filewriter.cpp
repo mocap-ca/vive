@@ -1,5 +1,7 @@
 #include "filewriter.h"
-#include <QTextStream>
+#include <QDataStream>
+#include <QByteArray>
+
 
 FileWriter::FileWriter(MocapSubjectList* slist,
                        QPushButton* pb,
@@ -48,11 +50,22 @@ void FileWriter::writeFrame()
 {
     if( file == NULL) return;
 
-    QString buffer;
-    QTextStream ts(&buffer);
+    QByteArray buffer;
+    QDataStream stream(&buffer, QIODevice::WriteOnly);
 
-    subjectList->read(ts, true);
+    subjectList->data.formatHeader(stream, true);
+    file->write(buffer);
 
-    file->write(buffer.toUtf8());
-    file->write("--END--\n");
+    IDList* ids = IDList::Instance();
+
+    int16_t len = ids->items.length();
+    stream <= len;
+
+
+    for( IDListType::iterator i = ids->items.begin(); i!= ids->items.end(); i++)
+    {
+        (*i).second->frame(stream);
+    }
+    file->write(buffer);
+
 }

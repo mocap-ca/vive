@@ -19,15 +19,16 @@ win32:LIBS += -lsetupapi -lWs2_32
 
 QMAKE_LFLAGS += -INCREMENTAL:NO
 
-SOURCES += src/main.cpp\
-    src/mainwindow.cpp \
-    src/server.cpp \
+SOURCES += ../src/mocapData.cpp \
+    src/main.cpp         \
+    src/mainwindow.cpp   \
+    src/server.cpp       \
     src/mocapSubject.cpp \
-    src/testClient.cpp \
-    src/profilesx.cpp \
-    src/baseclient.cpp \
-    src/mocapModel.cpp \
-    src/vivec3d.cpp \
+    src/testClient.cpp   \
+    src/profilesx.cpp    \
+    src/baseclient.cpp   \
+    src/mocapModel.cpp   \
+    src/vivec3d.cpp      \
     ../fileTranslators/asfAmcFile.cpp \
     ../fileTranslators/bvhFile.cpp \
     ../fileTranslators/c3dFile.cpp \
@@ -37,9 +38,10 @@ SOURCES += src/main.cpp\
     src/fileClient.cpp \
     src/filewriter.cpp
 
-INCLUDEPATH += src/ ../fileTranslators
+INCLUDEPATH += src/ ../fileTranslators ../src/
 
-HEADERS  += src/mainwindow.h \
+HEADERS  += ../src/mocapData.h \
+    src/mainwindow.h \
     src/server.h \
     src/mocapSubject.h \
     src/testClient.h \
@@ -77,7 +79,7 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
 
     INCLUDEPATH += $${VICONDIR}
     DEPENDPATH  += $${VICONDIR}
-    LIBS += $${VICONDIR}    /ViconDataStreamSDK_CPP.lib
+    LIBS += $${VICONDIR}/ViconDataStreamSDK_CPP.lib
 
     SOURCES += src/viconClient.cpp
     HEADERS += src/viconClient.h

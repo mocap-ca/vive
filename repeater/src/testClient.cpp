@@ -43,24 +43,24 @@ void TestConnector::run()
     emit conConnected();
     while(running)
     {
-        SubjectData *subject1 = new SubjectData(QString("TEST1"), CL_Stub);
+        MocapSubject *subject1 = new MocapSubject(QString("TEST1"), (int)CL_Stub, true);
 
         val += 0.1f;
         if(val >= 10.0f) val = 0.0f;
 
-        double tr[3] = { mousex, val, mousey };
-        double ro[4] = { 0, 0, 0, 0 };
+        float tr[3] = { mousex, val, mousey };
+        float ro[4] = { 0, 0, 0, 0 };
         //tr[1] = (double)qrand() / (double)RAND_MAX;
-        subject1->setSegment("root", tr, ro);
+        subject1->data.items.append( new MocapSegment("root", tr, ro));
 
         tr[0] = 10.0f;
         tr[2] = 10.0f;
-        subject1->setMarker("marker1", tr);
+        subject1->data.items.append( new MocapMarker("marker1", tr));
 
         emit conUpdateSubject(subject1);
 
-        SubjectData *subject2 = new SubjectData(QString("Oculus"), CL_Stub);
-        subject2->setSegment("Oculus", tr, ro);
+        MocapSubject *subject2 = new MocapSubject(QString("Oculus"), CL_Stub, true);
+        subject2->data.items.append( new MocapSegment( "Oculus", tr, ro));
         emit conUpdateSubject(subject2);
 
         emit conNewFrame();

@@ -174,7 +174,7 @@ void dataCallback( sFrameOfMocapData* data, void *ptr  )
 void NaturalPointClient::dataCallback( sFrameOfMocapData *frameData )
 {
 
-    SubjectData *subject;
+    MocapSubject *subject;
 
     if( frameData == NULL )
     {
@@ -199,21 +199,21 @@ void NaturalPointClient::dataCallback( sFrameOfMocapData *frameData )
 
         // Find/Create the subject by name.
         char* subjectName = markerSet->szName;
-        subject = new SubjectData(QString(subjectName), CL_NaturalPoint);
+        subject = new MocapSubject(QString(subjectName), CL_NaturalPoint, true);
 
         // Load the subject's translation and rotation quaternion.
-        double t[3] = { rb->x ,  rb->y,  -rb->z };
-        double r[4] = {-rb->qx, -rb->qy, rb->qz, rb->qw};
-        subject->setSegment(QString("root"), t, r);
+        float t[3] = { rb->x ,  rb->y,  -rb->z };
+        float r[4] = {-rb->qx, -rb->qy, rb->qz, rb->qw};
+        subject->data.items.append( new MocapSegment( QString("root"), t, r));
 
         for(int iMarker=0; iMarker < rb->nMarkers; iMarker++)
         {
             MarkerData *m = &rb->Markers[iMarker];
-            double markerPos[3] = {*m[0], *m[1], *m[2]};
+            float markerPos[3] = {*m[0], *m[1], *m[2]};
             if( rb->MarkerIDs ) {
-                subject->setMarker(QString::number(rb->MarkerIDs[iMarker]), markerPos);
+                subject->data.items.append( new MocapMarker( QString::number(rb->MarkerIDs[iMarker]), markerPos));
             } else {
-                subject->setMarker(QString::number(iMarker), markerPos);
+                subject->data.items.append( new MocapMarker( QString::number(iMarker), markerPos));
             }
         }
 

@@ -21,80 +21,46 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define MOCAP_SUBJECT
 
 #include <QTextStream>
+#include <QDataStream>
 
 #include <QObject>
 #include <QList>
 #include <QMutex>
 #include <QStandardItemModel>
 #include <QStandardItem>
+#include <QTextStream>
+#include <QString>
 #include "defines.h"
+
+#define ISTREAM QTextStream
+#define OSTREAM QTextStream
+#define STRING  QString
+#define LIST    QList
+#define FLOAT   float
+
+#include "mocapData.h"
 
 class MocapSegmentList;
 class MocapSubjectList;
 
-// A Segment has name, translation and rotation
-class MocapSegment
-{
-public:
-    MocapSegment(const QString name, const double tr[3], const double rot[4]);
-    QString name;
-	double translation[3];
-    double localRotation[4];
-    friend QTextStream& operator << (  QTextStream&, MocapSegment& );
-};
-
-inline bool operator == (const MocapSegment &a, const MocapSegment &b)
-{
-    return a.name == b.name;
-}
-
-
-class MocapMarker
-{
-public:
-    MocapMarker(const QString name, const double tr[3]);
-    QString name;
-    double translation[3];
-    friend QTextStream& operator << ( QTextStream&, MocapMarker& );
-};
-
-inline bool operator == (const MocapMarker &a, const MocapMarker &b)
-{
-    return a.name == b.name;
-}
-
-
-class SubjectData
-{
-public:
-    SubjectData(const SubjectData &);
-    SubjectData(QString name, ClientId id);
-    QList<MocapSegment> segments;
-    QList<MocapMarker>  markers;
-    QString             name;
-    ClientId            client;
-
-    void update(SubjectData &other);
-    void setSegment(QString name, double trans[3], double rot[4]);
-    void setMarker(QString name, double trans[3]);
-};
-
+/*
 
 // A mocap subject - has a name and a segment list
 class MocapSubject : public QObject
 {
 	Q_OBJECT
 public:
-    MocapSubject(const SubjectData&, QObject *parent = NULL, QMutex *mutex = NULL, bool local = true);
+    MocapSubject(const SubjectData &, QObject *parent = NULL, QMutex *mutex = NULL);
+    MocapSubject(QString name, int clientId, bool isLocal, QObject *parent=NULL, QMutex *mutex=NULL);
 
-    friend QTextStream& operator << ( QTextStream&, MocapSubject& );
-
+    bool operator==(const MocapSubject &);
     bool operator==(const SubjectData &);
 
     SubjectData         data;
     QMutex*             mutex;
-    bool                isLocal;
 };
+
+*/
 
 // A list of mocap subjects
 class MocapSubjectList : public QObject
@@ -103,19 +69,16 @@ class MocapSubjectList : public QObject
 public:
 	MocapSubjectList(QObject *parent = NULL);
 
-    //! Finds the subject, or returns null;
-    MocapSubject* find(QString name, ClientId id);
-
-    //! Serializes the data as a text stream
-    void read(QTextStream &stream, bool localOnly);
-
 	QMutex subjectMutex;
 
-	QList<MocapSubject*> items;
+//    MocapCollection data;
 
- public slots:
+//    MocapSubject* find(QString name, int id);
+
+
+ //public slots:
     //! Updates an existing subject
-    void update(SubjectData *);
+  //  void update(const MocapSubject *);
 };
 
 

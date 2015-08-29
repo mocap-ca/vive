@@ -57,8 +57,8 @@ public:
     eStreamMode   streamMode;
 
     bool  yUp;
-    void reorientPos(const double vicon[3],  double unityTrans[3]);
-    void reorientRot(const double vicon[4],  double unityRot[4]);
+    void reorientPos(const double vicon[3],  float unityTrans[3]);
+    void reorientRot(const double vicon[4],  float unityRot[4]);
 
 };
 

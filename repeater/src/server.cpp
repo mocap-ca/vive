@@ -199,13 +199,22 @@ void MyServer::process()
     if(alive > 0)
     {
         count++;
-        QString buffer;
-        QTextStream stream(&buffer);
+        QByteArray buffer;
+        QDataStream stream(&buffer, QIODevice::WriteOnly);
         // The following operation is threadsafe.
 
-        subjectList->read(stream, true);
+        subjectList->data.formatHeader(stream, true);
 
-        listMutex.lock();
+        IDList* ids = IDList::Instance();
+
+        int16_t len = ids->items.length();
+        stream <= len;
+
+        for( IDListType::iterator i = ids->items.begin(); i!= ids->items.end(); i++)
+        {
+            (*i).second->frame(stream);
+        }
+
 
         // for each connection
         for(QList<ServerConnection *>::iterator i =  connections.begin(); i != connections.end(); i++)
@@ -213,18 +222,16 @@ void MyServer::process()
             // Skip disconnected
             if(!(*i)->connected()) continue;
 
-            // Write the data and a footer
-            QByteArray byteString(QString("%1\nEND\r\n").arg(buffer).toUtf8());
-            int written = (*i)->write(byteString);
-
+            int written = (*i)->write(buffer);
             if(written == -1)
             {
-                emit outMessage(QString(" Error writing to %1").arg((*i)->str()));
+                emit outMessage(QString(" Error writing header to %1").arg((*i)->str()));
             }
             else
             {
                 (*i)->flush();
             }
+
 
 #if 0
             // this code will be for reciving data from another repeater

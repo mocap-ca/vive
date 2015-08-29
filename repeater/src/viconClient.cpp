@@ -44,7 +44,7 @@ void ViconConnector::run()
     }
     emit conConnected();
 
-    SubjectData *subject;
+    MocapSubject *subject;
 
     running = true;
 
@@ -83,7 +83,8 @@ void ViconConnector::run()
 
             std::string subjectName = rsn.SubjectName;
 
-            subject = new SubjectData(subjectName.c_str(), CL_Vicon);
+            subject = new MocapSubject(subjectName.c_str(), CL_Vicon, true);
+
 
             Output_GetSubjectRootSegmentName srs = mClient.GetSubjectRootSegmentName(subjectName);
             if(srs.Result != Result::Success) continue;
@@ -100,13 +101,14 @@ void ViconConnector::run()
                 // Convert to unity coordinate system
                 // TODO: convert to opengl instead
 
-                double unityTrans[3];
-                double unityRot[4];
+
+                float unityTrans[3];
+                float unityRot[4];
                 reorientPos(trans.Translation, unityTrans);
                 reorientRot(localRot.Rotation, unityRot);
 
                 std::string segname = sn.SegmentName;
-                subject->setSegment(QString(segname.c_str()) ,unityTrans, unityRot);
+                subject->data.items.append( new MocapSegment( QString(segname.c_str()) ,unityTrans, unityRot));
             }
 
             Output_GetMarkerCount mc = mClient.GetMarkerCount(subjectName);
@@ -114,10 +116,10 @@ void ViconConnector::run()
             {
                 Output_GetMarkerName mn = mClient.GetMarkerName(subjectName, i);
                 Output_GetMarkerGlobalTranslation trans = mClient.GetMarkerGlobalTranslation(subjectName, mn.MarkerName);
-                std::string markername = mn.MarkerName;
-                double unityTrans[3];
+                std::string markerName = mn.MarkerName;
+                float unityTrans[3];
                 reorientPos(trans.Translation, unityTrans);
-                subject->setMarker(QString(markername.c_str()), unityTrans);
+                subject->data.items.append( new MocapMarker( QString(markerName.c_str()), unityTrans ));
             }
             conUpdateSubject(subject);
         }
@@ -132,7 +134,7 @@ void ViconConnector::run()
 }
 
 
-void ViconConnector::reorientPos(const double vicon[3],  double unityTrans[3])
+void ViconConnector::reorientPos(const double vicon[3],  float unityTrans[3])
 {
     if(yUp)
     {
@@ -150,7 +152,7 @@ void ViconConnector::reorientPos(const double vicon[3],  double unityTrans[3])
     }
 }
 
-void ViconConnector::reorientRot(const double vicon[4],  double unityRot[4])
+void ViconConnector::reorientRot(const double vicon[4],  float unityRot[4])
 {
     if(yUp)
     {

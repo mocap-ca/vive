@@ -52,12 +52,12 @@ void MocapModel::update()
     //QList<MocapSubject*> deleteList = subjectItems.keys();
 
     // For each Subject
-    for(QList<MocapSubject*>::iterator i = subjects->items.begin(); i != subjects->items.end(); i++)
-    {
-        MocapSubject *subject = *i;
+    //for(QList<MocapSubject*>::iterator i = subjects->items.begin(); i != subjects->items.end(); i++)
+    //{
+    //    MocapSubject *subject = *i;
 
         //deleteList.removeAll(subject);
-        QStandardItem *subjectNode = NULL;
+    //    QStandardItem *subjectNode = NULL;
         //it = subjectItems.find(subject);
         /*if(it != subjectItems.end())
         {
@@ -72,7 +72,7 @@ void MocapModel::update()
             //subjectItems.appendRow(items);
             model->appendRow(subjectItems);
         }*/
-    }
+   // }
 
     /*
     for(QList<MocapSubject *>::iterator j = deleteList.begin();

@@ -92,7 +92,7 @@ MainWindow::MainWindow(QWidget *parent) :
                                                ui->lineEditViconPort,
                                                ui->checkBoxViconYUp,
                                                this);
-    connect(viconClient, SIGNAL(updateSubject(SubjectData*)), subjectList, SLOT(update(SubjectData*)));
+    connect(viconClient, SIGNAL(updateSubject(MocapSubject*)), subjectList, SLOT(update(MocapSubject*)));
     clients.append(viconClient);
 #else
     ui->tabWidgetClients->removeTab(ui->tabWidgetClients->indexOf(ui->tabVicon));
@@ -110,7 +110,7 @@ MainWindow::MainWindow(QWidget *parent) :
                                                                     ui->lineEditNPCommandPort,
                                                                     ui->lineEditNPDataPort,
                                                                     this);
-    connect(naturalPointClient, SIGNAL(updateSubject(SubjectData*)), subjectList, SLOT(update(SubjectData*)));
+    connect(naturalPointClient, SIGNAL(updateSubject(MocapSubject*)), subjectList, SLOT(update(MocapSubject*)));
     clients.append(naturalPointClient);
 
 #else
@@ -121,7 +121,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Stub Client
     TestClient *testClient  = new TestClient(ui->pushButtonStub, ui->lineEditStubStatus, this);
-    connect(testClient, SIGNAL(updateSubject(SubjectData*)), subjectList, SLOT(update(SubjectData*)));
+    connect(testClient, SIGNAL(updateSubject(MocapSubject*)), subjectList, SLOT(update(MocapSubject*)));
     clients.append(testClient);
 
     // Vive Client
@@ -130,12 +130,12 @@ MainWindow::MainWindow(QWidget *parent) :
                                 ui->lineEditViveHost,
                                 ui->lineEditVivePort,
                                 this);
-    connect(viveClient, SIGNAL(updateSubject(SubjectData*)), subjectList, SLOT(update(SubjectData*)));
+    connect(viveClient, SIGNAL(updateSubject(MocapSubject*)), subjectList, SLOT(update(MocapSubject*)));
     clients.append(viveClient);
 
     // File client
     FileClient *fileClient = new FileClient(ui->pushButtonFileRead, ui->lineEditFileStatus, ui->lineEditFilePath, this);
-    connect(fileClient, SIGNAL(updateSubject(SubjectData*)), subjectList, SLOT(update(SubjectData*)));
+    connect(fileClient, SIGNAL(updateSubject(MocapSubject*)), subjectList, SLOT(update(MocapSubject*)));
     connect(fileClient, SIGNAL(isIdle(bool)), ui->pushButtonFileWrite, SLOT(setEnabled(bool)));
     clients.append(fileClient);
 
@@ -271,7 +271,7 @@ void MainWindow::timerClick()
         QString data;
         QTextStream stream(&data);
 
-        subjectList->read(stream, false);
+        subjectList->data.format(stream, false);
         ui->textEditData->setText(data);
     }
 }

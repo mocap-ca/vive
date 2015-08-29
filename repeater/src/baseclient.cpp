@@ -98,11 +98,11 @@ bool BaseClient::linkConnector(BaseConnector *c)
     ok &= (bool)connect(c, SIGNAL(conOutMessage(QString)),         this, SLOT(outMessage(QString)));
     ok &= (bool)connect(c, SIGNAL(conNewFrame()),                  this, SLOT(emitNewFrame()));
     ok &= (bool)connect(c, SIGNAL(conNewFrame()),                  this, SLOT(addCount()));
-    ok &= (bool)connect(c, SIGNAL(conUpdateSubject(SubjectData*)), this, SLOT(emitUpdateSubject(SubjectData*)));
+    ok &= (bool)connect(c, SIGNAL(conUpdateSubject(MocapSubject*)), this, SLOT(emitUpdateSubject(MocapSubject*)));
     return ok;
 }
 
-void BaseClient::emitUpdateSubject(SubjectData *d)
+void BaseClient::emitUpdateSubject(MocapSubject *d)
 {
      emit updateSubject(d);
 }

@@ -50,7 +50,7 @@ signals:
     void conDisconnected();
     void conNewFrame();
     void conOutMessage(QString);
-    void conUpdateSubject(SubjectData *);
+    void conUpdateSubject(MocapSubject *);
 
 };
 
@@ -134,7 +134,7 @@ public slots:
     void addCount();
 
     //! pass on the subect
-    void emitUpdateSubject(SubjectData *d);
+    void emitUpdateSubject(MocapSubject *d);
 
 
 signals:
@@ -144,7 +144,7 @@ signals:
     void stateDisconnected();
     void outMessage_(QString);
     void updateFrame();
-    void updateSubject(SubjectData*);  //!< Update a mocap subject in the model
+    void updateSubject(MocapSubject*);  //!< Update a mocap subject in the model
 };
 
 #endif // BASECLIENT_H

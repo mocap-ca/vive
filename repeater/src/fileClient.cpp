@@ -53,15 +53,15 @@ void FileClient::tick()
         int joints = s1[1].toInt();
         int markers = s1[2].toInt();
 
-        SubjectData * newSubject = new SubjectData(name, CL_File);
+        MocapSubject * newSubject = new MocapSubject(name, CL_File, true);
 
         for(int j = 0; j < joints; j++)
         {
             QStringList s2 = lines[iLine++].split("\t");
             if(s2.length() < 8) continue;
             QString jointName = s2[0];
-            double trans[3];
-            double rot[4];
+            float trans[3];
+            float rot[4];
 
             trans[0] = s2[1].toFloat();
             trans[1] = s2[2].toFloat();
@@ -71,7 +71,7 @@ void FileClient::tick()
             rot[2]   = s2[6].toFloat();
             rot[3]   = s2[7].toFloat();
 
-            newSubject->setSegment(jointName, trans, rot);
+            newSubject->data.items.append( new MocapSegment( jointName, trans, rot) );
         }
 
         for(int j = 0; j < markers; j++)
@@ -79,13 +79,13 @@ void FileClient::tick()
             QStringList s2 = lines[iLine++].split("\t");
             if(s2.length() < 4) continue;
             QString markerName = s2[0];
-            double trans[3];
+            float trans[3];
 
             trans[0] = s2[1].toFloat();
             trans[1] = s2[2].toFloat();
             trans[2] = s2[3].toFloat();
 
-            newSubject->setMarker(markerName, trans);
+            newSubject->data.items.append( new MocapMarker( markerName, trans));
         }
 
         emit updateSubject(newSubject);
