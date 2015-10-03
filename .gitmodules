@@ -1,0 +1,3 @@
+[submodule "peellib"]
+	path = peellib
+	url = https://github.com/mocap-ca/peellib.git
